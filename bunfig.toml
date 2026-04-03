@@ -1,0 +1,14 @@
+# Bun configuration for Synergy EMS
+# This project uses Bun exclusively
+
+[install]
+# Save exact versions to bun.lock
+exact = false
+
+[install.cache]
+# Use a shared cache directory
+dir = "~/.bun/install/cache"
+
+[run]
+# Use bun as the JS runtime for scripts
+bun = true

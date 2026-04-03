@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+
+# Build output (we build fresh in Docker)
+dist
+dist-ssr
+build
+
+# Environment files (never send to Docker build context)
+.env*
+!.env.example
+
+# Version control
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage
+*.test.js
+*.spec.js
+
+# Documentation
+README.md
+*.md
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Project files not needed in image
+database/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+.agent

@@ -1,0 +1,22 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="synergy-gradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" /> <!-- Indigo-500 -->
+      <stop offset="50%" stop-color="#8b5cf6" /> <!-- Violet-500 -->
+      <stop offset="100%" stop-color="#ec4899" /> <!-- Pink-500 -->
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Background Squircle -->
+  <rect x="32" y="32" width="448" height="448" rx="128" fill="url(#synergy-gradient)" />
+  
+  <!-- Stylized 'S' / Synergy Symbol -->
+  <path d="M180 160C180 160 220 120 256 120C292 120 332 160 332 160C332 160 372 200 332 240C292 280 220 280 180 320C140 360 180 400 180 400C180 400 220 440 256 440C292 440 332 400 332 400" stroke="white" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  
+  <!-- Subtle shine/highlight -->
+  <circle cx="400" cy="112" r="64" fill="white" fill-opacity="0.1" />
+</svg>

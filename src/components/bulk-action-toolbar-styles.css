@@ -1,0 +1,185 @@
+/* Bulk Action Toolbar Styles */
+.bulk-action-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-hover) 100%
+  );
+  border: 1px solid var(--primary);
+  box-shadow: var(--shadow-lg);
+  animation: slideDown 0.3s ease;
+  flex-wrap: wrap;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bulk-action-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.bulk-action-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(10px);
+}
+
+.bulk-action-clear {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bulk-action-clear:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.bulk-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.bulk-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+}
+
+.bulk-action-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  padding: 0 0.5rem;
+}
+
+.bulk-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: white;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bulk-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Status-specific button colors */
+.bulk-action-btn.status-active {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.bulk-action-btn.status-active:hover {
+  background: var(--success);
+  color: white;
+}
+
+.bulk-action-btn.status-leave {
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+.bulk-action-btn.status-leave:hover {
+  background: var(--warning);
+  color: white;
+}
+
+.bulk-action-btn.status-offline {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.bulk-action-btn.status-offline:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* Danger button */
+.bulk-action-btn.danger {
+  background: var(--danger);
+  color: white;
+  font-weight: 600;
+}
+
+.bulk-action-btn.danger:hover {
+  background: #b91c1c;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bulk-action-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulk-action-info {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .bulk-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .bulk-action-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulk-action-label {
+    text-align: center;
+  }
+
+  .bulk-action-btn {
+    justify-content: center;
+  }
+}
