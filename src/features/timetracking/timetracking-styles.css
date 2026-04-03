@@ -1,0 +1,435 @@
+/* ========================================
+   Time Tracking Styles
+   ======================================== */
+
+/* No custom padding needed - uses main-content */
+
+/* Header - matches other page headers */
+.timetracking-header {
+    margin-bottom: 24px;
+}
+
+.timetracking-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.timetracking-header h1 svg {
+    color: var(--primary);
+}
+
+.timetracking-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* No Employee Message */
+.timetracking-no-employee {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.timetracking-no-employee svg {
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.timetracking-no-employee h2 {
+    margin: 0 0 8px 0;
+    color: var(--text-main);
+}
+
+.timetracking-no-employee p {
+    margin: 0;
+}
+
+/* Clock Card - uses card styling for consistency */
+.clock-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 32px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.clock-display {
+    margin-bottom: 24px;
+}
+
+.current-time {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.current-date {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+/* Clock Status */
+.clock-status {
+    margin-bottom: 32px;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.status-indicator.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.status-indicator.completed {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+}
+
+.status-indicator.idle {
+    background: var(--bg-body);
+    color: var(--text-muted);
+}
+
+.pulse {
+    width: 10px;
+    height: 10px;
+    background: currentColor;
+    border-radius: 50%;
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+.elapsed-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--text-main);
+    font-family: 'Courier New', monospace;
+}
+
+.clock-in-time,
+.total-hours {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.day-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    font-size: 18px;
+    color: var(--text-muted);
+}
+
+.day-summary .separator {
+    color: var(--text-muted);
+}
+
+/* Clock Actions */
+.clock-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.clock-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clock-btn.clock-in {
+    background: #10B981;
+    color: white;
+}
+
+.clock-btn.clock-in:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-2px);
+}
+
+.clock-btn.clock-out {
+    background: #EF4444;
+    color: white;
+}
+
+.clock-btn.clock-out:hover:not(:disabled) {
+    background: #DC2626;
+    transform: translateY(-2px);
+}
+
+.clock-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Weekly Section */
+.weekly-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.week-navigator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.week-navigator button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-body);
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.week-navigator button:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+}
+
+.week-navigator button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.week-navigator span {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    min-width: 150px;
+    text-align: center;
+}
+
+/* Weekly Stats */
+.weekly-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.weekly-stat {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--bg-body);
+}
+
+.weekly-stat svg {
+    color: var(--primary);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Daily Breakdown */
+.daily-breakdown {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.day-card {
+    padding: 16px 12px;
+    background: var(--bg-body);
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.day-card.today {
+    border: 2px solid var(--primary);
+    background: rgba(var(--primary-rgb), 0.05);
+}
+
+.day-card.weekend {
+    opacity: 0.6;
+}
+
+.day-header {
+    margin-bottom: 12px;
+}
+
+.day-name {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.day-date {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-top: 4px;
+}
+
+.day-hours {
+    margin-bottom: 8px;
+}
+
+.hours-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.hours-bar {
+    height: 4px;
+    background: var(--border);
+    overflow: hidden;
+}
+
+.hours-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.no-hours {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.day-times {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .timetracking {
+        padding: 16px;
+    }
+
+    .clock-card {
+        padding: 32px 16px;
+    }
+
+    .current-time {
+        font-size: 48px;
+    }
+
+    .weekly-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .daily-breakdown {
+        grid-template-columns: repeat(7, 1fr);
+        overflow-x: auto;
+    }
+
+    .day-card {
+        min-width: 60px;
+        padding: 12px 8px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .daily-breakdown {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
