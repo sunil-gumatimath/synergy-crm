@@ -21,6 +21,12 @@ dist-ssr
 !.env.example
 .env.*.local
 
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+nginx.conf
+
 # Testing / coverage
 coverage
 .eslintcache
