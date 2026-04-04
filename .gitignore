@@ -68,9 +68,6 @@ supabase/.cache
 # Backend SQL snapshots/scripts (never commit SQL)
 database/*.sql
 supabase/**/*.sql
-# Allow this security hardening migration explicitly
-!supabase/migrations/20260306172000_rbac_hardening_and_storage_lockdown.sql
-!supabase/migrations/20260306190500_rls_and_function_hardening_followup.sql
 
 # One-off dev/migration scripts (should not be committed)
 apply-sql.cjs
