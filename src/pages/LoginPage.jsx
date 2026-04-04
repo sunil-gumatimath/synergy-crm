@@ -12,6 +12,7 @@ import {
   Mail,
 } from "../lib/icons";
 import SynergyLogo from "../components/common/SynergyLogo";
+import { setEncryptedItem, getEncryptedItem, removeEncryptedItem } from "../utils/storageUtils";
 import "../index.css";
 import "./login-styles.css";
 
@@ -24,8 +25,6 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [failedAttempts, setFailedAttempts] = useState(0);
-  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
@@ -44,21 +43,12 @@ const LoginPage = () => {
 
   // Load remembered email on mount
   useEffect(() => {
-    const rememberedEmail = localStorage.getItem("synergy_remembered_email");
+    const rememberedEmail = getEncryptedItem("synergy_remembered_email");
     if (rememberedEmail) {
       setFormData((prev) => ({ ...prev, email: rememberedEmail }));
       setRememberMe(true);
     }
   }, []);
-
-  // Cooldown countdown
-  useEffect(() => {
-    if (cooldownSeconds <= 0) return;
-    const timer = setTimeout(() => setCooldownSeconds((s) => s - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [cooldownSeconds]);
-
-  const isRateLimited = cooldownSeconds > 0;
 
   // Cooldown countdown
   useEffect(() => {
@@ -151,9 +141,9 @@ const LoginPage = () => {
       if (isLogin) {
         // Handle Remember Me
         if (rememberMe) {
-          localStorage.setItem("synergy_remembered_email", formData.email);
+          setEncryptedItem("synergy_remembered_email", formData.email);
         } else {
-          localStorage.removeItem("synergy_remembered_email");
+          removeEncryptedItem("synergy_remembered_email");
         }
 
         const { error: signInError, user: signedInUser } = await signIn(

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js';
+import DOMPurify from 'dompurify';
 
 /**
  * Reports Service - Aggregates data for various report types
@@ -484,7 +485,7 @@ export const printReport = (elementId) => {
           <h1>Synergy EMS</h1>
           <p>Generated on ${new Date().toLocaleDateString()}</p>
         </div>
-        ${printContent.innerHTML}
+        ${DOMPurify.sanitize(printContent.innerHTML)}
       </body>
     </html>
   `);
