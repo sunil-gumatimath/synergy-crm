@@ -2,6 +2,31 @@ import { supabase } from "../lib/supabase";
 const STORAGE_BUCKET = "employee-documents";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
+// Allowed file extensions for document uploads (security: prevents .exe, .html, .svg XSS vectors)
+const ALLOWED_EXTENSIONS = [
+  "pdf", "doc", "docx", "xls", "xlsx", "csv", "txt", "rtf", "ppt", "pptx",
+  "jpg", "jpeg", "png", "gif", "webp", "bmp",
+];
+
+// Allowed MIME types (secondary validation alongside extension check)
+const ALLOWED_MIME_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "text/csv",
+  "text/plain",
+  "application/rtf",
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/bmp",
+];
+
 function extractStoragePath(fileRef) {
   if (!fileRef) return null;
   if (!fileRef.startsWith("http")) return fileRef;
@@ -50,6 +75,21 @@ export const documentService = {
         );
       }
 
+      // Validate file extension (security: prevents .exe, .html, .svg uploads)
+      const fileExt = file.name.split(".").pop()?.toLowerCase();
+      if (!fileExt || !ALLOWED_EXTENSIONS.includes(fileExt)) {
+        throw new Error(
+          `File type ".${fileExt || "unknown"}" is not allowed. Accepted types: ${ALLOWED_EXTENSIONS.join(", ")}`,
+        );
+      }
+
+      // Secondary MIME type check (can be spoofed, but adds defense-in-depth)
+      if (file.type && !ALLOWED_MIME_TYPES.includes(file.type)) {
+        throw new Error(
+          `File MIME type "${file.type}" is not allowed.`,
+        );
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -63,8 +103,7 @@ export const documentService = {
         uploaderEmployeeId = uploader?.id || null;
       }
 
-      // Create unique file name
-      const fileExt = file.name.split(".").pop();
+      // Create unique file name (reuses fileExt validated above)
       const fileName = `${employeeId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       // Upload to storage

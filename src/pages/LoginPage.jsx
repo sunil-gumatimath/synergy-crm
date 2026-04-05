@@ -69,8 +69,19 @@ const LoginPage = () => {
   const handleRememberMeChange = (e) => {
     setRememberMe(e.target.checked);
     if (!e.target.checked) {
-      localStorage.removeItem("synergy_remembered_email");
+      removeEncryptedItem("synergy_remembered_email");
     }
+  };
+
+  /**
+   * Get cooldown duration based on number of failed attempts.
+   * Progressive: 3 failures → 5s, 4 → 15s, 5+ → 30s.
+   */
+  const getCooldownDuration = (attempts) => {
+    if (attempts >= 5) return 30;
+    if (attempts >= 4) return 15;
+    if (attempts >= 3) return 5;
+    return 0;
   };
 
   const validateForm = () => {
@@ -151,6 +162,14 @@ const LoginPage = () => {
           formData.password,
         );
         if (signInError) {
+          // Track failed attempts for client-side rate limiting
+          const newAttempts = failedAttempts + 1;
+          setFailedAttempts(newAttempts);
+          const cooldown = getCooldownDuration(newAttempts);
+          if (cooldown > 0) {
+            setCooldownSeconds(cooldown);
+          }
+
           // Handle specific error cases
           if (signInError.message?.includes('Invalid login credentials')) {
             setError("Invalid email or password. Please try again.");
@@ -162,6 +181,9 @@ const LoginPage = () => {
             setError(signInError.message || "Failed to sign in. Please try again.");
           }
         } else if (signedInUser) {
+          // Reset rate limiting on successful login
+          setFailedAttempts(0);
+          setCooldownSeconds(0);
           // Redirect based on role: Employee → /dashboard, Admin/Manager → /analytics
           navigate("/", { replace: true });
         }
@@ -540,7 +562,7 @@ const LoginPage = () => {
               )}
 
               {/* Submit Button */}
-              <button type="submit" className="submit-btn" disabled={loading}>
+              <button type="submit" className="submit-btn" disabled={loading || isRateLimited}>
                 {loading ? (
                   <div className="loading-dots">
                     <span></span>

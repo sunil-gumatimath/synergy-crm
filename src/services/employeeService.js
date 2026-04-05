@@ -4,6 +4,18 @@ import { authService } from "./authService";
 const TABLE_NAME = "employees";
 
 /**
+ * Sanitize user input for PostgREST filter strings.
+ * Strips characters that have special meaning in PostgREST filter syntax
+ * (commas, dots, parens, colons, asterisks) to prevent filter injection.
+ * @param {string} input - Raw user input
+ * @returns {string} Sanitized input safe for .or() filters
+ */
+function sanitizeFilterInput(input) {
+  if (!input) return "";
+  return input.replace(/[,.()*:]/g, "");
+}
+
+/**
  * Employee Service - Handles all CRUD operations for employees
  */
 export const employeeService = {
@@ -262,11 +274,17 @@ export const employeeService = {
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
+      // Sanitize input to prevent PostgREST filter injection
+      const safeQuery = sanitizeFilterInput(query);
+      if (!safeQuery) {
+        return { data: [], count: 0, error: null };
+      }
+
       const { data, error, count } = await supabase
         .from(TABLE_NAME)
         .select("*", { count: "exact" })
         .or(
-          `name.ilike.%${query}%,email.ilike.%${query}%,department.ilike.%${query}%`,
+          `name.ilike.%${safeQuery}%,email.ilike.%${safeQuery}%,department.ilike.%${safeQuery}%`,
         )
         .order("created_at", { ascending: false })
         .range(from, to);

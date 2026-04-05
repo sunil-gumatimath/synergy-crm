@@ -102,7 +102,33 @@ export const authService = {
    */
   async resetPassword(email) {
     try {
-      const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+      // Validate redirect origin to prevent open redirect attacks.
+      // If VITE_APP_URL is set, use it exclusively. Otherwise, verify that
+      // window.location.origin is an expected value (localhost for dev).
+      const configuredUrl = import.meta.env.VITE_APP_URL;
+      let baseUrl;
+
+      if (configuredUrl) {
+        // Production: always use the explicitly configured URL
+        baseUrl = configuredUrl;
+      } else {
+        // Development: only allow known localhost origins
+        const origin = window.location.origin;
+        const allowedDevOrigins = [
+          "http://localhost:5173",
+          "http://localhost:3000",
+          "http://127.0.0.1:5173",
+          "http://127.0.0.1:3000",
+        ];
+        if (allowedDevOrigins.includes(origin)) {
+          baseUrl = origin;
+        } else {
+          // Reject unknown origins — log and fall back to first allowed
+          console.warn(`Password reset: unexpected origin "${origin}", using fallback.`);
+          baseUrl = allowedDevOrigins[0];
+        }
+      }
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${baseUrl}/reset-password`,
       });

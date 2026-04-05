@@ -1,46 +1,38 @@
-import CryptoJS from 'crypto-js';
-
-// Use a static encryption key for client-side encryption
-// In production, this should be derived from user-specific data
-const ENCRYPTION_KEY = 'synergy-ems-storage-key-v1';
+/**
+ * Storage Utilities — thin wrappers around localStorage.
+ *
+ * Previously this module used CryptoJS with a hardcoded key shipped in the
+ * client bundle, which provided zero security (the key was visible in DevTools).
+ * Replaced with plain localStorage since the only stored value is a
+ * non-sensitive remembered email address.
+ *
+ * The API surface (setEncryptedItem / getEncryptedItem / removeEncryptedItem)
+ * is preserved so callers don't need changes.
+ */
 
 /**
- * Encrypts and stores a value in localStorage
+ * Stores a value in localStorage
  * @param {string} key - The storage key
- * @param {string} value - The value to encrypt and store
+ * @param {string} value - The value to store
  */
 export const setEncryptedItem = (key, value) => {
   try {
-    const encrypted = CryptoJS.AES.encrypt(value, ENCRYPTION_KEY).toString();
-    localStorage.setItem(key, encrypted);
-  } catch (error) {
-    console.error('Error encrypting localStorage item:', error);
-    // Fallback to plain storage if encryption fails
     localStorage.setItem(key, value);
+  } catch (error) {
+    console.error('Error setting localStorage item:', error);
   }
 };
 
 /**
- * Retrieves and decrypts a value from localStorage
+ * Retrieves a value from localStorage
  * @param {string} key - The storage key
- * @returns {string|null} The decrypted value or null if not found
+ * @returns {string|null} The stored value or null if not found
  */
 export const getEncryptedItem = (key) => {
   try {
-    const encrypted = localStorage.getItem(key);
-    if (!encrypted) return null;
-
-    // Try to decrypt - if it fails, it might be plain text (legacy)
-    try {
-      const bytes = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY);
-      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-      return decrypted || encrypted; // Return encrypted if decryption fails (legacy data)
-    } catch {
-      // If decryption fails, return as-is (might be plain text from before encryption)
-      return encrypted;
-    }
+    return localStorage.getItem(key);
   } catch (error) {
-    console.error('Error decrypting localStorage item:', error);
+    console.error('Error getting localStorage item:', error);
     return null;
   }
 };
