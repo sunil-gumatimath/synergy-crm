@@ -273,7 +273,7 @@ const AddEventModal = ({ isOpen, onClose, onSave, initialDate, eventToEdit, isLo
                         Cancel
                     </button>
                     <button
-                        type="submit"
+                        type="button"
                         className="btn-save"
                         onClick={handleSubmit}
                         disabled={isLoading}

@@ -188,8 +188,11 @@ const Sidebar = ({ activeTab }) => {
           aria-expanded={!isCollapsed}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          data-collapsed={isCollapsed}
         >
-          {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          <span className="sidebar-collapse-toggle-icon" aria-hidden="true">
+            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </span>
           <span className="sr-only">
             {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           </span>
