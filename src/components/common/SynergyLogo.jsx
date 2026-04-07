@@ -1,10 +1,9 @@
-
 import React from "react";
 import PropTypes from "prop-types";
 
 /**
- * Synergy Logo - "The Orbital"
- * Represents connection, 360-degree management, and dynamic flow.
+ * Synergy Logo - "The Infinity Ribbon"
+ * Represents seamless connection, continuous growth, and infinite potential.
  */
 const SynergyLogo = ({ size = 32, className = "" }) => {
     return (
@@ -18,46 +17,40 @@ const SynergyLogo = ({ size = 32, className = "" }) => {
             aria-label="Synergy Logo"
         >
             <defs>
-                <linearGradient id="synergyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#6366f1" /> {/* Indigo-500 */}
-                    <stop offset="50%" stopColor="#8b5cf6" /> {/* Violet-500 */}
-                    <stop offset="100%" stopColor="#ec4899" /> {/* Pink-500 */}
+                <linearGradient id="syn-grad-1" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#8b5cf6" /> {/* Violet */}
+                    <stop offset="100%" stopColor="#4f46e5" /> {/* Indigo */}
                 </linearGradient>
-                <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="2" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                <linearGradient id="syn-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ec4899" /> {/* Pink */}
+                    <stop offset="100%" stopColor="#8b5cf6" /> {/* Violet */}
+                </linearGradient>
+                <filter id="ribbon-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="2" dy="4" stdDeviation="3" floodColor="#0f172a" floodOpacity="0.25" />
                 </filter>
             </defs>
 
-            {/* Orbit Ring 1 (Top-Right to Bottom-Left) */}
+            {/* Left Ribbon (Bottom Left -> Top Left -> Bottom Right) */}
             <path
-                d="M32 8 C 45.25 8, 56 18.75, 56 32 C 56 45.25, 45.25 56, 32 56"
-                stroke="url(#synergyGradient)"
-                strokeWidth="5"
+                d="M 22 44 C 4 44, 4 20, 22 20 C 32 20, 32 44, 42 44"
+                stroke="url(#syn-grad-1)"
+                strokeWidth="10"
                 strokeLinecap="round"
-                fill="none"
-                filter="url(#softGlow)"
+                strokeLinejoin="round"
+            />
+            
+            {/* Right Ribbon (Bottom Right -> Top Right -> Bottom Left) with shadow drop */}
+            <path
+                d="M 42 44 C 60 44, 60 20, 42 20 C 32 20, 32 44, 22 44"
+                stroke="url(#syn-grad-2)"
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#ribbon-shadow)"
             />
 
-            {/* Orbit Ring 2 (Bottom-Left to Top-Right - Offset) */}
-            <path
-                d="M32 56 C 18.75 56, 8 45.25, 8 32 C 8 18.75, 18.75 8, 32 8"
-                stroke="url(#synergyGradient)"
-                strokeWidth="5"
-                strokeLinecap="round"
-                fill="none"
-                strokeOpacity="0.6"
-            />
-
-            {/* Central Connector (The "S" Energy) */}
-            <path
-                d="M24 32 L40 32"
-                stroke="url(#synergyGradient)"
-                strokeWidth="4"
-                strokeLinecap="round"
-            />
-            <circle cx="32" cy="32" r="6" fill="url(#synergyGradient)" />
-            <circle cx="32" cy="32" r="2" fill="white" />
+            {/* Accent Spark */}
+            <circle cx="32" cy="32" r="3" fill="#ffffff" opacity="0.9" />
         </svg>
     );
 };

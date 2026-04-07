@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
     format,
     addMonths,
@@ -35,6 +35,36 @@ const CalendarView = () => {
     const [editingEvent, setEditingEvent] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [eventToDelete, setEventToDelete] = useState(null);
+    const isSavingRef = useRef(false);
+
+    const buildEventOccurrenceKey = useCallback((event) => {
+        const normalizedDate = format(new Date(event.date), "yyyy-MM-dd");
+
+        return [
+            normalizedDate,
+            event.title?.trim().toLowerCase() || "",
+            event.time || "",
+            event.endTime || event.end_time || "",
+            event.type || "",
+            event.location?.trim().toLowerCase() || "",
+            event.recurrence || "none",
+            event.isAnniversary ? "anniversary" : "calendar",
+        ].join("|");
+    }, []);
+
+    const dedupeEvents = useCallback((eventList) => {
+        const seen = new Set();
+
+        return eventList.filter((event) => {
+            const occurrenceKey = buildEventOccurrenceKey(event);
+            if (seen.has(occurrenceKey)) {
+                return false;
+            }
+
+            seen.add(occurrenceKey);
+            return true;
+        });
+    }, [buildEventOccurrenceKey]);
 
     const generateRecurringInstances = (event, startRange, endRange) => {
         const instances = [];
@@ -85,7 +115,7 @@ const CalendarView = () => {
         setIsLoading(true);
         try {
             const { data: employees } = await employeeService.getAll();
-            const { data: calendarEvents } = await calendarService.getAll();
+            const { data: calendarEvents } = await calendarService.getAll({ pageSize: 500 });
 
             let allEvents = [];
             const rangeStart = subMonths(startOfMonth(currentMonth), 1);
@@ -150,13 +180,13 @@ const CalendarView = () => {
                 });
             }
 
-            setEvents(allEvents);
+            setEvents(dedupeEvents(allEvents));
         } catch (error) {
             console.error("Error fetching events:", error);
         } finally {
             setIsLoading(false);
         }
-    }, [currentMonth]);
+    }, [currentMonth, dedupeEvents]);
 
     useEffect(() => {
         fetchEvents();
@@ -202,6 +232,9 @@ const CalendarView = () => {
     };
 
     const handleSaveEvent = async (formData) => {
+        if (isSavingRef.current) return;
+
+        isSavingRef.current = true;
         setIsLoading(true);
         try {
             if (editingEvent) {
@@ -214,6 +247,7 @@ const CalendarView = () => {
         } catch (error) {
             console.error("Error saving event:", error);
         } finally {
+            isSavingRef.current = false;
             setIsLoading(false);
         }
     };

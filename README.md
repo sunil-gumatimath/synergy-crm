@@ -7,7 +7,7 @@
   [![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC.svg?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
   [![Bun](https://img.shields.io/badge/Bun-Runtime-000000.svg?style=flat&logo=bun)](https://bun.sh/)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg?style=flat)]()
 
   <br />
 
@@ -199,4 +199,4 @@ synergy-crm/
 
 ## License
 
-This project is open-source and free to use under the **[MIT License](LICENSE)**.
+This project is **open-source and free to use**. Feel free to fork, modify, and distribute it for personal or commercial projects.

@@ -1,8 +1,0 @@
--- =============================================================
--- DEPRECATED: This migration previously granted anon access to
--- RLS policies. Those grants have been removed and superseded
--- by the role-scoped policies in 20260227010000_proper_rls_policies.sql.
---
--- Keeping this file to preserve migration history ordering.
--- =============================================================
--- (intentionally empty — no-op)
