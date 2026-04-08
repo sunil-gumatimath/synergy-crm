@@ -42,7 +42,10 @@ describe("employeeService", () => {
             const result = await employeeService.getAll();
 
             expect(supabase.from).toHaveBeenCalledWith("employees");
-            expect(mockSelect).toHaveBeenCalledWith("*", { count: "exact" });
+            expect(mockSelect).toHaveBeenCalledWith(
+                expect.stringContaining("private_details:employee_private_details(*)"),
+                { count: "exact" },
+            );
             expect(mockRange).toHaveBeenCalledWith(0, 49); // page 1, pageSize 50
             expect(result.data).toHaveLength(1);
             expect(result.error).toBeNull();

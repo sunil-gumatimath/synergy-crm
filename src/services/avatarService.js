@@ -1,6 +1,19 @@
 import { supabase } from "../lib/supabase";
 
 const BUCKET = "avatars";
+const SIGNED_URL_TTL_SECONDS = 60 * 60;
+const signedUrlCache = new Map();
+
+function normalizeAvatarPath(value) {
+    if (!value) return null;
+    if (!value.startsWith("http")) return value;
+    const marker = `/${BUCKET}/`;
+    const markerIndex = value.indexOf(marker);
+    if (markerIndex === -1) return value;
+
+    const pathWithQuery = value.slice(markerIndex + marker.length);
+    return pathWithQuery.split("?")[0] || null;
+}
 
 /**
  * Avatar Service — Upload, retrieve, and remove profile photos via Supabase Storage
@@ -24,22 +37,20 @@ export const avatarService = {
 
             if (uploadError) throw uploadError;
 
-            // Get public URL
-            const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-            const publicUrl = `${data.publicUrl}?t=${Date.now()}`; // cache-bust
-
-            // Save URL to employee record
+            // Save storage path to employee record; the client resolves signed URLs on demand.
             const { error: dbError } = await supabase
                 .from("employees")
-                .update({ avatar: publicUrl })
+                .update({ avatar: path })
                 .eq("id", employeeId);
 
             if (dbError) throw dbError;
 
-            return { url: publicUrl, error: null };
+            signedUrlCache.delete(path);
+            const signedUrl = await this.getUrl(path, { bustCache: true });
+            return { url: signedUrl || path, path, error: null };
         } catch (error) {
             console.error("Avatar upload error:", error);
-            return { url: null, error };
+            return { url: null, path: null, error };
         }
     },
 
@@ -63,6 +74,7 @@ export const avatarService = {
                     .from(BUCKET)
                     .remove(paths);
                 if (removeError) throw removeError;
+                paths.forEach((path) => signedUrlCache.delete(path));
             }
 
             // Clear avatar URL from employee record
@@ -81,17 +93,36 @@ export const avatarService = {
     },
 
     /**
-     * Get the public URL for an employee's avatar
-     * Returns null if the employee has no avatar column value
+     * Resolve an avatar path to a signed URL for private bucket access.
      * @param {string} avatarPath - The avatar URL/path from the employee record
      * @returns {string|null}
      */
-    getUrl(avatarPath) {
-        if (!avatarPath) return null;
-        // If it's already a full URL, return as-is
-        if (avatarPath.startsWith("http")) return avatarPath;
-        // Otherwise construct from storage
-        const { data } = supabase.storage.from(BUCKET).getPublicUrl(avatarPath);
-        return data.publicUrl;
+    async getUrl(avatarPath, { bustCache = false } = {}) {
+        const normalizedPath = normalizeAvatarPath(avatarPath);
+        if (!normalizedPath) return null;
+        if (normalizedPath.startsWith("http")) return normalizedPath;
+
+        if (!bustCache) {
+            const cached = signedUrlCache.get(normalizedPath);
+            if (cached && cached.expiresAt > Date.now()) {
+                return cached.url;
+            }
+        }
+
+        const { data, error } = await supabase.storage
+            .from(BUCKET)
+            .createSignedUrl(normalizedPath, SIGNED_URL_TTL_SECONDS);
+
+        if (error || !data?.signedUrl) {
+            console.error("Avatar signed URL error:", error);
+            return null;
+        }
+
+        signedUrlCache.set(normalizedPath, {
+            url: data.signedUrl,
+            expiresAt: Date.now() + ((SIGNED_URL_TTL_SECONDS - 30) * 1000),
+        });
+
+        return data.signedUrl;
     },
 };

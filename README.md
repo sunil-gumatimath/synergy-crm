@@ -111,6 +111,13 @@ Run the following migrations in order via the Supabase CLI or SQL Editor:
 1. `supabase/migrations/20260101000000_setup.sql`
 2. `supabase/migrations/20260101000001_fix_rls.sql`
 3. `supabase/migrations/20260218000000_chat_tables.sql`
+4. `supabase/migrations/20260227000000_add_missing_indexes.sql`
+5. `supabase/migrations/20260227010000_proper_rls_policies.sql`
+6. `supabase/migrations/20260306172000_rbac_hardening_and_storage_lockdown.sql`
+7. `supabase/migrations/20260306190500_rls_and_function_hardening_followup.sql`
+8. `supabase/migrations/20260405000000_harden_admin_auth_user_rpcs.sql`
+9. `supabase/migrations/20260408000000_drop_full_access_policies.sql`
+10. `supabase/migrations/20260408010000_secure_employee_private_data_and_avatars.sql`
 </details>
 
 ### 4. Running the Development Server

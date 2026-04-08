@@ -209,6 +209,18 @@ const SettingsView = () => {
         });
       }
 
+      if (user.employeeId && settings.phone !== originalSettings.phone) {
+        const normalizedPhone = settings.phone.trim();
+        const { error: privateDetailsError } = await supabase
+          .from('employee_private_details')
+          .upsert({
+            employee_id: user.employeeId,
+            phone: normalizedPhone || null,
+          });
+
+        if (privateDetailsError) throw privateDetailsError;
+      }
+
       // Update User Settings
       const settingsPayload = {
         user_id: user.id,

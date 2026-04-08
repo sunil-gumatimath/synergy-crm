@@ -6,6 +6,24 @@ import { normalizeRole } from "../utils/roles";
 
 const AuthContext = createContext({});
 
+const EMPLOYEE_SELECT = `
+  *,
+  private_details:employee_private_details(*)
+`;
+
+const flattenEmployeeRecord = (record) => {
+  if (!record) return record;
+  const privateDetails = Array.isArray(record.private_details)
+    ? record.private_details[0]
+    : record.private_details;
+
+  return {
+    ...record,
+    ...(privateDetails || {}),
+    private_details: privateDetails || null,
+  };
+};
+
 /* eslint-disable react-refresh/only-export-components */
 
 // Provider component for authentication context
@@ -19,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data: employee, error } = await supabase
         .from('employees')
-        .select('*')
+        .select(EMPLOYEE_SELECT)
         .eq('email', authUser.email)
         .maybeSingle();
 
@@ -27,25 +45,7 @@ export const AuthProvider = ({ children }) => {
         console.error("Error fetching employee profile:", error);
       }
 
-      let resolvedEmployee = employee;
-
-      // Auto-link auth.users.id -> employees.user_id when email matches.
-      // This helps role-aware RLS policies that depend on employees.user_id = auth.uid().
-      if (resolvedEmployee && !resolvedEmployee.user_id && authUser?.id) {
-        const { data: linkedEmployee, error: linkError } = await supabase
-          .from('employees')
-          .update({ user_id: authUser.id })
-          .eq('id', resolvedEmployee.id)
-          .is('user_id', null)
-          .select('*')
-          .maybeSingle();
-
-        if (linkError) {
-          console.warn('Could not auto-link employee user_id:', linkError.message || linkError);
-        } else if (linkedEmployee) {
-          resolvedEmployee = linkedEmployee;
-        }
-      }
+      const resolvedEmployee = flattenEmployeeRecord(employee);
 
       // Role comes from employee table, normalized for consistent RBAC checks
       const role = normalizeRole(resolvedEmployee?.role || 'Employee');

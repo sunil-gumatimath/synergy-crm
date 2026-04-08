@@ -1,15 +1,16 @@
-# Logs
-logs
-*.log
+# Dependency directories
+node_modules/
+jspm_packages/
 
-# Bun-only project artifacts
-bun.lockb
-bun.lock
+# Bun artifacts
+# bun.lock and bun.lockb SHOULD NOT be ignored as they are needed for frozen builds
+# bun.lockb
+# bun.lock
 
-node_modules
-dist
-dist-ssr
-*.local
+# Build outputs
+dist/
+dist-ssr/
+build/
 
 # Environment variables
 .env
@@ -21,20 +22,23 @@ dist-ssr
 !.env.example
 .env.*.local
 
-# Docker files
-Dockerfile
-docker-compose.yml
-.dockerignore
-nginx.conf
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
 
 # Testing / coverage
-coverage
+coverage/
 .eslintcache
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
@@ -42,19 +46,24 @@ coverage
 *.sln
 *.sw?
 
-# Agent / tool directories
-.agent
-.opencode
+# Tooling / Agents
+.agent/
+.agents/
+.collaborator/
+.gemini/
+.antigravity/
 .cursor/
+skills-lock.json
 
-# Supabase CLI temp files
-supabase/.temp
-supabase/.branches
-supabase/.cache
+# Supabase CLI
+supabase/.temp/
+supabase/.branches/
+supabase/.cache/
 
 # Bun / Vite cache
-.bun
-.vite
+.bun/
+.vite/
+node_modules/.vite/
 
 # Accidental local home-dir mirror
 ~/
@@ -68,9 +77,11 @@ supabase/.cache
 # Backend SQL snapshots/scripts (never commit SQL)
 database/*.sql
 supabase/**/*.sql
+# We keep migrations but ignore specific snapshots if needed
+!supabase/migrations/
+!supabase/migrations/*.sql
 
-# One-off dev/migration scripts (should not be committed)
+# One-off dev/migration scripts
 apply-sql.cjs
 apply-sql-robust.cjs
 verify-supabase.cjs
-.collaborator

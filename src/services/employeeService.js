@@ -2,6 +2,10 @@ import { supabase } from "../lib/supabase";
 import { authService } from "./authService";
 
 const TABLE_NAME = "employees";
+const EMPLOYEE_SELECT = `
+  *,
+  private_details:employee_private_details(*)
+`;
 
 /**
  * Sanitize user input for PostgREST filter strings.
@@ -13,6 +17,23 @@ const TABLE_NAME = "employees";
 function sanitizeFilterInput(input) {
   if (!input) return "";
   return input.replace(/[,.()*:]/g, "");
+}
+
+function flattenEmployeeRecord(record) {
+  if (!record) return record;
+  const privateDetails = Array.isArray(record.private_details)
+    ? record.private_details[0]
+    : record.private_details;
+
+  return {
+    ...record,
+    ...(privateDetails || {}),
+    private_details: privateDetails || null,
+  };
+}
+
+function flattenEmployeeRecords(records) {
+  return (records || []).map(flattenEmployeeRecord);
 }
 
 /**
@@ -33,12 +54,12 @@ export const employeeService = {
 
       const { data, error, count } = await supabase
         .from(TABLE_NAME)
-        .select("*", { count: "exact" })
+        .select(EMPLOYEE_SELECT, { count: "exact" })
         .order("created_at", { ascending: false })
         .range(from, to);
 
       if (error) throw error;
-      return { data, count, error: null };
+      return { data: flattenEmployeeRecords(data), count, error: null };
     } catch (error) {
       console.error("Error fetching employees:", error);
       return { data: [], count: 0, error };
@@ -54,12 +75,12 @@ export const employeeService = {
     try {
       const { data, error } = await supabase
         .from(TABLE_NAME)
-        .select("*")
+        .select(EMPLOYEE_SELECT)
         .eq("id", id)
         .single();
 
       if (error) throw error;
-      return { data, error: null };
+      return { data: flattenEmployeeRecord(data), error: null };
     } catch (error) {
       console.error("Error fetching employee:", error);
       return { data: null, error };
@@ -104,7 +125,7 @@ export const employeeService = {
       createdUserId = userId;
 
       // Step 3: Insert the employee record, linking it to the auth user
-      const { data, error } = await supabase
+      const { data: createdEmployee, error } = await supabase
         .from(TABLE_NAME)
         .insert([
           {
@@ -116,9 +137,6 @@ export const employeeService = {
             status: employeeData.status || "Active",
             gender: employeeData.gender || "other",
             avatar: null,
-            phone: employeeData.phone || null,
-            address: employeeData.address || null,
-            salary: employeeData.salary || 0,
             join_date:
               employeeData.joinDate || new Date().toISOString().split("T")[0],
           },
@@ -127,6 +145,26 @@ export const employeeService = {
         .single();
 
       if (error) throw error;
+
+      const { error: privateError } = await supabase
+        .from("employee_private_details")
+        .upsert({
+          employee_id: createdEmployee.id,
+          phone: employeeData.phone || null,
+          address: employeeData.address || null,
+          location: employeeData.location || null,
+          salary: employeeData.salary || 0,
+          performance_score: employeeData.performance_score || 0,
+          employment_type: employeeData.employment_type || "Full-time",
+          manager: employeeData.manager || null,
+          projects_completed: employeeData.projects_completed || 0,
+          bank_details: employeeData.bank_details || null,
+          education: employeeData.education || [],
+        });
+
+      if (privateError) throw privateError;
+
+      const { data } = await this.getById(createdEmployee.id);
       return { data, error: null };
     } catch (error) {
       // Roll back: if auth user was created but employee insert failed, clean up
@@ -151,53 +189,78 @@ export const employeeService = {
    */
   async update(id, updates) {
     try {
-      const updateData = {};
-      if (updates.name !== undefined) updateData.name = updates.name;
-      if (updates.email !== undefined) updateData.email = updates.email;
-      if (updates.role !== undefined) updateData.role = updates.role;
+      const employeeUpdates = {};
+      const privateUpdates = {};
+
+      if (updates.name !== undefined) employeeUpdates.name = updates.name;
+      if (updates.email !== undefined) employeeUpdates.email = updates.email;
+      if (updates.role !== undefined) employeeUpdates.role = updates.role;
       if (updates.department !== undefined)
-        updateData.department = updates.department;
-      if (updates.status !== undefined) updateData.status = updates.status;
-      if (updates.gender !== undefined) updateData.gender = updates.gender;
-      if (updates.phone !== undefined) updateData.phone = updates.phone;
-      if (updates.address !== undefined) updateData.address = updates.address;
-      if (updates.salary !== undefined) updateData.salary = updates.salary;
+        employeeUpdates.department = updates.department;
+      if (updates.status !== undefined) employeeUpdates.status = updates.status;
+      if (updates.gender !== undefined) employeeUpdates.gender = updates.gender;
       if (updates.joinDate !== undefined)
-        updateData.join_date = updates.joinDate;
-      // New fields
-      if (updates.location !== undefined) updateData.location = updates.location;
-      if (updates.manager !== undefined) updateData.manager = updates.manager;
-      if (updates.employment_type !== undefined) updateData.employment_type = updates.employment_type;
-      if (updates.projects_completed !== undefined) updateData.projects_completed = updates.projects_completed;
-      if (updates.bank_details !== undefined) updateData.bank_details = updates.bank_details;
-      if (updates.education !== undefined) updateData.education = updates.education;
-      if (updates.performance_score !== undefined) updateData.performance_score = updates.performance_score;
+        employeeUpdates.join_date = updates.joinDate;
+      if (updates.avatar !== undefined) employeeUpdates.avatar = updates.avatar;
 
-      // Handle type casting edge cases for PostgreSQL when resetting form fields
-      if (updateData.salary === "") updateData.salary = null;
-      if (updateData.join_date === "") updateData.join_date = null;
+      if (updates.phone !== undefined) privateUpdates.phone = updates.phone;
+      if (updates.address !== undefined) privateUpdates.address = updates.address;
+      if (updates.salary !== undefined) privateUpdates.salary = updates.salary;
+      if (updates.location !== undefined) privateUpdates.location = updates.location;
+      if (updates.manager !== undefined) privateUpdates.manager = updates.manager;
+      if (updates.employment_type !== undefined)
+        privateUpdates.employment_type = updates.employment_type;
+      if (updates.projects_completed !== undefined)
+        privateUpdates.projects_completed = updates.projects_completed;
+      if (updates.bank_details !== undefined)
+        privateUpdates.bank_details = updates.bank_details;
+      if (updates.education !== undefined) privateUpdates.education = updates.education;
+      if (updates.performance_score !== undefined)
+        privateUpdates.performance_score = updates.performance_score;
 
-      // Normalize optional text fields
-      if (updateData.phone === "") updateData.phone = null;
-      if (updateData.address === "") updateData.address = null;
-      if (updateData.location === "") updateData.location = null;
-      if (updateData.manager === "") updateData.manager = null;
+      if (privateUpdates.salary === "") privateUpdates.salary = null;
+      if (employeeUpdates.join_date === "") employeeUpdates.join_date = null;
+      if (privateUpdates.phone === "") privateUpdates.phone = null;
+      if (privateUpdates.address === "") privateUpdates.address = null;
+      if (privateUpdates.location === "") privateUpdates.location = null;
+      if (privateUpdates.manager === "") privateUpdates.manager = null;
 
-      const { data, error } = await supabase
-        .from(TABLE_NAME)
-        .update(updateData)
-        .eq("id", id)
-        .select()
-        .single();
+      let updatedEmployee = null;
+      if (Object.keys(employeeUpdates).length > 0) {
+        const { data, error } = await supabase
+          .from(TABLE_NAME)
+          .update(employeeUpdates)
+          .eq("id", id)
+          .select("id, user_id")
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
+        updatedEmployee = data;
+      } else {
+        const { data, error } = await supabase
+          .from(TABLE_NAME)
+          .select("id, user_id")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+        updatedEmployee = data;
+      }
+
+      if (Object.keys(privateUpdates).length > 0) {
+        const { error } = await supabase
+          .from("employee_private_details")
+          .upsert({ employee_id: id, ...privateUpdates });
+
+        if (error) throw error;
+      }
 
       // If email was changed, also sync it to auth.users so the employee
       // can log in with their new email address
-      if (updateData.email && data.user_id) {
+      if (employeeUpdates.email && updatedEmployee.user_id) {
         const { error: emailSyncError } = await supabase.rpc(
           "admin_update_auth_email",
-          { target_user_id: data.user_id, new_email: updateData.email },
+          { target_user_id: updatedEmployee.user_id, new_email: employeeUpdates.email },
         );
         if (emailSyncError) {
           console.warn(
@@ -207,6 +270,7 @@ export const employeeService = {
         }
       }
 
+      const { data } = await this.getById(id);
       return { data, error: null };
     } catch (error) {
       console.error("Error updating employee:", error);
@@ -282,7 +346,7 @@ export const employeeService = {
 
       const { data, error, count } = await supabase
         .from(TABLE_NAME)
-        .select("*", { count: "exact" })
+        .select(EMPLOYEE_SELECT, { count: "exact" })
         .or(
           `name.ilike.%${safeQuery}%,email.ilike.%${safeQuery}%,department.ilike.%${safeQuery}%`,
         )
@@ -290,7 +354,7 @@ export const employeeService = {
         .range(from, to);
 
       if (error) throw error;
-      return { data, count, error: null };
+      return { data: flattenEmployeeRecords(data), count, error: null };
     } catch (error) {
       console.error("Error searching employees:", error);
       return { data: null, count: 0, error };
@@ -309,7 +373,7 @@ export const employeeService = {
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
-      let query = supabase.from(TABLE_NAME).select("*", { count: "exact" });
+      let query = supabase.from(TABLE_NAME).select(EMPLOYEE_SELECT, { count: "exact" });
 
       if (filters.department) {
         query = query.eq("department", filters.department);
@@ -324,7 +388,7 @@ export const employeeService = {
         .range(from, to);
 
       if (error) throw error;
-      return { data, count, error: null };
+      return { data: flattenEmployeeRecords(data), count, error: null };
     } catch (error) {
       console.error("Error filtering employees:", error);
       return { data: null, count: 0, error };

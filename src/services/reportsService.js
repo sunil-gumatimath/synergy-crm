@@ -1,6 +1,25 @@
 import { supabase } from '../lib/supabase.js';
 import DOMPurify from 'dompurify';
 
+const EMPLOYEE_SUMMARY_SELECT = `
+  *,
+  private_details:employee_private_details(
+    salary,
+    performance_score
+  )
+`;
+
+const flattenEmployee = (employee) => {
+    const privateDetails = Array.isArray(employee?.private_details)
+        ? employee.private_details[0]
+        : employee?.private_details;
+
+    return {
+        ...employee,
+        ...(privateDetails || {}),
+    };
+};
+
 /**
  * Reports Service - Aggregates data for various report types
  */
@@ -323,16 +342,18 @@ export const getEmployeeSummaryReport = async () => {
     try {
         const { data, error } = await supabase
             .from('employees')
-            .select('*')
+            .select(EMPLOYEE_SUMMARY_SELECT)
             .order('department');
 
         if (error) throw error;
+
+        const employees = (data || []).map(flattenEmployee);
 
         // Aggregate by department
         const deptMap = new Map();
         const statusCounts = { active: 0, 'on-leave': 0, inactive: 0 };
 
-        (data || []).forEach(emp => {
+        employees.forEach(emp => {
             const dept = emp.department || 'Unknown';
             if (!deptMap.has(dept)) {
                 deptMap.set(dept, {
@@ -362,10 +383,10 @@ export const getEmployeeSummaryReport = async () => {
 
         return {
             success: true,
-            data: data || [],
+            data: employees,
             byDepartment,
             summary: {
-                totalEmployees: data?.length || 0,
+                totalEmployees: employees.length,
                 ...statusCounts,
                 departments: deptMap.size
             }

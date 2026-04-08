@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getInitials, getAvatarStyle } from '../../utils/avatarUtils.js';
+import { avatarService } from '../../services/avatarService.js';
 
 /**
  * Avatar Component — Displays user avatar
@@ -15,7 +16,8 @@ const Avatar = ({
     className = '',
     onClick
 }) => {
-    const [imgError, setImgError] = useState(false);
+    const [failedSrc, setFailedSrc] = useState(null);
+    const [resolvedSrc, setResolvedSrc] = useState(null);
     const initials = getInitials(name);
     const style = getAvatarStyle(gender);
 
@@ -29,7 +31,34 @@ const Avatar = ({
 
     const sizeClass = sizeClasses[size] || sizeClasses.md;
 
-    const shouldShowImage = src && !imgError;
+    useEffect(() => {
+        let isMounted = true;
+
+        const resolveSrc = async () => {
+            if (!src) {
+                if (isMounted) setResolvedSrc(null);
+                return;
+            }
+
+            if (src.startsWith('http')) {
+                if (isMounted) setResolvedSrc(src);
+                return;
+            }
+
+            const signedUrl = await avatarService.getUrl(src);
+            if (isMounted) {
+                setResolvedSrc(signedUrl || null);
+            }
+        };
+
+        resolveSrc();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [src]);
+
+    const shouldShowImage = resolvedSrc && failedSrc !== resolvedSrc;
 
     // Show uploaded photo if available and valid
     if (shouldShowImage) {
@@ -41,9 +70,9 @@ const Avatar = ({
                 style={{ padding: 0, overflow: 'hidden' }}
             >
                 <img
-                    src={src}
+                    src={resolvedSrc}
                     alt={name}
-                    onError={() => setImgError(true)}
+                    onError={() => setFailedSrc(resolvedSrc)}
                     style={{
                         width: '100%',
                         height: '100%',
