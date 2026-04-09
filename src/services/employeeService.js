@@ -88,93 +88,22 @@ export const employeeService = {
   },
 
   /**
-   * Create a new employee
-   * 1. Pre-check: ensure email doesn't already exist in employees table
-   * 2. Create a Supabase Auth user so the employee can log in
-   * 3. Insert an employee row linked to that auth user
-   * 4. Roll back auth user if employee insert fails
+   * Create a new employee using the fast RPC backend
    * @param {Object} employeeData - Employee data (includes password)
    * @returns {Promise<{data: Object|null, error: Error|null}>}
    */
   async create(employeeData) {
-    let createdUserId = null;
-
     try {
-      // Step 1: Pre-check — make sure the email isn't already in the employees table
-      const { data: existing } = await supabase
-        .from(TABLE_NAME)
-        .select("id")
-        .eq("email", employeeData.email)
-        .maybeSingle();
-
-      if (existing) {
-        throw new Error("An employee with this email already exists.");
-      }
-
-      // Step 2: Create the auth user so the employee can log in
-      const { userId, error: authError } = await authService.adminCreateUser(
-        employeeData.email,
-        employeeData.password,
-        {
-          full_name: employeeData.name,
-          role: employeeData.role,
-        },
-      );
-
-      if (authError) throw authError;
-      createdUserId = userId;
-
-      // Step 3: Insert the employee record, linking it to the auth user
-      const { data: createdEmployee, error } = await supabase
-        .from(TABLE_NAME)
-        .insert([
-          {
-            user_id: userId,
-            name: employeeData.name,
-            email: employeeData.email,
-            role: employeeData.role,
-            department: employeeData.department,
-            status: employeeData.status || "Active",
-            gender: employeeData.gender || "other",
-            avatar: null,
-            join_date:
-              employeeData.joinDate || new Date().toISOString().split("T")[0],
-          },
-        ])
-        .select()
-        .single();
+      // Instead of 5 sequential network round-trips from the client, we delegate
+      // end-to-end orchestration to a dedicated Postgres RPC function.
+      const { data, error } = await supabase.rpc("admin_create_employee_full", {
+        employee_data: employeeData,
+      });
 
       if (error) throw error;
-
-      const { error: privateError } = await supabase
-        .from("employee_private_details")
-        .upsert({
-          employee_id: createdEmployee.id,
-          phone: employeeData.phone || null,
-          address: employeeData.address || null,
-          location: employeeData.location || null,
-          salary: employeeData.salary || 0,
-          performance_score: employeeData.performance_score || 0,
-          employment_type: employeeData.employment_type || "Full-time",
-          manager: employeeData.manager || null,
-          projects_completed: employeeData.projects_completed || 0,
-          bank_details: employeeData.bank_details || null,
-          education: employeeData.education || [],
-        });
-
-      if (privateError) throw privateError;
-
-      const { data } = await this.getById(createdEmployee.id);
-      return { data, error: null };
+      
+      return { data: flattenEmployeeRecord(data), error: null };
     } catch (error) {
-      // Roll back: if auth user was created but employee insert failed, clean up
-      if (createdUserId) {
-        await supabase
-          .rpc("admin_delete_auth_user", { target_user_id: createdUserId })
-          .catch((e) =>
-            console.warn("Failed to roll back auth user:", e.message),
-          );
-      }
       console.error("Error creating employee:", error);
       return { data: null, error };
     }

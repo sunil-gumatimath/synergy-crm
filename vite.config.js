@@ -8,26 +8,37 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-  esbuild: {
-    drop: ["console", "debugger"],
-  },
   build: {
     // Increase chunk size warning limit slightly (default is 500kB)
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Split React and React-DOM into separate chunk
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
 
-          // Split Recharts into its own chunk (this is the heavy one)
-          "recharts-vendor": ["recharts"],
+          if (
+            id.includes("/react/") ||
+            id.includes("/react-dom/") ||
+            id.includes("/react-router-dom/")
+          ) {
+            return "react-vendor";
+          }
 
-          // Split Supabase into separate chunk
-          "supabase-vendor": ["@supabase/supabase-js"],
+          if (id.includes("/recharts/")) {
+            return "recharts-vendor";
+          }
 
-          // Split icons and utilities
-          "ui-vendor": ["react-icons", "date-fns", "prop-types"],
+          if (id.includes("/@supabase/supabase-js/")) {
+            return "supabase-vendor";
+          }
+
+          if (
+            id.includes("/react-icons/") ||
+            id.includes("/date-fns/") ||
+            id.includes("/prop-types/")
+          ) {
+            return "ui-vendor";
+          }
         },
       },
     },
@@ -35,7 +46,13 @@ export default defineConfig({
     cssCodeSplit: true,
     // Optimize dependencies
     sourcemap: false,
-    minify: "esbuild",
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
   // Pre-bundle heavy dependencies
   optimizeDeps: {
