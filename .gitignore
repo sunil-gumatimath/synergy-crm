@@ -79,7 +79,16 @@ database/*.sql
 supabase/**/*.sql
 # We keep migrations but ignore specific snapshots if needed
 !supabase/migrations/
-!supabase/migrations/*.sql
+# Ignore all SQL files in migrations except specific allowed ones
+supabase/migrations/*.sql
+!supabase/migrations/20260101000000_setup.sql
+!supabase/migrations/20260101000001_fix_rls.sql
+!supabase/migrations/20260218000000_chat_tables.sql
+!supabase/migrations/20260227000000_add_missing_indexes.sql
+!supabase/migrations/20260227010000_proper_rls_policies.sql
+!supabase/migrations/20260306172000_rbac_hardening_and_storage_lockdown.sql
+!supabase/migrations/20260306190500_rls_and_function_hardening_followup.sql
+!supabase/migrations/20260405000000_harden_admin_auth_user_rpcs.sql
 supabase/migrations/20260101000000_setup.sql
 supabase/migrations/20260101000001_fix_rls.sql
 supabase/migrations/20260218000000_chat_tables.sql
