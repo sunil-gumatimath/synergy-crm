@@ -10,7 +10,8 @@ import {
     getDepartments, exportToCSV, printReport
 } from '../../services/reportsService.js';
 import { formatDateForInput } from '../../utils/dateUtils';
-import { SkeletonStatCard, SkeletonTable, Skeleton } from '../../components/common/Skeleton';
+import { GenericViewSkeleton } from "../../components/common/PageSkeletons";
+import Toast from "../../components/common/Toast";
 import './ReportsView.css';
 
 const ReportsView = () => {
@@ -203,6 +204,10 @@ const ReportsView = () => {
 
     const ReportIcon = reportTypes.find(r => r.id === activeReport)?.icon || FileText;
 
+    if (loading) {
+        return <GenericViewSkeleton title="Reports Dashboard" />;
+    }
+
     return (
         <div className="reports-container">
             <div className="reports-header">
@@ -222,29 +227,14 @@ const ReportsView = () => {
             </div>
 
             <div className="reports-filters">
-                <div className="filter-group"><label><Calendar size={16} />Start</label><input type="date" value={dateRange.start} onChange={e => setDateRange(p => ({ ...p, start: e.target.value }))} className="filter-input" /></div>
-                <div className="filter-group"><label><Calendar size={16} />End</label><input type="date" value={dateRange.end} onChange={e => setDateRange(p => ({ ...p, end: e.target.value }))} className="filter-input" /></div>
-                {activeReport !== 'employees' && <div className="filter-group"><label><Building2 size={16} />Dept</label><div className="select-wrapper"><select value={department} onChange={e => setDepartment(e.target.value)} className="filter-select"><option value="all">All</option>{departments.map(d => <option key={d} value={d}>{d}</option>)}</select><ChevronDown size={16} className="select-icon" /></div></div>}
             </div>
 
-            <div className="reports-content" id="report-content">
-                {loading ? (
-                    <>
-                        <div className="reports-summary-grid" style={{ marginBottom: '24px' }}>
-                            {Array.from({ length: 4 }).map((_, i) => (
-                                <SkeletonStatCard key={i} hasIcon={true} />
-                            ))}
-                        </div>
-                        <SkeletonTable rows={8} columns={5} hasAvatar={true} />
-                    </>
-                )
-                    : error ? <div className="reports-error"><p>{error}</p><button onClick={fetchReport}>Retry</button></div>
-                        : <>
-                            <div className="reports-section-header"><ReportIcon size={20} /><h2>{reportTypes.find(r => r.id === activeReport)?.label} Report</h2><span className="date-range-badge">{new Date(dateRange.start).toLocaleDateString()} - {new Date(dateRange.end).toLocaleDateString()}</span></div>
-                            {renderSummaryCards()}
-                            <div className="reports-data-section">{renderTable()}</div>
-                        </>}
+            <div id="report-content">
+                {renderSummaryCards()}
+                {renderTable()}
             </div>
+
+            {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
         </div>
     );
 };
