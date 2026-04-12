@@ -2,15 +2,17 @@ import React, { Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar";
 import Stats from "./components/Stats";
-import EmployeeList from "./features/employees/EmployeeList";
-import SettingsView from "./features/settings/SettingsView";
+import { DashboardSkeleton, EmployeeListSkeleton, EmployeeDetailSkeleton, LeaveManagementSkeleton, AnalyticsSkeleton, TasksSkeleton, CalendarSkeleton, GenericViewSkeleton } from "./components/common/PageSkeletons";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import SettingsView from "./features/settings/SettingsView";
 import Header from "./components/layout/Header";
 import LoadingSpinner from "./components/common/LoadingSpinner";
-import EmployeeDetailPage from "./pages/EmployeeDetailPage";
-import ProfilePage from "./pages/ProfilePage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import LoginPage from "./pages/LoginPage";
+
+const EmployeeList = React.lazy(() => import("./features/employees/EmployeeList"));
+const EmployeeDetailPage = React.lazy(() => import("./pages/EmployeeDetailPage"));
+const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
+const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
+const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 import { useAuth } from "./contexts/AuthContext";
 import { useUIStore } from "./store/uiStore";
 import "./components/common/Avatar.css";
@@ -145,7 +147,7 @@ function App() {
                 <ProtectedRoute allowedRoles={['Employee', 'Admin', 'Manager']}>
                   <Suspense
                     fallback={
-                      <LoadingSpinner size="lg" message="Loading dashboard..." />
+                      <DashboardSkeleton />
                     }
                   >
                     <EmployeeDashboard />
@@ -159,12 +161,12 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
                   <Suspense
-                    fallback={
-                      <LoadingSpinner size="lg" message="Loading analytics..." />
-                    }
-                  >
-                    <AnalyticsDashboard />
-                  </Suspense>
+                  fallback={
+                    <AnalyticsSkeleton />
+                  }
+                >
+                  <AnalyticsDashboard />
+                </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -174,10 +176,12 @@ function App() {
               path="/employees"
               element={
                 <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
-                  <>
-                    <Stats />
-                    <EmployeeList />
-                  </>
+                  <Suspense fallback={<EmployeeListSkeleton />}>
+                    <>
+                      <Stats />
+                      <EmployeeList />
+                    </>
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -186,7 +190,9 @@ function App() {
               path="/employees/:id"
               element={
                 <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
-                  <EmployeeDetailPage />
+                  <Suspense fallback={<EmployeeDetailSkeleton />}>
+                    <EmployeeDetailPage />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -196,7 +202,7 @@ function App() {
               element={
                 <Suspense
                   fallback={
-                    <LoadingSpinner size="lg" message="Loading calendar..." />
+                    <CalendarSkeleton />
                   }
                 >
                   <CalendarView />
@@ -209,7 +215,7 @@ function App() {
               element={
                 <Suspense
                   fallback={
-                    <LoadingSpinner size="lg" message="Loading tasks..." />
+                    <TasksSkeleton />
                   }
                 >
                   <TasksView />
@@ -222,7 +228,7 @@ function App() {
               element={
                 <Suspense
                   fallback={
-                    <LoadingSpinner size="lg" message="Loading support..." />
+                    <GenericViewSkeleton title="Support" />
                   }
                 >
                   <SupportView />
@@ -235,7 +241,7 @@ function App() {
               element={
                 <Suspense
                   fallback={
-                    <LoadingSpinner size="lg" message="Loading leave management..." />
+                    <LeaveManagementSkeleton />
                   }
                 >
                   <LeaveManagement />
@@ -248,7 +254,7 @@ function App() {
               element={
                 <Suspense
                   fallback={
-                    <LoadingSpinner size="lg" message="Loading time tracking..." />
+                    <GenericViewSkeleton title="Time Tracking" />
                   }
                 >
                   <TimeTracking />
@@ -262,7 +268,7 @@ function App() {
                 <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
                   <Suspense
                     fallback={
-                      <LoadingSpinner size="lg" message="Loading reports..." />
+                      <GenericViewSkeleton title="Reports" />
                     }
                   >
                     <ReportsView />
@@ -276,7 +282,7 @@ function App() {
               element={
                 <Suspense
                   fallback={
-                    <LoadingSpinner size="lg" message="Loading chat..." />
+                    <GenericViewSkeleton title="Chat" />
                   }
                 >
                   <TeamChat />
@@ -290,7 +296,7 @@ function App() {
                 <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
                   <Suspense
                     fallback={
-                      <LoadingSpinner size="lg" message="Loading performance reviews..." />
+                      <GenericViewSkeleton title="Performance" />
                     }
                   >
                     <PerformanceReviews />
