@@ -10,7 +10,64 @@
             var(--skeleton-highlight, #e0e0e0) 50%,
             var(--skeleton-base, #f0f0f0) 75%);
     background-size: 200% 100%;
-    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    animation: skeleton-shimmer 2s ease-in-out infinite;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Fade-in animation for skeleton containers */
+@keyframes skeleton-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply fade-in to skeleton containers */
+.chat-container,
+.chat-sidebar,
+.chat-main,
+.leave-management,
+.timetracking,
+.perf-container,
+.reports-container,
+.calendar-layout,
+.settings-container {
+    animation: skeleton-fade-in 0.3s ease-out;
+}
+
+/* Smooth content transition when loading completes */
+.card,
+.stats-grid,
+.leave-stats-grid,
+.weekly-stats,
+.perf-stats-grid,
+.reports-summary-grid {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Fade-in for content after loading */
+.card.fade-in,
+.stats-grid.fade-in,
+.leave-stats-grid.fade-in,
+.weekly-stats.fade-in,
+.perf-stats-grid.fade-in,
+.reports-summary-grid.fade-in {
+    animation: content-fade-in 0.4s ease-out;
+}
+
+@keyframes content-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Animation Variants */
@@ -32,14 +89,19 @@
 }
 
 /* Color Variants */
+:root {
+    --skeleton-base: #e5e7eb;
+    --skeleton-highlight: #d1d5db;
+}
+
 .skeleton--default {
     --skeleton-base: #f0f0f0;
     --skeleton-highlight: #e0e0e0;
 }
 
 .skeleton--dark {
-    --skeleton-base: #374151;
-    --skeleton-highlight: #4b5563;
+    --skeleton-base: #2f343a;
+    --skeleton-highlight: #434a54;
 }
 
 .skeleton--light {
@@ -586,4 +648,27 @@
 /* Employee details separator */
 .dark .skeleton-employee-details {
     border-top-color: var(--border);
+}
+
+/* Ensure fade-in animations work in dark mode */
+.dark .chat-container,
+.dark .chat-sidebar,
+.dark .chat-main,
+.dark .leave-management,
+.dark .timetracking,
+.dark .perf-container,
+.dark .reports-container,
+.dark .calendar-layout,
+.dark .settings-container {
+    animation: skeleton-fade-in 0.3s ease-out;
+}
+
+/* Ensure content transitions work in dark mode */
+.dark .card,
+.dark .stats-grid,
+.dark .leave-stats-grid,
+.dark .weekly-stats,
+.dark .perf-stats-grid,
+.dark .reports-summary-grid {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
