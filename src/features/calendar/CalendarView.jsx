@@ -20,7 +20,7 @@ import {
 import { ChevronLeft, ChevronRight, MapPin, Plus, Award, Clock, Trash2, Edit2, Calendar, Repeat } from "../../lib/icons";
 import { employeeService } from "../../services/employeeService";
 import { calendarService } from "../../services/calendarService";
-import { Skeleton } from "../../components/common/Skeleton";
+import { CalendarSkeleton } from "../../components/common/PageSkeletons";
 import AddEventModal from "./AddEventModal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import "./calendar-styles.css";
@@ -617,78 +617,50 @@ const CalendarView = () => {
     };
 
     if (isLoading && !events.length) {
-        return (
-            <div className="space-y-6">
-                <div className="card">
-                    <div className="calendar-header">
-                        <div className="calendar-header-title">
-                            <Skeleton width="200px" height="32px" />
-                            <Skeleton width="220px" height="14px" />
-                        </div>
-                        <div className="calendar-header-actions">
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <Skeleton width="36px" height="36px" borderRadius="8px" />
-                                <Skeleton width="60px" height="36px" borderRadius="8px" />
-                                <Skeleton width="36px" height="36px" borderRadius="8px" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="calendar-layout">
-                    <div className="card p-6">
-                        <Skeleton width="100%" height="400px" borderRadius="12px" />
-                    </div>
-                    <div className="card p-6">
-                        <Skeleton width="180px" height="20px" />
-                        <Skeleton width="100px" height="14px" className="mt-2" />
-                    </div>
-                </div>
-            </div>
-        );
+        return <CalendarSkeleton />;
     }
 
     return (
         <div className="space-y-6">
-            <div className="card">{renderHeader()}</div>
-            <div className="calendar-layout">
-                <div className="card">
-                    <div className="calendar-grid-wrapper">
-                        <div className="calendar-grid-container">
-                            {view === "month" && (
-                                <>
-                                    {renderDays()}
-                                    {renderCells()}
-                                </>
-                            )}
-                            {view === "week" && renderWeekView()}
-                            {view === "day" && renderDayView()}
+                <div className="card">{renderHeader()}</div>
+                <div className="calendar-layout">
+                    <div className="card">
+                        <div className="calendar-grid-wrapper">
+                            <div className="calendar-grid-container">
+                                {view === "month" && (
+                                    <>
+                                        {renderDays()}
+                                        {renderCells()}
+                                    </>
+                                )}
+                                {view === "week" && renderWeekView()}
+                                {view === "day" && renderDayView()}
+                            </div>
                         </div>
                     </div>
+                    <div className="card p-4">{renderSidebar()}</div>
                 </div>
-                <div className="card p-4">{renderSidebar()}</div>
+
+                <AddEventModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSave={handleSaveEvent}
+                    initialDate={selectedDate}
+                    eventToEdit={editingEvent}
+                    isLoading={isLoading}
+                />
+
+                <ConfirmModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                    title="Delete Event"
+                    message={`Are you sure you want to delete "${eventToDelete?.title}"?${eventToDelete?.recurrence && eventToDelete?.recurrence !== "none" ? " This will delete all recurring instances." : ""} This action cannot be undone.`}
+                    confirmText="Delete"
+                    type="danger"
+                    isLoading={isLoading}
+                />
             </div>
-
-            <AddEventModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveEvent}
-                initialDate={selectedDate}
-                eventToEdit={editingEvent}
-                isLoading={isLoading}
-            />
-
-            <ConfirmModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={handleConfirmDelete}
-                title="Delete Event"
-                message={`Are you sure you want to delete "${eventToDelete?.title}"?${eventToDelete?.recurrence && eventToDelete?.recurrence !== "none" ? " This will delete all recurring instances." : ""} This action cannot be undone.`}
-                confirmText="Delete"
-                type="danger"
-                isLoading={isLoading}
-            />
-        </div>
     );
 };
 
