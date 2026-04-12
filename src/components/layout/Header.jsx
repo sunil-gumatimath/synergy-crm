@@ -232,7 +232,7 @@ const Header = () => {
 
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button className="user-profile cursor-pointer hover:bg-[var(--bg-body)] rounded-lg transition-colors border-none bg-transparent flex items-center gap-3">
+            <button className="user-profile cursor-pointer hover:bg-[var(--bg-body)] rounded-sm transition-colors border-none bg-transparent flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium text-main">{getUserName()}</p>
                 <p className="text-xs text-muted">{user?.email}</p>
@@ -249,11 +249,11 @@ const Header = () => {
 
           <DropdownMenu.Portal>
             <DropdownMenu.Content
-              className={`dropdown-content w-[240px] overflow-hidden rounded-2xl shadow-xl border p-3 space-y-1.5 z-50 animate-in fade-in zoom-in-95 ${effectiveTheme === "dark"
-                ? "bg-[#131a28] border-[#1e293b]"
+              className={`dropdown-content w-[240px] overflow-hidden rounded-md shadow-xl border p-3 space-y-1.5 z-50 animate-in fade-in zoom-in-95 ${effectiveTheme === "dark"
+                ? "bg-[#0f172a] border-[#334155]"
                 : "bg-white border-gray-200"
                 }`}
-              style={{ borderRadius: '20px', padding: '12px', width: '240px' }}
+              style={{ borderRadius: '6px', padding: '12px', width: '240px' }}
               sideOffset={8}
               collisionPadding={8}
               align="end"
@@ -262,15 +262,15 @@ const Header = () => {
                 My Account
               </DropdownMenu.Label>
 
-              <DropdownMenu.Item className={`dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-xl w-full text-left transition-colors ${effectiveTheme === 'dark' ? 'text-gray-200 hover:bg-[#1e293b] data-[highlighted]:bg-[#1e293b]' : 'text-gray-900 hover:bg-gray-100 data-[highlighted]:bg-gray-100'}`} style={{ borderRadius: '14px', padding: '10px 16px' }} onSelect={() => navigate('/profile')}>
+              <DropdownMenu.Item className={`dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-sm w-full text-left transition-colors ${effectiveTheme === 'dark' ? 'text-gray-200 hover:bg-[#1e293b] data-[highlighted]:bg-[#1e293b]' : 'text-gray-900 hover:bg-gray-100 data-[highlighted]:bg-gray-100'}`} style={{ borderRadius: '4px', padding: '10px 16px' }} onSelect={() => navigate('/profile')}>
                 Profile Settings
               </DropdownMenu.Item>
 
               <DropdownMenu.Separator className={`h-[1px] my-1 mx-1 ${effectiveTheme === 'dark' ? 'bg-[#1e293b]' : 'bg-gray-200'}`} />
 
               <DropdownMenu.Item
-                className={`dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-xl w-full text-left font-medium transition-colors ${effectiveTheme === 'dark' ? 'text-red-400 hover:bg-red-950/30 data-[highlighted]:bg-red-950/30' : 'text-red-600 hover:bg-red-50 data-[highlighted]:bg-red-50'}`}
-                style={{ borderRadius: '14px', padding: '10px 16px' }}
+                className={`dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-sm w-full text-left font-medium transition-colors ${effectiveTheme === 'dark' ? 'text-red-400 hover:bg-red-950/30 data-[highlighted]:bg-red-950/30' : 'text-red-600 hover:bg-red-50 data-[highlighted]:bg-red-50'}`}
+                style={{ borderRadius: '4px', padding: '10px 16px' }}
                 onSelect={handleSignOut}
               >
                 Sign Out
