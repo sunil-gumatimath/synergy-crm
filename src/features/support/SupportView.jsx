@@ -3,7 +3,7 @@ import { Plus, Search, Filter, MessageSquare, Clock, CheckCircle, AlertCircle, L
 import { supportService } from "../../services/supportService";
 import CreateTicketModal from "./CreateTicketModal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
-import { GenericViewSkeleton } from "../../components/common/PageSkeletons";
+import { SupportViewSkeleton } from "../../components/common/PageSkeletons";
 import Toast from "../../components/common/Toast";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -122,7 +122,7 @@ const SupportView = () => {
     };
 
     if (isLoading) {
-        return <GenericViewSkeleton title="Help Desk & Support" />;
+        return <SupportViewSkeleton />;
     }
 
     return (
