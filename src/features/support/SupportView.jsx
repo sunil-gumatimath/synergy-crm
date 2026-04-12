@@ -150,7 +150,7 @@ const SupportView = () => {
             </div>
 
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="card p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                         <Clock size={20} />
@@ -275,7 +275,7 @@ const SupportView = () => {
                         </table>
                     </div>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center text-muted p-8">
+                    <div className="flex-1 flex flex-col items-center justify-center text-muted p-4">
                         <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
                             <MessageSquare size={32} className="opacity-50" />
                         </div>

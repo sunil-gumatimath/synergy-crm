@@ -628,7 +628,6 @@ button {
   flex-direction: column;
   position: sticky;
   top: 0;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-md);
   z-index: 50;
 }
@@ -708,7 +707,6 @@ button {
   align-items: center;
   gap: var(--space-md);
   margin-bottom: var(--space-xs);
-  transition: all 0.3s ease;
 }
 
 .sidebar.collapsed .sidebar-header {
@@ -727,7 +725,6 @@ button {
   letter-spacing: -0.025em;
   white-space: nowrap;
   overflow: visible;
-  transition: opacity 0.2s ease;
   min-height: 1.75rem;
   display: flex;
   align-items: center;
@@ -736,11 +733,10 @@ button {
 
 /* The Glowing Dot */
 .brand-dot {
-  color: #7c3aed;
+  color: var(--primary);
   font-size: 1.5em;
   line-height: 0.5;
   margin-left: 1px;
-  text-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
 }
 
 .sidebar.collapsed .brand-name {
@@ -765,7 +761,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  transition: all 0.3s ease;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -834,7 +829,6 @@ button {
   font-weight: 500;
   position: relative;
   overflow: visible;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
 }
 
@@ -843,7 +837,6 @@ button {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
 }
 
 .sidebar.collapsed .nav-item {
@@ -854,7 +847,6 @@ button {
 .nav-item-label {
   font-size: 0.8125rem;
   white-space: nowrap;
-  transition: opacity 0.2s ease;
   flex: 1;
 }
 
@@ -872,7 +864,7 @@ button {
 
 /* Notification Badges */
 .nav-badge {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: #dc2626;
   color: white;
   font-size: 0.65rem;
   font-weight: 700;
@@ -881,15 +873,13 @@ button {
   margin-left: auto;
   min-width: 1.25rem;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
-  animation: badge-pulse 2s ease-in-out infinite;
 }
 
 .nav-badge-collapsed {
   position: absolute;
   top: 4px;
   right: 4px;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: #dc2626;
   color: white;
   font-size: 0.55rem;
   font-weight: 700;
@@ -897,19 +887,6 @@ button {
   border-radius: var(--radius-full);
   min-width: 1rem;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
-}
-
-@keyframes badge-pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.05);
-  }
 }
 
 /* Enhanced Hover Effects */
@@ -920,8 +897,7 @@ button {
   top: 0;
   bottom: 0;
   width: 0;
-  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
-  transition: width 0.2s ease;
+  background: var(--primary);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
@@ -934,12 +910,7 @@ button {
   width: 3px;
 }
 
-.nav-item:hover .nav-item-icon {
-  transform: scale(1.1);
-}
-
 .sidebar.collapsed .nav-item:hover:not(.active) {
-  transform: scale(1.08);
   background: var(--bg-body);
 }
 
@@ -948,15 +919,13 @@ button {
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-light) 82%, transparent 18%) 0%, rgba(var(--primary-rgb), 0.05) 100%);
+  background: var(--bg-secondary);
   color: var(--primary);
   font-weight: 600;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 10px 24px rgba(var(--primary-rgb), 0.08);
 }
 
 .nav-item.active::before {
   width: 3px;
-  box-shadow: 2px 0 8px rgba(124, 58, 237, 0.4);
 }
 
 /* Custom Tooltips for Collapsed Sidebar */
@@ -965,7 +934,7 @@ button {
   position: absolute;
   left: calc(100% + 12px);
   top: 50%;
-  transform: translateY(-50%) translateX(-4px);
+  transform: translateY(-50%);
   background: var(--text-main);
   color: white;
   padding: 6px 12px;
@@ -975,7 +944,6 @@ button {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -984,7 +952,6 @@ button {
 
 .sidebar.collapsed .nav-item:hover::after {
   opacity: 1;
-  transform: translateY(-50%) translateX(0);
 }
 
 .user-profile-sidebar {
@@ -993,7 +960,6 @@ button {
   gap: var(--space-md);
   padding: var(--space-md);
   border-radius: var(--radius-md);
-  transition: all 0.2s ease;
   cursor: pointer;
 }
 
@@ -1013,7 +979,6 @@ button {
   border-top: 1px solid var(--border);
   background: var(--bg-sidebar);
   /* Ensure solid background */
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -1034,7 +999,6 @@ button {
   font-size: 0.875rem;
   border: 2px solid var(--bg-surface);
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
 }
 
 .user-avatar-sidebar-img {
@@ -1044,12 +1008,10 @@ button {
   object-fit: cover;
   border: 2px solid var(--bg-surface);
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
 }
 
 .user-profile-sidebar:hover .user-avatar-sidebar,
 .user-profile-sidebar:hover .user-avatar-sidebar-img {
-  transform: scale(1.05);
   box-shadow: var(--shadow-md);
 }
 
@@ -1063,7 +1025,6 @@ button {
   flex-direction: column;
   overflow: hidden;
   flex: 1;
-  transition: opacity 0.2s ease;
 }
 
 .sidebar.collapsed .user-info-sidebar {
@@ -1098,7 +1059,6 @@ button {
   padding: var(--space-sm) var(--space-md);
   gap: var(--space-md);
   border-radius: var(--radius-md);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -1123,16 +1083,7 @@ button {
 .sidebar-logout-btn:hover {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
-  transform: translateX(2px);
   border-color: rgba(239, 68, 68, 0.2);
-}
-
-.sidebar.collapsed .sidebar-logout-btn:hover {
-  transform: scale(1.05);
-}
-
-.sidebar-logout-btn:active {
-  transform: scale(0.95);
 }
 
 .sidebar.collapsed .sidebar-footer {

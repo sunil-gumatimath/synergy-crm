@@ -621,9 +621,9 @@ const CalendarView = () => {
     }
 
     return (
-        <div className="space-y-6">
-                <div className="card">{renderHeader()}</div>
-                <div className="calendar-layout">
+        <div>
+                <div className="card" style={{ marginBottom: '10px' }}>{renderHeader()}</div>
+                <div className="calendar-layout gap-6">
                     <div className="card">
                         <div className="calendar-grid-wrapper">
                             <div className="calendar-grid-container">
