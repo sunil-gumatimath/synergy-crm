@@ -4,8 +4,8 @@
     "description": "Modern employee management system with HR features, time tracking, and team collaboration",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#0f172a",
-    "theme_color": "#4f46e5",
+    "background_color": "#f6f8fc",
+    "theme_color": "#f6f8fc",
     "orientation": "any",
     "scope": "/",
     "icons": [
