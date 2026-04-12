@@ -38,6 +38,7 @@ import {
 } from "../../lib/icons";
 import { employeeService } from "../../services/employeeService";
 import { taskService } from "../../services/taskService";
+import { AnalyticsSkeleton } from "../../components/common/PageSkeletons";
 import "./analytics-styles.css";
 
 // Extended color palette for departments (15 colors)
@@ -293,31 +294,7 @@ const AnalyticsDashboard = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="analytics-container">
-        {/* Header Skeleton */}
-        <div className="analytics-header">
-          <div>
-            <div className="skeleton skeleton-title-lg"></div>
-            <div className="skeleton skeleton-text-sm" style={{ width: '200px', marginTop: '8px' }}></div>
-          </div>
-        </div>
-
-        {/* Stats Skeleton */}
-        <div className="analytics-stats-grid">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-
-        {/* Charts Skeleton */}
-        <div className="analytics-charts-row">
-          <SkeletonChart />
-          <SkeletonChart />
-        </div>
-      </div>
-    );
+    return <AnalyticsSkeleton />;
   }
 
   return (
