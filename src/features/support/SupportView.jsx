@@ -3,7 +3,7 @@ import { Plus, Search, Filter, MessageSquare, Clock, CheckCircle, AlertCircle, L
 import { supportService } from "../../services/supportService";
 import CreateTicketModal from "./CreateTicketModal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
-import { SkeletonStatCard, SkeletonTable, Skeleton } from "../../components/common/Skeleton";
+import { GenericViewSkeleton } from "../../components/common/PageSkeletons";
 import Toast from "../../components/common/Toast";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -121,6 +121,10 @@ const SupportView = () => {
         }
     };
 
+    if (isLoading) {
+        return <GenericViewSkeleton title="Help Desk & Support" />;
+    }
+
     return (
         <div className="h-full flex flex-col">
             <div className="flex items-center justify-between mb-6">
@@ -206,11 +210,7 @@ const SupportView = () => {
                     </div>
                 </div>
 
-                {isLoading ? (
-                    <div style={{ padding: '24px' }}>
-                        <SkeletonTable rows={6} columns={6} hasCheckbox={false} />
-                    </div>
-                ) : tickets.length > 0 ? (
+                {tickets.length > 0 ? (
                     <div className="overflow-y-auto flex-1">
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-[var(--bg-body)] text-xs uppercase text-muted font-semibold sticky top-0">
