@@ -10,7 +10,7 @@ import {
     getDepartments, exportToCSV, printReport
 } from '../../services/reportsService.js';
 import { formatDateForInput } from '../../utils/dateUtils';
-import { GenericViewSkeleton } from "../../components/common/PageSkeletons";
+import { ReportsViewSkeleton } from "../../components/common/PageSkeletons";
 import Toast from "../../components/common/Toast";
 import './ReportsView.css';
 
@@ -30,6 +30,7 @@ const ReportsView = () => {
     const [reportData, setReportData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [toast, setToast] = useState(null);
 
     const reportTypes = [
         { id: 'attendance', label: 'Attendance', icon: Clock, color: '#4f46e5' },
@@ -205,7 +206,7 @@ const ReportsView = () => {
     const ReportIcon = reportTypes.find(r => r.id === activeReport)?.icon || FileText;
 
     if (loading) {
-        return <GenericViewSkeleton title="Reports Dashboard" />;
+        return <ReportsViewSkeleton />;
     }
 
     return (
@@ -227,7 +228,54 @@ const ReportsView = () => {
             </div>
 
             <div className="reports-filters">
+                {activeReport !== 'employees' && (
+                    <>
+                        <div className="filter-group">
+                            <label><Calendar size={14} />Start Date</label>
+                            <input
+                                type="date"
+                                className="filter-input"
+                                value={dateRange.start}
+                                onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                            />
+                        </div>
+                        <div className="filter-group">
+                            <label><Calendar size={14} />End Date</label>
+                            <input
+                                type="date"
+                                className="filter-input"
+                                value={dateRange.end}
+                                onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                            />
+                        </div>
+                    </>
+                )}
+                <div className="filter-group">
+                    <label><Building2 size={14} />Department</label>
+                    <div className="select-wrapper">
+                        <select
+                            className="filter-select"
+                            value={department}
+                            onChange={(e) => setDepartment(e.target.value)}
+                        >
+                            <option value="all">All Departments</option>
+                            {departments.map(dept => (
+                                <option key={dept} value={dept}>{dept}</option>
+                            ))}
+                        </select>
+                        <ChevronDown size={14} className="select-icon" />
+                    </div>
+                </div>
             </div>
+
+            {error && (
+                <div className="reports-error">
+                    <FileText size={48} />
+                    <h3>Error Loading Report</h3>
+                    <p>{error}</p>
+                    <button onClick={fetchReport}>Try Again</button>
+                </div>
+            )}
 
             <div id="report-content">
                 {renderSummaryCards()}
