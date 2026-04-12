@@ -7,7 +7,7 @@ import {
 import { taskService } from '../../services/taskService.js';
 import { employeeService } from '../../services/employeeService.js';
 
-import { SkeletonTaskCard, SkeletonStatCard, Skeleton } from '../../components/common/Skeleton';
+import { TasksSkeleton } from '../../components/common/PageSkeletons';
 import './TasksView.css';
 
 const STATUSES = ['To Do', 'In Progress', 'Review', 'Done'];
@@ -139,54 +139,7 @@ const TasksView = () => {
     };
 
     if (loading) {
-        return (
-            <div className="tasks-container">
-                {/* Header Skeleton */}
-                <div className="tasks-header">
-                    <div className="tasks-title-section">
-                        <Skeleton width="100px" height="32px" />
-                        <Skeleton width="200px" height="14px" />
-                    </div>
-                    <Skeleton width="120px" height="40px" borderRadius="8px" />
-                </div>
-
-                {/* Stats Skeleton */}
-                <div className="tasks-stats">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <SkeletonStatCard key={i} hasIcon={true} />
-                    ))}
-                </div>
-
-                {/* Toolbar Skeleton */}
-                <div className="tasks-toolbar">
-                    <Skeleton width="280px" height="40px" borderRadius="8px" />
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                        <Skeleton width="120px" height="36px" borderRadius="6px" />
-                        <Skeleton width="120px" height="36px" borderRadius="6px" />
-                    </div>
-                </div>
-
-                {/* Board Skeleton */}
-                <div className="tasks-board">
-                    {STATUSES.map((status) => (
-                        <div key={status} className="task-column">
-                            <div className="column-header">
-                                <div className="column-title">
-                                    <Skeleton width="16px" height="16px" borderRadius="4px" />
-                                    <Skeleton width="80px" height="14px" />
-                                    <Skeleton width="24px" height="20px" borderRadius="10px" />
-                                </div>
-                            </div>
-                            <div className="column-content skeleton-stagger">
-                                {Array.from({ length: 3 }).map((_, i) => (
-                                    <SkeletonTaskCard key={i} />
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
+        return <TasksSkeleton />;
     }
 
     return (
