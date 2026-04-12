@@ -18,7 +18,7 @@ import {
     ChevronLeft,
     Loader2,
 } from "../../lib/icons";
-import { GenericViewSkeleton } from "../../components/common/PageSkeletons";
+import { TeamChatSkeleton } from "../../components/common/PageSkeletons";
 import { useAuth } from "../../contexts/AuthContext";
 import { useToast } from "../../contexts/ToastContext";
 import { chatService } from "../../services/chatService";
@@ -338,7 +338,7 @@ const TeamChat = () => {
     }
 
     if (isLoading) {
-        return <GenericViewSkeleton title="Team Communication" />;
+        return <TeamChatSkeleton />;
     }
 
     return (
