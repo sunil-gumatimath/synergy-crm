@@ -22,6 +22,8 @@ import {
 } from "react-icons/md";
 import { Link } from "react-router-dom";
 import "./employee-dashboard-styles.css";
+import { DashboardSkeleton } from "../../components/common/PageSkeletons";
+
 
 const MOTIVATIONAL_QUOTES = [
     "The only way to do great work is to love what you do. – Steve Jobs",
@@ -178,37 +180,7 @@ const EmployeeDashboard = () => {
     };
 
     if (isLoading) {
-        return (
-            <div className="emp-dash-container">
-                {/* Welcome Skeleton */}
-                <div className="emp-dash-welcome skeleton-welcome">
-                    <div className="skeleton skeleton-title-lg"></div>
-                    <div className="skeleton skeleton-text-md" style={{ width: '60%', marginTop: '8px' }}></div>
-                    <div className="skeleton skeleton-quote"></div>
-                </div>
-
-                {/* Stats Skeleton */}
-                <div className="emp-dash-stats-grid">
-                    <SkeletonStatCard />
-                    <SkeletonStatCard />
-                    <SkeletonStatCard />
-                </div>
-
-                {/* Content Skeleton */}
-                <div className="emp-dash-content-grid">
-                    <div className="emp-dash-tasks-section">
-                        <div className="skeleton skeleton-section-title"></div>
-                        <SkeletonTaskCard />
-                        <SkeletonTaskCard />
-                        <SkeletonTaskCard />
-                    </div>
-                    <div className="emp-dash-events-section">
-                        <div className="skeleton skeleton-section-title"></div>
-                        <div className="skeleton skeleton-event-card"></div>
-                    </div>
-                </div>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     return (
@@ -386,9 +358,9 @@ const EmployeeDashboard = () => {
                                 <p>No upcoming events scheduled</p>
                             </div>
                         )}
-                    </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 };
