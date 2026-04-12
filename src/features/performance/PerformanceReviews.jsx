@@ -8,6 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useToast } from "../../contexts/ToastContext";
 import { performanceService } from "../../services/performanceService";
 import Avatar from "../../components/common/Avatar";
+import { PerformanceReviewsSkeleton } from "../../components/common/PageSkeletons";
 import "./performance-reviews.css";
 
 const statusConfig = {
@@ -79,7 +80,7 @@ const PerformanceReviews = () => {
     };
 
     if (isLoading) {
-        return <div className="perf-container"><div className="perf-loading"><Loader2 size={40} className="animate-spin" /><span>Loading...</span></div></div>;
+        return <PerformanceReviewsSkeleton />;
     }
 
     const stats = [
