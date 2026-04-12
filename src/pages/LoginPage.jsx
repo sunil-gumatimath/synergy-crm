@@ -7,23 +7,19 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
-  Check,
   X,
   Mail,
 } from "../lib/icons";
 import SynergyLogo from "../components/common/SynergyLogo";
 import { setEncryptedItem, getEncryptedItem, removeEncryptedItem } from "../utils/storageUtils";
-import "../index.css";
 import "./login-styles.css";
 
 const LoginPage = () => {
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
@@ -37,8 +33,6 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
-    name: "",
   });
 
   // Load remembered email on mount
@@ -63,7 +57,6 @@ const LoginPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError("");
-    setSuccessMessage("");
   };
 
   const handleRememberMeChange = (e) => {
@@ -93,53 +86,11 @@ const LoginPage = () => {
       setError("Please enter a valid email address");
       return false;
     }
-    if (!isLogin) {
-      if (formData.password.length < 8) {
-        setError("Password must be at least 8 characters");
-        return false;
-      }
-      if (!/[A-Z]/.test(formData.password)) {
-        setError("Password must contain at least one uppercase letter");
-        return false;
-      }
-      if (!/[a-z]/.test(formData.password)) {
-        setError("Password must contain at least one lowercase letter");
-        return false;
-      }
-      if (!/[0-9]/.test(formData.password)) {
-        setError("Password must contain at least one number");
-        return false;
-      }
-      if (!/[^A-Za-z0-9]/.test(formData.password)) {
-        setError("Password must contain at least one special character");
-        return false;
-      }
-      if (!formData.name) {
-        setError("Please enter your name");
-        return false;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
-        return false;
-      }
-    } else {
-      if (formData.password.length < 6) {
-        setError("Password must be at least 6 characters");
-        return false;
-      }
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return false;
     }
     return true;
-  };
-
-  const calculatePasswordStrength = (password) => {
-    if (!password) return 0;
-    let strength = 0;
-    if (password.length >= 8) strength += 20;
-    if (password.match(/[A-Z]/)) strength += 20;
-    if (password.match(/[a-z]/)) strength += 20;
-    if (password.match(/[0-9]/)) strength += 20;
-    if (password.match(/[^A-Za-z0-9]/)) strength += 20;
-    return strength;
   };
 
   const handleSubmit = async (e) => {
@@ -147,74 +98,42 @@ const LoginPage = () => {
     if (!validateForm()) return;
     setLoading(true);
     setError("");
-    setSuccessMessage("");
     try {
-      if (isLogin) {
-        // Handle Remember Me
-        if (rememberMe) {
-          setEncryptedItem("synergy_remembered_email", formData.email);
-        } else {
-          removeEncryptedItem("synergy_remembered_email");
-        }
-
-        const { error: signInError, user: signedInUser } = await signIn(
-          formData.email,
-          formData.password,
-        );
-        if (signInError) {
-          // Track failed attempts for client-side rate limiting
-          const newAttempts = failedAttempts + 1;
-          setFailedAttempts(newAttempts);
-          const cooldown = getCooldownDuration(newAttempts);
-          if (cooldown > 0) {
-            setCooldownSeconds(cooldown);
-          }
-
-          // Handle specific error cases
-          if (signInError.message?.includes('Invalid login credentials')) {
-            setError("Invalid email or password. Please try again.");
-          } else if (signInError.message?.includes('Email not confirmed')) {
-            setError("Please verify your email address before signing in.");
-          } else if (signInError.message?.includes('JWT') || signInError.code?.includes('JWT')) {
-            setError("Session expired. Please try signing in again.");
-          } else {
-            setError(signInError.message || "Failed to sign in. Please try again.");
-          }
-        } else if (signedInUser) {
-          // Reset rate limiting on successful login
-          setFailedAttempts(0);
-          setCooldownSeconds(0);
-          // Redirect based on role: Employee → /dashboard, Admin/Manager → /analytics
-          navigate("/", { replace: true });
-        }
+      // Handle Remember Me
+      if (rememberMe) {
+        setEncryptedItem("synergy_remembered_email", formData.email);
       } else {
-        const { error: signUpError } = await signUp(
-          formData.email,
-          formData.password,
-          { full_name: formData.name },
-        );
-        if (signUpError) {
-          // Handle specific signup errors
-          if (signUpError.message?.includes('already registered')) {
-            setError("This email is already registered. Try signing in instead.");
-          } else if (signUpError.message?.includes('Password')) {
-            setError("Password is too weak. Use at least 6 characters with numbers and letters.");
-          } else {
-            setError(signUpError.message || "Failed to create account. Please try again.");
-          }
-        } else {
-          // Show success message and switch to login
-          setError("");
-          setIsLogin(true);
-          setFormData({
-            email: formData.email, // Keep email for easy login
-            password: "",
-            confirmPassword: "",
-            name: "",
-          });
-          // Show success message
-          setSuccessMessage("Account created successfully! Please sign in with your credentials.");
+        removeEncryptedItem("synergy_remembered_email");
+      }
+
+      const { error: signInError, user: signedInUser } = await signIn(
+        formData.email,
+        formData.password,
+      );
+      if (signInError) {
+        // Track failed attempts for client-side rate limiting
+        const newAttempts = failedAttempts + 1;
+        setFailedAttempts(newAttempts);
+        const cooldown = getCooldownDuration(newAttempts);
+        if (cooldown > 0) {
+          setCooldownSeconds(cooldown);
         }
+
+        // Handle specific error cases
+        if (signInError.message?.includes('Invalid login credentials')) {
+          setError("Invalid email or password. Please try again.");
+        } else if (signInError.message?.includes('Email not confirmed')) {
+          setError("Please verify your email address before signing in.");
+        } else if (signInError.message?.includes('JWT') || signInError.code?.includes('JWT')) {
+          setError("Session expired. Please try signing in again.");
+        } else {
+          setError(signInError.message || "Failed to sign in. Please try again.");
+        }
+      } else if (signedInUser) {
+        // Reset rate limiting on successful login
+        setFailedAttempts(0);
+        setCooldownSeconds(0);
+        navigate("/", { replace: true });
       }
     } catch (err) {
       console.error("Auth error:", err);
@@ -257,14 +176,6 @@ const LoginPage = () => {
     }
   };
 
-  const toggleMode = () => {
-    setIsLogin(!isLogin);
-    setError("");
-    setSuccessMessage("");
-    setFormData({ email: "", password: "", confirmPassword: "", name: "" });
-  };
-
-  const passwordStrength = calculatePasswordStrength(formData.password);
 
   return (
     <div className="login-page">
@@ -364,18 +275,10 @@ const LoginPage = () => {
 
         {/* Form Card */}
         <div className="login-card">
-          <div className="card-shine"></div>
-
           <div className="card-content">
             <div className="form-header">
-              <h2 className="form-title">
-                {isLogin ? "Welcome Back" : "Get Started"}
-              </h2>
-              <p className="form-subtitle">
-                {isLogin
-                  ? "Sign in to access your dashboard"
-                  : "Create your account to continue"}
-              </p>
+              <h2 className="form-title">Employee Login</h2>
+              <p className="form-subtitle">Sign in to access your dashboard. Your account is created by your admin or manager.</p>
             </div>
 
             {/* Error Message */}
@@ -386,35 +289,7 @@ const LoginPage = () => {
               </div>
             )}
 
-            {/* Success Message */}
-            {successMessage && (
-              <div className="success-alert">
-                <Check size={18} className="success-icon" />
-                <p>{successMessage}</p>
-              </div>
-            )}
-
             <form onSubmit={handleSubmit} className="login-form">
-              {/* Name (Sign Up only) */}
-              {!isLogin && (
-                <div className="form-group">
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder=" "
-                    disabled={loading}
-                    autoComplete="name"
-                  />
-                  <label htmlFor="name" className="floating-label">
-                    Full Name
-                  </label>
-                </div>
-              )}
-
               {/* Email */}
               <div className="form-group">
                 <input
@@ -445,7 +320,7 @@ const LoginPage = () => {
                     className="form-input"
                     placeholder=" "
                     disabled={loading}
-                    autoComplete={isLogin ? "current-password" : "new-password"}
+                    autoComplete="current-password"
                   />
                   <label htmlFor="password" className="floating-label">
                     Password
@@ -459,107 +334,30 @@ const LoginPage = () => {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-
-                {!isLogin && formData.password && (
-                  <div className="password-strength-meter">
-                    <div
-                      className="strength-bar"
-                      style={{
-                        width: `${passwordStrength}%`,
-                        backgroundColor:
-                          passwordStrength <= 20
-                            ? "#ef4444"
-                            : passwordStrength <= 40
-                              ? "#f59e0b"
-                              : passwordStrength <= 60
-                                ? "#3b82f6"
-                                : passwordStrength <= 80
-                                  ? "#22c55e"
-                                  : "#16a34a",
-                      }}
-                    ></div>
-                    <span className="strength-text">
-                      {passwordStrength <= 20
-                        ? "Very Weak"
-                        : passwordStrength <= 40
-                          ? "Weak"
-                          : passwordStrength <= 60
-                            ? "Fair"
-                            : passwordStrength <= 80
-                              ? "Strong"
-                              : "Very Strong"}
-                    </span>
-                  </div>
-                )}
-
-                {!isLogin && formData.password && (
-                  <div className="password-requirements">
-                    <p>Password must contain:</p>
-                    <ul>
-                      <li className={formData.password.length >= 8 ? "met" : ""}>
-                        At least 8 characters
-                      </li>
-                      <li className={/[A-Z]/.test(formData.password) ? "met" : ""}>
-                        One uppercase letter
-                      </li>
-                      <li className={/[a-z]/.test(formData.password) ? "met" : ""}>
-                        One lowercase letter
-                      </li>
-                      <li className={/[0-9]/.test(formData.password) ? "met" : ""}>
-                        One number
-                      </li>
-                      <li className={/[^A-Za-z0-9]/.test(formData.password) ? "met" : ""}>
-                        One special character
-                      </li>
-                    </ul>
-                  </div>
-                )}
               </div>
 
-              {/* Confirm Password (Sign Up only) */}
-              {!isLogin && (
-                <div className="form-group">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="form-input"
-                    placeholder=" "
-                    disabled={loading}
-                    autoComplete="new-password"
-                  />
-                  <label htmlFor="confirmPassword" className="floating-label">
-                    Confirm Password
-                  </label>
-                </div>
-              )}
-
               {/* Remember Me & Forgot Password */}
-              {isLogin && (
-                <div className="form-actions">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      className="checkbox-input"
-                      checked={rememberMe}
-                      onChange={handleRememberMeChange}
-                    />
-                    <span className="checkbox-text">Remember me</span>
-                  </label>
-                  <button
-                    type="button"
-                    className="forgot-password-link"
-                    onClick={() => {
-                      setResetEmail(formData.email);
-                      setShowForgotPassword(true);
-                    }}
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-              )}
+              <div className="form-actions">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    className="checkbox-input"
+                    checked={rememberMe}
+                    onChange={handleRememberMeChange}
+                  />
+                  <span className="checkbox-text">Remember me</span>
+                </label>
+                <button
+                  type="button"
+                  className="forgot-password-link"
+                  onClick={() => {
+                    setResetEmail(formData.email);
+                    setShowForgotPassword(true);
+                  }}
+                >
+                  Forgot Password?
+                </button>
+              </div>
 
               {/* Submit Button */}
               <button type="submit" className="submit-btn" disabled={loading || isRateLimited}>
@@ -571,29 +369,13 @@ const LoginPage = () => {
                   </div>
                 ) : (
                   <>
-                    <span>{isLogin ? "Sign In" : "Create Account"}</span>
+                    <span>Sign In</span>
                     <ArrowRight size={18} />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Toggle Mode */}
-            <div className="auth-toggle">
-              <p>
-                {isLogin
-                  ? "Don't have an account?"
-                  : "Already have an account?"}{" "}
-                <button
-                  type="button"
-                  onClick={toggleMode}
-                  className="toggle-link"
-                  disabled={loading}
-                >
-                  {isLogin ? "Sign Up" : "Sign In"}
-                </button>
-              </p>
-            </div>
           </div>
         </div>
 
