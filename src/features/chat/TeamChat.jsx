@@ -18,6 +18,7 @@ import {
     ChevronLeft,
     Loader2,
 } from "../../lib/icons";
+import { GenericViewSkeleton } from "../../components/common/PageSkeletons";
 import { useAuth } from "../../contexts/AuthContext";
 import { useToast } from "../../contexts/ToastContext";
 import { chatService } from "../../services/chatService";
@@ -336,205 +337,197 @@ const TeamChat = () => {
         );
     }
 
-    // Loading state
     if (isLoading) {
-        return (
-            <div className="chat-container">
-                <div className="chat-loading">
-                    <Loader2 size={40} className="animate-spin" />
-                    <span>Loading chats...</span>
-                </div>
-            </div>
-        );
+        return <GenericViewSkeleton title="Team Communication" />;
     }
 
     return (
         <div className="chat-container">
-            {/* Sidebar - Conversations List */}
-            <aside className={`chat-sidebar ${showMobileConversations ? "mobile-visible" : ""}`}>
-                <div className="chat-sidebar-header">
-                    <div className="chat-header-top">
-                        <h2>
-                            <MessageCircle size={22} />
-                            Team Chat
-                        </h2>
-                        <button
-                            className="chat-new-btn"
-                            onClick={() => setShowNewChatModal(true)}
-                            title="New conversation"
-                        >
-                            <Plus size={20} />
-                        </button>
-                    </div>
-                    <div className="chat-search">
-                        <Search size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search conversations..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="chat-conversations">
-                    {filteredConversations.length === 0 ? (
-                        <div className="chat-empty">
-                            <Users size={48} />
-                            <p>No conversations yet</p>
-                            <button onClick={() => setShowNewChatModal(true)}>
-                                Start a conversation
-                            </button>
-                        </div>
-                    ) : (
-                        filteredConversations.map(renderConversationItem)
-                    )}
-                </div>
-            </aside>
-
-            {/* Main Chat Area */}
-            <main className="chat-main">
-                {activeConversation ? (
-                    <>
-                        {/* Chat Header */}
-                        <div className="chat-main-header">
+                {/* Sidebar - Conversations List */}
+                <aside className={`chat-sidebar ${showMobileConversations ? "mobile-visible" : ""}`}>
+                    <div className="chat-sidebar-header">
+                        <div className="chat-header-top">
+                            <h2>
+                                <MessageCircle size={22} />
+                                Team Chat
+                            </h2>
                             <button
-                                className="chat-back-btn"
-                                onClick={() => setShowMobileConversations(true)}
+                                className="chat-new-btn"
+                                onClick={() => setShowNewChatModal(true)}
+                                title="New conversation"
                             >
-                                <ChevronLeft size={24} />
+                                <Plus size={20} />
                             </button>
-                            <div className="chat-contact-info">
-                                <Avatar
-                                    src={getConversationAvatar(activeConversation)}
-                                    name={getConversationName(activeConversation)}
-                                    size="sm"
-                                    className="chat-contact-avatar"
-                                />
-                                <div className="chat-contact-details">
-                                    <span className="chat-contact-name">
-                                        {getConversationName(activeConversation)}
-                                    </span>
-                                    <span className="chat-contact-status">
-                                        {activeConversation.is_group
-                                            ? `${activeConversation.participants?.length || 0} members`
-                                            : isUserOnline(activeConversation.participants?.[0]?.user_id)
-                                                ? "Online"
-                                                : "Offline"
-                                        }
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="chat-header-actions">
-                                <button title="Voice call" disabled>
-                                    <Phone size={20} />
-                                </button>
-                                <button title="Video call" disabled>
-                                    <Video size={20} />
-                                </button>
-                                <button title="More options">
-                                    <MoreVertical size={20} />
-                                </button>
-                            </div>
                         </div>
-
-                        {/* Messages Area */}
-                        <div className="chat-messages">
-                            {messages.length === 0 ? (
-                                <div className="chat-messages-empty">
-                                    <MessageCircle size={64} />
-                                    <h3>No messages yet</h3>
-                                    <p>Send a message to start the conversation</p>
-                                </div>
-                            ) : (
-                                <>
-                                    {messages.map((msg, index) => renderMessage(msg, index, messages))}
-                                    <div ref={messagesEndRef} />
-                                </>
-                            )}
-
-                            {typingUsers.length > 0 && (
-                                <div className="chat-typing-indicator">
-                                    <span className="typing-dots">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </span>
-                                    <span>{typingUsers.join(", ")} is typing...</span>
-                                </div>
-                            )}
+                        <div className="chat-search">
+                            <Search size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search conversations..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
                         </div>
+                    </div>
 
-                        {/* Message Input */}
-                        <form className="chat-input-area" onSubmit={handleSendMessage}>
-                            <button type="button" className="chat-attach-btn" title="Attach file" disabled>
-                                <Paperclip size={20} />
-                            </button>
-                            <div className="chat-input-wrapper">
-                                <input
-                                    ref={messageInputRef}
-                                    type="text"
-                                    placeholder="Type a message..."
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    disabled={isSending}
-                                />
-                                <button type="button" className="chat-emoji-btn" title="Add emoji" disabled>
-                                    <Smile size={20} />
+                    <div className="chat-conversations">
+                        {filteredConversations.length === 0 ? (
+                            <div className="chat-empty">
+                                <Users size={48} />
+                                <p>No conversations yet</p>
+                                <button onClick={() => setShowNewChatModal(true)}>
+                                    Start a conversation
                                 </button>
                             </div>
-                            <button
-                                type="submit"
-                                className="chat-send-btn"
-                                disabled={!newMessage.trim() || isSending}
-                            >
-                                {isSending ? (
-                                    <Loader2 size={20} className="animate-spin" />
+                        ) : (
+                            filteredConversations.map(renderConversationItem)
+                        )}
+                    </div>
+                </aside>
+
+                {/* Main Chat Area */}
+                <main className="chat-main">
+                    {activeConversation ? (
+                        <>
+                            {/* Chat Header */}
+                            <div className="chat-main-header">
+                                <button
+                                    className="chat-back-btn"
+                                    onClick={() => setShowMobileConversations(true)}
+                                >
+                                    <ChevronLeft size={24} />
+                                </button>
+                                <div className="chat-contact-info">
+                                    <Avatar
+                                        src={getConversationAvatar(activeConversation)}
+                                        name={getConversationName(activeConversation)}
+                                        size="sm"
+                                        className="chat-contact-avatar"
+                                    />
+                                    <div className="chat-contact-details">
+                                        <span className="chat-contact-name">
+                                            {getConversationName(activeConversation)}
+                                        </span>
+                                        <span className="chat-contact-status">
+                                            {activeConversation.is_group
+                                                ? `${activeConversation.participants?.length || 0} members`
+                                                : isUserOnline(activeConversation.participants?.[0]?.user_id)
+                                                    ? "Online"
+                                                    : "Offline"
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="chat-header-actions">
+                                    <button title="Voice call" disabled>
+                                        <Phone size={20} />
+                                    </button>
+                                    <button title="Video call" disabled>
+                                        <Video size={20} />
+                                    </button>
+                                    <button title="More options">
+                                        <MoreVertical size={20} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Messages Area */}
+                            <div className="chat-messages">
+                                {messages.length === 0 ? (
+                                    <div className="chat-messages-empty">
+                                        <MessageCircle size={64} />
+                                        <h3>No messages yet</h3>
+                                        <p>Send a message to start the conversation</p>
+                                    </div>
                                 ) : (
-                                    <Send size={20} />
+                                    <>
+                                        {messages.map((msg, index) => renderMessage(msg, index, messages))}
+                                        <div ref={messagesEndRef} />
+                                    </>
                                 )}
-                            </button>
-                        </form>
-                    </>
-                ) : (
-                    // Empty state when no conversation selected
-                    <div className="chat-empty-state">
-                        <div className="chat-empty-icon">
-                            <MessageCircle size={80} />
-                        </div>
-                        <h2>Welcome to Team Chat</h2>
-                        <p>Select a conversation to start messaging or create a new one</p>
-                        <button
-                            className="chat-start-btn"
-                            onClick={() => setShowNewChatModal(true)}
-                        >
-                            <Plus size={20} />
-                            Start New Conversation
-                        </button>
-                    </div>
-                )}
-            </main>
 
-            {/* New Chat Modal */}
-            {showNewChatModal && (
-                <NewChatModal
-                    onClose={() => setShowNewChatModal(false)}
-                    onCreateConversation={(conv) => {
-                        setConversations((prev) => {
-                            // Avoid duplicates
-                            const exists = prev.some(c => c.id === conv.id);
-                            if (exists) return prev;
-                            return [conv, ...prev];
-                        });
-                        setActiveConversation(conv);
-                        setShowMobileConversations(false);
-                        setShowNewChatModal(false);
-                        toast.success("Conversation created!");
-                    }}
-                    currentEmployeeId={employeeId}
-                />
-            )}
-        </div>
+                                {typingUsers.length > 0 && (
+                                    <div className="chat-typing-indicator">
+                                        <span className="typing-dots">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </span>
+                                        <span>{typingUsers.join(", ")} is typing...</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Message Input */}
+                            <form className="chat-input-area" onSubmit={handleSendMessage}>
+                                <button type="button" className="chat-attach-btn" title="Attach file" disabled>
+                                    <Paperclip size={20} />
+                                </button>
+                                <div className="chat-input-wrapper">
+                                    <input
+                                        ref={messageInputRef}
+                                        type="text"
+                                        placeholder="Type a message..."
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        disabled={isSending}
+                                    />
+                                    <button type="button" className="chat-emoji-btn" title="Add emoji" disabled>
+                                        <Smile size={20} />
+                                    </button>
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="chat-send-btn"
+                                    disabled={!newMessage.trim() || isSending}
+                                >
+                                    {isSending ? (
+                                        <Loader2 size={20} className="animate-spin" />
+                                    ) : (
+                                        <Send size={20} />
+                                    )}
+                                </button>
+                            </form>
+                        </>
+                    ) : (
+                        // Empty state when no conversation selected
+                        <div className="chat-empty-state">
+                            <div className="chat-empty-icon">
+                                <MessageCircle size={80} />
+                            </div>
+                            <h2>Welcome to Team Chat</h2>
+                            <p>Select a conversation to start messaging or create a new one</p>
+                            <button
+                                className="chat-start-btn"
+                                onClick={() => setShowNewChatModal(true)}
+                            >
+                                <Plus size={20} />
+                                Start New Conversation
+                            </button>
+                        </div>
+                    )}
+                </main>
+
+                {/* New Chat Modal */}
+                {showNewChatModal && (
+                    <NewChatModal
+                        onClose={() => setShowNewChatModal(false)}
+                        onCreateConversation={(conv) => {
+                            setConversations((prev) => {
+                                // Avoid duplicates
+                                const exists = prev.some(c => c.id === conv.id);
+                                if (exists) return prev;
+                                return [conv, ...prev];
+                            });
+                            setActiveConversation(conv);
+                            setShowMobileConversations(false);
+                            setShowNewChatModal(false);
+                            toast.success("Conversation created!");
+                        }}
+                        currentEmployeeId={employeeId}
+                    />
+                )}
+            </div>
     );
 };
 
