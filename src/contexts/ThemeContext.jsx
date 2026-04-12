@@ -18,12 +18,12 @@ export const ThemeProvider = ({ children }) => {
 
     // Accent color definitions
     const accentColors = {
-        indigo: { primary: "#4f46e5", hover: "#4338ca", light: "#e0e7ff" },
-        blue: { primary: "#2563eb", hover: "#1d4ed8", light: "#dbeafe" },
-        violet: { primary: "#7c3aed", hover: "#6d28d9", light: "#ede9fe" },
-        rose: { primary: "#e11d48", hover: "#be123c", light: "#ffe4e6" },
-        emerald: { primary: "#059669", hover: "#047857", light: "#d1fae5" },
-        amber: { primary: "#d97706", hover: "#b45309", light: "#fef3c7" },
+        indigo: { primary: "#4f46e5", hover: "#4338ca", light: "rgba(79, 70, 229, 0.14)", rgb: "79, 70, 229" },
+        blue: { primary: "#2563eb", hover: "#1d4ed8", light: "rgba(37, 99, 235, 0.14)", rgb: "37, 99, 235" },
+        violet: { primary: "#7c3aed", hover: "#6d28d9", light: "rgba(124, 58, 237, 0.14)", rgb: "124, 58, 237" },
+        rose: { primary: "#e11d48", hover: "#be123c", light: "rgba(225, 29, 72, 0.14)", rgb: "225, 29, 72" },
+        emerald: { primary: "#059669", hover: "#047857", light: "rgba(5, 150, 105, 0.14)", rgb: "5, 150, 105" },
+        amber: { primary: "#d97706", hover: "#b45309", light: "rgba(217, 119, 6, 0.14)", rgb: "217, 119, 6" },
     };
 
     // Load saved preferences on mount
@@ -74,6 +74,14 @@ export const ThemeProvider = ({ children }) => {
 
         // Set data attribute for CSS selectors
         root.setAttribute("data-theme", effectiveTheme);
+
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+            themeColorMeta.setAttribute(
+                "content",
+                effectiveTheme === "dark" ? "#020817" : "#f6f8fc"
+            );
+        }
     }, [effectiveTheme]);
 
     // Apply accent color to CSS variables
@@ -84,6 +92,7 @@ export const ThemeProvider = ({ children }) => {
         root.style.setProperty("--primary", colors.primary);
         root.style.setProperty("--primary-hover", colors.hover);
         root.style.setProperty("--primary-light", colors.light);
+        root.style.setProperty("--primary-rgb", colors.rgb);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [accentColor]);
 
