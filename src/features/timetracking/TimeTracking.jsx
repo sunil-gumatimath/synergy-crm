@@ -14,7 +14,7 @@ import {
 } from "../../lib/icons";
 import { timeTrackingService } from "../../services/timeTrackingService.js";
 import { useAuth } from "../../contexts/AuthContext";
-import { GenericViewSkeleton } from "../../components/common/PageSkeletons";
+import { TimeTrackingSkeleton } from "../../components/common/PageSkeletons";
 import Toast from "../../components/common/Toast";
 import "./timetracking-styles.css";
 
@@ -141,7 +141,7 @@ const TimeTracking = () => {
     const isClockedIn = todayEntry?.clock_in && !todayEntry?.clock_out;
 
     if (loading) {
-        return <GenericViewSkeleton title="Time Tracking" />;
+        return <TimeTrackingSkeleton />;
     }
 
     if (!employeeId) {
