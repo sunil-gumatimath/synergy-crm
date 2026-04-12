@@ -17,7 +17,7 @@ import {
 } from "../../lib/icons";
 import { leaveService } from "../../services/leaveService.js";
 import { useAuth } from "../../contexts/AuthContext";
-import { SkeletonLeaveCard, SkeletonStatCard, SkeletonTable, Skeleton } from "../../components/common/Skeleton";
+import { LeaveManagementSkeleton } from "../../components/common/PageSkeletons";
 import Toast from "../../components/common/Toast";
 import ApplyLeaveModal from "./ApplyLeaveModal";
 import Avatar from "../../components/common/Avatar";
@@ -175,46 +175,7 @@ const LeaveManagement = () => {
     });
 
     if (loading) {
-        return (
-            <div className="leave-management">
-                {/* Header Skeleton */}
-                <div className="leave-header">
-                    <div className="leave-header-left">
-                        <Skeleton width="200px" height="32px" />
-                        <Skeleton width="280px" height="14px" />
-                    </div>
-                    <Skeleton width="140px" height="40px" borderRadius="8px" />
-                </div>
-
-                {/* Stats Skeleton */}
-                <div className="leave-stats-grid">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <SkeletonStatCard key={i} hasIcon={true} />
-                    ))}
-                </div>
-
-                {/* Leave Balances Skeleton */}
-                <div className="leave-section">
-                    <Skeleton width="120px" height="20px" />
-                    <div className="leave-balances-grid" style={{ marginTop: '16px' }}>
-                        {Array.from({ length: 4 }).map((_, i) => (
-                            <SkeletonLeaveCard key={i} />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Table Skeleton */}
-                <div className="leave-section">
-                    <div className="leave-tabs-section">
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <Skeleton width="140px" height="36px" borderRadius="6px" />
-                            <Skeleton width="100px" height="36px" borderRadius="6px" />
-                        </div>
-                    </div>
-                    <SkeletonTable rows={5} columns={6} hasAvatar={true} />
-                </div>
-            </div>
-        );
+        return <LeaveManagementSkeleton />;
     }
 
     return (
