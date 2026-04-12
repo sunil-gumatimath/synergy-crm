@@ -188,7 +188,6 @@ const Sidebar = ({ activeTab }) => {
           aria-expanded={!isCollapsed}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          data-collapsed={isCollapsed}
         >
           <span className="sidebar-collapse-toggle-icon" aria-hidden="true">
             {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -204,7 +203,7 @@ const Sidebar = ({ activeTab }) => {
           className={`sidebar ${isMobileMenuOpen ? "mobile-open" : ""} ${isCollapsed ? "collapsed" : ""}`}
         >
           <div className="sidebar-header">
-            <Link to="/dashboard" className={`brand-logo ${isCollapsed ? 'short' : ''}`}>
+            <Link to="/dashboard">
               <SynergyLogo size={isCollapsed ? 24 : 32} />
               {!isCollapsed && (
                 <h1 className="brand-name">

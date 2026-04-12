@@ -196,8 +196,8 @@
 }
 
 .employee-avatar {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: var(--radius-full);
   object-fit: cover;
   border: 2px solid var(--border);
