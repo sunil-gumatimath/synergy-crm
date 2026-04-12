@@ -36,6 +36,7 @@ import DocumentList from "../components/DocumentList";
 import NotesList from "../components/NotesList";
 import "./employee-detail-styles.css";
 
+
 // Lazy load modals
 const EditEmployeeModal = lazy(() => import("../components/EditEmployeeModal"));
 const ConfirmModal = lazy(() => import("../components/ui/ConfirmModal"));
@@ -498,7 +499,23 @@ Exported: ${new Date().toLocaleString()}
         { id: "documents", label: "Documents", icon: <FiFolder size={16} /> },
     ];
 
-    // Loading state
+    // Error state
+    if (!isLoading && !employee) {
+        return (
+            <div className="emp-detail">
+                <div className="emp-detail__error">
+                    <FiUser size={64} className="emp-detail__error-icon" />
+                    <h3>Employee Not Found</h3>
+                    <p>The employee you're looking for doesn't exist or has been removed.</p>
+                    <button className="emp-detail__btn emp-detail__btn--primary" onClick={() => navigate("/employees")}>
+                        <FiArrowLeft size={18} />
+                        Back to Employees
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     if (isLoading) {
         return (
             <div className="emp-detail">
@@ -571,23 +588,6 @@ Exported: ${new Date().toLocaleString()}
                             </div>
                         </main>
                     </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Error state
-    if (!employee) {
-        return (
-            <div className="emp-detail">
-                <div className="emp-detail__error">
-                    <FiUser size={64} className="emp-detail__error-icon" />
-                    <h3>Employee Not Found</h3>
-                    <p>The employee you're looking for doesn't exist or has been removed.</p>
-                    <button className="emp-detail__btn emp-detail__btn--primary" onClick={() => navigate("/employees")}>
-                        <FiArrowLeft size={18} />
-                        Back to Employees
-                    </button>
                 </div>
             </div>
         );
