@@ -23,6 +23,8 @@ import BulkActionToolbar from "../../components/BulkActionToolbar";
 import EmployeesByRole from "./EmployeesByRole";
 import { useAuth } from "../../contexts/AuthContext";
 import { isAdminRole } from "../../utils/roles";
+import { EmployeeListSkeleton } from "../../components/common/PageSkeletons";
+
 
 
 // Lazy load modals for better performance
@@ -413,22 +415,7 @@ const EmployeeList = () => {
   }, [employees]);
 
   if (isLoading) {
-    return (
-      <div className="employees-container">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <Skeleton width="200px" height="32px" />
-            <Skeleton width="180px" height="14px" className="mt-2" />
-          </div>
-        </div>
-        <SkeletonFilterBar hasSearch={true} filterCount={2} />
-        <div className="employees-grid skeleton-stagger">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <SkeletonEmployeeCard key={index} />
-          ))}
-        </div>
-      </div>
-    );
+    return <EmployeeListSkeleton />;
   }
 
   return (
@@ -675,7 +662,7 @@ const EmployeeList = () => {
           )}
         </>
       )}
-    </div>
+      </div>
   );
 };
 
