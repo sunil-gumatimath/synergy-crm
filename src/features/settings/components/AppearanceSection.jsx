@@ -64,7 +64,7 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
                             );
                         })}
                     </div>
-                    <span className="settings-field-hint">Theme switching is coming soon!</span>
+                    <span className="settings-field-hint">Switch instantly between a polished light, dark, or system-matched theme.</span>
                 </div>
 
                 {/* Accent Color */}
@@ -84,7 +84,7 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
                             </button>
                         ))}
                     </div>
-                    <span className="settings-field-hint">Accent color customization is coming soon!</span>
+                    <span className="settings-field-hint">Choose an accent color to personalize highlights, focus states, and actions.</span>
                 </div>
 
                 {/* Compact Mode Toggle */}
