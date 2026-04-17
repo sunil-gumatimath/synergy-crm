@@ -4,7 +4,6 @@ import Sidebar from "./components/layout/Sidebar";
 import Stats from "./components/Stats";
 import { DashboardSkeleton, EmployeeListSkeleton, EmployeeDetailSkeleton, LeaveManagementSkeleton, AnalyticsSkeleton, TasksSkeleton, CalendarSkeleton, GenericViewSkeleton } from "./components/common/PageSkeletons";
 import ProtectedRoute from "./components/common/ProtectedRoute";
-import SettingsView from "./features/settings/SettingsView";
 import Header from "./components/layout/Header";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 
@@ -13,6 +12,7 @@ const EmployeeDetailPage = React.lazy(() => import("./pages/EmployeeDetailPage")
 const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
 const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
+const SettingsView = React.lazy(() => import("./features/settings/SettingsView"));
 import { useAuth } from "./contexts/AuthContext";
 import { useUIStore } from "./store/uiStore";
 import "./components/common/Avatar.css";
@@ -53,7 +53,13 @@ const PerformanceReviews = React.lazy(
 );
 
 const HomeRedirect = () => {
-  const { user } = useAuth();
+  const { user, profileLoaded } = useAuth();
+  // Wait until the DB-backed role is loaded before deciding where to land -
+  // user_metadata.role can be stale/missing and would otherwise send an admin
+  // to /dashboard first and never auto-correct.
+  if (!profileLoaded) {
+    return <LoadingSpinner />;
+  }
   if (isAdminOrManagerRole(user?.role)) {
     return <Navigate to="/analytics" replace />;
   }
@@ -305,7 +311,14 @@ function App() {
               }
             />
 
-            <Route path="/settings" element={<SettingsView />} />
+            <Route
+              path="/settings"
+              element={
+                <Suspense fallback={<GenericViewSkeleton title="Settings" />}>
+                  <SettingsView />
+                </Suspense>
+              }
+            />
 
             <Route path="/profile" element={<ProfilePage />} />
 
