@@ -5,17 +5,28 @@ import App from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import RootFallback from "./components/common/RootFallback";
 import "./index.css";
 import "./mobile-enhancements.css";
 
-const RootFallback = () => (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
-        </div>
-    </div>
-);
+// Handle PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+    if (import.meta.env.PROD) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('SW registered:', reg.scope))
+                .catch(err => console.log('SW registration failed:', err));
+        });
+    } else {
+        // In development, unregister any existing service workers to prevent stale caching issues
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let registration of registrations) {
+                registration.unregister();
+                console.log('SW unregistered for development');
+            }
+        });
+    }
+}
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
