@@ -24,6 +24,28 @@ const flattenEmployee = (employee) => {
  * Reports Service - Aggregates data for various report types
  */
 
+// Fetch department analytics stats from the secured RPC
+export const getAnalyticsDepartmentStats = async () => {
+    try {
+        const { data, error } = await supabase.rpc('get_analytics_department_stats');
+        if (error) throw error;
+        
+        return {
+            success: true,
+            data: (data || []).map(row => ({
+                department: row.department,
+                headcount: Number(row.headcount || 0),
+                avgPerformance: Number(row.avg_performance || 0),
+                totalPayroll: Number(row.total_payroll || 0),
+            })),
+            error: null
+        };
+    } catch (err) {
+        console.warn("Analytics RPC access denied or failed:", err.message);
+        return { success: false, data: [], error: err };
+    }
+};
+
 // Get attendance report data
 export const getAttendanceReport = async (startDate, endDate, departmentFilter = null) => {
     try {
