@@ -134,8 +134,8 @@ const AnalyticsDashboard = () => {
 
     try {
       const [empRes, taskRes] = await Promise.all([
-        employeeService.getAll(),
-        taskService.getAll()
+        employeeService.getAll({ pageSize: 10000 }),
+        taskService.getAll({ pageSize: 10000 })
       ]);
 
       if (empRes.data) setEmployees(empRes.data);
@@ -217,17 +217,17 @@ const AnalyticsDashboard = () => {
 
     // Calculate Average Performance
     const avgPerformance = totalEmployees > 0
-      ? Math.round(employees.reduce((acc, emp) => acc + (emp.performance_score || 0), 0) / totalEmployees)
+      ? Math.round(employees.reduce((acc, emp) => acc + Number(emp.performance_score || 0), 0) / totalEmployees)
       : 0;
 
     // Calculate Total Payroll
-    const totalPayroll = employees.reduce((acc, emp) => acc + (emp.salary || 0), 0);
+    const totalPayroll = employees.reduce((acc, emp) => acc + Number(emp.salary || 0), 0);
 
     // Calculate Performance by Department
     const performanceByDept = Object.keys(deptCounts).map((dept) => {
       const deptEmployees = employees.filter((e) => (e.department || 'Unknown') === dept);
       const avg = deptEmployees.length > 0 
-        ? deptEmployees.reduce((acc, e) => acc + (e.performance_score || 0), 0) / deptEmployees.length 
+        ? deptEmployees.reduce((acc, e) => acc + Number(e.performance_score || 0), 0) / deptEmployees.length 
         : 0;
       return {
         name: dept,
