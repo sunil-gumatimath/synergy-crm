@@ -48,7 +48,7 @@ const Sidebar = ({ activeTab }) => {
           label: "Dashboard",
           id: "dashboard",
           path: "/dashboard",
-          roles: ["Employee"],
+          roles: ["Employee", "Admin", "Manager"],
         },
         {
           icon: LayoutDashboard,
