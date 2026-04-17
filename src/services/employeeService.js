@@ -1,5 +1,4 @@
 import { supabase } from "../lib/supabase";
-import { authService } from "./authService";
 
 const TABLE_NAME = "employees";
 const EMPLOYEE_SELECT = `
