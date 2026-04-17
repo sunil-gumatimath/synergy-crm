@@ -25,7 +25,6 @@ import { MdOutlineBusiness, MdCurrencyRupee, MdOutlineAccountBalance } from "rea
 import { FaGraduationCap } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { isAdminRole } from "../utils/roles";
-
 import { employeeService } from "../services/employeeService";
 import noteService from "../services/noteService";
 import documentService from "../services/documentService";
@@ -35,14 +34,11 @@ import Avatar from "../components/common/Avatar";
 import DocumentList from "../components/DocumentList";
 import NotesList from "../components/NotesList";
 import "./employee-detail-styles.css";
-
-
 // Lazy load modals
 const EditEmployeeModal = lazy(() => import("../components/EditEmployeeModal"));
 const ConfirmModal = lazy(() => import("../components/ui/ConfirmModal"));
 const BankDetailsModal = lazy(() => import("../components/BankDetailsModal"));
 const EducationModal = lazy(() => import("../components/EducationModal"));
-
 const EmployeeDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -61,7 +57,6 @@ const EmployeeDetailPage = () => {
     const [documentsLoading, setDocumentsLoading] = useState(true);
     const [notesLoading, setNotesLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
-
     // Fetch employee data
     const fetchEmployee = async () => {
         if (!id) {
@@ -85,56 +80,47 @@ const EmployeeDetailPage = () => {
             setIsLoading(false);
         }
     };
-
     const fetchDocuments = async () => {
         setDocumentsLoading(true);
         const { data } = await documentService.getByEmployeeId(id);
         setDocuments(data || []);
         setDocumentsLoading(false);
     };
-
     const fetchNotes = async () => {
         setNotesLoading(true);
         const { data } = await noteService.getByEmployeeId(id);
         setNotes(data || []);
         setNotesLoading(false);
     };
-
     useEffect(() => {
         fetchEmployee();
         fetchDocuments();
         fetchNotes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
-
     // Handlers
     const handleDocumentAdded = (doc) => {
         setDocuments((prev) => [doc, ...prev]);
         setToast({ type: "success", message: "Document uploaded successfully!" });
     };
-
     const handleDocumentDeleted = async (docId) => {
         await documentService.delete(docId);
         setDocuments((prev) => prev.filter((d) => d.id !== docId));
         setToast({ type: "success", message: "Document deleted." });
     };
-
     const handleNoteAdded = (note) => {
         setNotes((prev) => [note, ...prev]);
         setToast({ type: "success", message: "Note added!" });
     };
-
     const handleNoteUpdated = (updated) => {
         setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         setToast({ type: "success", message: "Note updated!" });
     };
-
     const handleNoteDeleted = async (noteId) => {
         await noteService.delete(noteId);
         setNotes((prev) => prev.filter((n) => n.id !== noteId));
         setToast({ type: "success", message: "Note deleted." });
     };
-
     const handleEditEmployee = async (empId, updates) => {
         setActionLoading(true);
         const { data, error } = await employeeService.update(empId, updates);
@@ -147,7 +133,6 @@ const EmployeeDetailPage = () => {
         }
         setActionLoading(false);
     };
-
     const handleDeleteEmployee = async () => {
         if (!employee) return;
         setActionLoading(true);
@@ -160,7 +145,6 @@ const EmployeeDetailPage = () => {
             setTimeout(() => navigate("/employees"), 1500);
         }
     };
-
     const handleUpdateBankDetails = async (empId, updates) => {
         setActionLoading(true);
         const { data, error } = await employeeService.update(empId, updates);
@@ -173,7 +157,6 @@ const EmployeeDetailPage = () => {
         }
         setActionLoading(false);
     };
-
     const handleUpdateEducation = async (empId, updates) => {
         setActionLoading(true);
         const { data, error } = await employeeService.update(empId, updates);
@@ -186,7 +169,6 @@ const EmployeeDetailPage = () => {
         }
         setActionLoading(false);
     };
-
     // Helpers
     const getStatusClass = (status) => {
         switch (status) {
@@ -195,7 +177,6 @@ const EmployeeDetailPage = () => {
             default: return "inactive";
         }
     };
-
     const getEmploymentDuration = (joinDate) => {
         if (!joinDate) return "N/A";
         const start = new Date(joinDate);
@@ -206,7 +187,6 @@ const EmployeeDetailPage = () => {
         if (years > 0) return `${years}y ${rem}m`;
         return months === 0 ? "< 1 month" : `${months} months`;
     };
-
     const formatDate = (date) => {
         if (!date) return "N/A";
         return new Date(date).toLocaleDateString("en-US", {
@@ -215,7 +195,6 @@ const EmployeeDetailPage = () => {
             day: "numeric",
         });
     };
-
     const exportProfile = () => {
         if (!employee) return;
         const content = `
@@ -230,8 +209,7 @@ Join Date: ${formatDate(employee.join_date)}
 Phone: ${employee.phone || "N/A"}
 Location: ${employee.location || "N/A"}
 Salary: ${employee.salary ? `₹${employee.salary.toLocaleString()}` : "N/A"}
-Performance Score: ${employee.performance_score || "N/A"}%
-
+Performance Score: ${employee.performance_score ? `${employee.performance_score} / 5` : "N/A"}
 Exported: ${new Date().toLocaleString()}
     `;
         const blob = new Blob([content], { type: "text/plain" });
@@ -243,7 +221,6 @@ Exported: ${new Date().toLocaleString()}
         window.URL.revokeObjectURL(url);
         setToast({ type: "success", message: "Profile exported!" });
     };
-
     // Tab content renderers
     const renderOverviewTab = () => (
         <>
@@ -254,7 +231,7 @@ Exported: ${new Date().toLocaleString()}
                         <FiTrendingUp size={24} />
                     </div>
                     <div className="emp-detail__stat-info">
-                        <h4>{employee.performance_score ? `${employee.performance_score}%` : "—"}</h4>
+                        <h4>{employee.performance_score ? `${employee.performance_score} / 5` : "—"}</h4>
                         <p>Performance Score</p>
                     </div>
                 </div>
@@ -286,7 +263,6 @@ Exported: ${new Date().toLocaleString()}
                     </div>
                 </div>
             </div>
-
             {/* Employment Details */}
             <div className="emp-detail__card">
                 <div className="emp-detail__card-header">
@@ -344,7 +320,6 @@ Exported: ${new Date().toLocaleString()}
             </div>
         </>
     );
-
     const renderFinanceTab = () => (
         <div className="emp-detail__card">
             <div className="emp-detail__card-header">
@@ -414,7 +389,6 @@ Exported: ${new Date().toLocaleString()}
             </div>
         </div>
     );
-
     const renderEducationTab = () => (
         <div className="emp-detail__card">
             <div className="emp-detail__card-header">
@@ -471,7 +445,6 @@ Exported: ${new Date().toLocaleString()}
             </div>
         </div>
     );
-
     const renderDocumentsTab = () => (
         <div className="emp-detail__docs-grid">
             <DocumentList
@@ -491,14 +464,12 @@ Exported: ${new Date().toLocaleString()}
             />
         </div>
     );
-
     const tabs = [
         { id: "overview", label: "Overview", icon: <FiUser size={16} /> },
         { id: "finance", label: "Finance", icon: <MdCurrencyRupee size={16} /> },
         { id: "education", label: "Education", icon: <FaGraduationCap size={16} /> },
         { id: "documents", label: "Documents", icon: <FiFolder size={16} /> },
     ];
-
     // Error state
     if (!isLoading && !employee) {
         return (
@@ -515,7 +486,6 @@ Exported: ${new Date().toLocaleString()}
             </div>
         );
     }
-
     if (isLoading) {
         return (
             <div className="emp-detail">
@@ -526,7 +496,6 @@ Exported: ${new Date().toLocaleString()}
                         <Skeleton width="14px" height="14px" borderRadius="2px" />
                         <Skeleton width="120px" height="14px" />
                     </nav>
-
                     {/* Hero Card Skeleton */}
                     <div className="emp-detail__hero">
                         <div className="emp-detail__hero-banner" />
@@ -549,7 +518,6 @@ Exported: ${new Date().toLocaleString()}
                             </div>
                         </div>
                     </div>
-
                     {/* Main Grid Skeleton */}
                     <div className="emp-detail__grid">
                         <aside className="emp-detail__sidebar">
@@ -592,7 +560,6 @@ Exported: ${new Date().toLocaleString()}
             </div>
         );
     }
-
     return (
         <div className="emp-detail">
             <div className="emp-detail__wrapper">
@@ -604,7 +571,6 @@ Exported: ${new Date().toLocaleString()}
                     <FiChevronRight size={14} className="emp-detail__breadcrumb-sep" />
                     <span className="emp-detail__breadcrumb-current">{employee.name}</span>
                 </nav>
-
                 {/* Hero Card */}
                 <div className="emp-detail__hero">
                     <div className="emp-detail__hero-banner" />
@@ -652,7 +618,6 @@ Exported: ${new Date().toLocaleString()}
                         </div>
                     </div>
                 </div>
-
                 {/* Main Grid */}
                 <div className="emp-detail__grid">
                     {/* Sidebar */}
@@ -691,7 +656,6 @@ Exported: ${new Date().toLocaleString()}
                                 </div>
                             </div>
                         </div>
-
                         {/* Quick Stats Card */}
                         <div className="emp-detail__card">
                             <div className="emp-detail__card-header">
@@ -714,7 +678,6 @@ Exported: ${new Date().toLocaleString()}
                             </div>
                         </div>
                     </aside>
-
                     {/* Main Content */}
                     <main className="emp-detail__main">
                         {/* Tabs */}
@@ -730,7 +693,6 @@ Exported: ${new Date().toLocaleString()}
                                 </button>
                             ))}
                         </div>
-
                         {/* Tab Content */}
                         <div className="emp-detail__tab-content">
                             {activeTab === "overview" && renderOverviewTab()}
@@ -741,7 +703,6 @@ Exported: ${new Date().toLocaleString()}
                     </main>
                 </div>
             </div>
-
             {/* Modals */}
             <Suspense fallback={null}>
                 <EditEmployeeModal
@@ -752,7 +713,6 @@ Exported: ${new Date().toLocaleString()}
                     isLoading={actionLoading}
                 />
             </Suspense>
-
             <Suspense fallback={null}>
                 <ConfirmModal
                     isOpen={showDeleteModal}
@@ -766,7 +726,6 @@ Exported: ${new Date().toLocaleString()}
                     type="danger"
                 />
             </Suspense>
-
             <Suspense fallback={null}>
                 <BankDetailsModal
                     isOpen={showBankModal}
@@ -776,7 +735,6 @@ Exported: ${new Date().toLocaleString()}
                     isLoading={actionLoading}
                 />
             </Suspense>
-
             <Suspense fallback={null}>
                 <EducationModal
                     isOpen={showEducationModal}
@@ -786,8 +744,6 @@ Exported: ${new Date().toLocaleString()}
                     isLoading={actionLoading}
                 />
             </Suspense>
-
-
             {/* Toast */}
             {toast && (
                 <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />
@@ -795,5 +751,4 @@ Exported: ${new Date().toLocaleString()}
         </div>
     );
 };
-
 export default EmployeeDetailPage;

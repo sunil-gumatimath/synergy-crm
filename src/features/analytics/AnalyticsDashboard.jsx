@@ -38,6 +38,7 @@ import {
 } from "../../lib/icons";
 import { employeeService } from "../../services/employeeService";
 import { taskService } from "../../services/taskService";
+import { getAnalyticsDepartmentStats } from "../../services/reportsService";
 import { AnalyticsSkeleton } from "../../components/common/PageSkeletons";
 import "./analytics-styles.css";
 
@@ -121,6 +122,7 @@ const ActivityItem = ({ icon: Icon, title, time, color, description }) => (
 const AnalyticsDashboard = () => {
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [departmentStats, setDepartmentStats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -133,13 +135,15 @@ const AnalyticsDashboard = () => {
     }
 
     try {
-      const [empRes, taskRes] = await Promise.all([
+      const [empRes, taskRes, deptStatsRes] = await Promise.all([
         employeeService.getAll({ pageSize: 10000 }),
-        taskService.getAll({ pageSize: 10000 })
+        taskService.getAll({ pageSize: 10000 }),
+        getAnalyticsDepartmentStats()
       ]);
 
       if (empRes.data) setEmployees(empRes.data);
       if (taskRes.data) setTasks(taskRes.data);
+      setDepartmentStats(deptStatsRes?.success ? deptStatsRes.data : []);
       setLastUpdated(new Date());
     } catch (error) {
       console.error("Error fetching analytics data:", error);
@@ -164,29 +168,23 @@ const AnalyticsDashboard = () => {
   // Calculate Statistics with dynamic month-over-month changes
   const stats = useMemo(() => {
     const totalEmployees = employees.length;
-    const activeTasks = tasks.filter(t => t.status !== 'done').length;
-    const completedTasks = tasks.filter(t => t.status === 'done').length;
+    const activeTasks = tasks.filter(t => t.status?.toLowerCase() !== 'done').length;
+    const completedTasks = tasks.filter(t => t.status?.toLowerCase() === 'done').length;
 
     // Calculate month-over-month employee change
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
-    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
     const employeesThisMonth = employees.filter(emp => {
       const joinDate = new Date(emp.join_date);
       return joinDate.getMonth() === currentMonth && joinDate.getFullYear() === currentYear;
     }).length;
 
-    const employeesLastMonth = employees.filter(emp => {
-      const joinDate = new Date(emp.join_date);
-      return joinDate.getMonth() === lastMonth && joinDate.getFullYear() === lastMonthYear;
-    }).length;
-
     // Calculate percentage change (avoid division by zero)
-    const employeeChange = employeesLastMonth > 0
-      ? Math.round(((employeesThisMonth - employeesLastMonth) / employeesLastMonth) * 100)
+    const totalEmployeesLastMonth = totalEmployees - employeesThisMonth;
+    const employeeChange = totalEmployeesLastMonth > 0
+      ? Math.round((employeesThisMonth / totalEmployeesLastMonth) * 100)
       : employeesThisMonth > 0 ? 100 : 0;
 
     // Department Distribution with extended colors
@@ -215,25 +213,47 @@ const AnalyticsDashboard = () => {
       return { month, employees: count };
     }).slice(0, currentMonth + 1);
 
-    // Calculate Average Performance
-    const avgPerformance = totalEmployees > 0
-      ? Math.round(employees.reduce((acc, emp) => acc + Number(emp.performance_score || 0), 0) / totalEmployees)
-      : 0;
+    // Server-side aggregates from secure RPC (Admin/Manager only).
+    // When the RPC is denied (regular employees), fall back to client-side
+    // aggregation which will naturally yield zeros due to RLS on private data.
+    const hasServerStats = Array.isArray(departmentStats) && departmentStats.length > 0;
 
     // Calculate Total Payroll
-    const totalPayroll = employees.reduce((acc, emp) => acc + Number(emp.salary || 0), 0);
+    const totalPayroll = hasServerStats
+      ? departmentStats.reduce((acc, d) => acc + Number(d.totalPayroll || 0), 0)
+      : employees.reduce((acc, emp) => acc + Number(emp.salary || 0), 0);
+
+    // Calculate Average Performance (headcount-weighted when server stats available)
+    let avgPerformance = 0;
+    if (hasServerStats) {
+      const weightedSum = departmentStats.reduce(
+        (acc, d) => acc + Number(d.avgPerformance || 0) * Number(d.headcount || 0),
+        0
+      );
+      const totalHeadcount = departmentStats.reduce((acc, d) => acc + Number(d.headcount || 0), 0);
+      avgPerformance = totalHeadcount > 0 ? Math.round((weightedSum / totalHeadcount) * 10) / 10 : 0;
+    } else if (totalEmployees > 0) {
+      avgPerformance = Math.round(
+        employees.reduce((acc, emp) => acc + Number(emp.performance_score || 0), 0) / totalEmployees
+      );
+    }
 
     // Calculate Performance by Department
-    const performanceByDept = Object.keys(deptCounts).map((dept) => {
-      const deptEmployees = employees.filter((e) => (e.department || 'Unknown') === dept);
-      const avg = deptEmployees.length > 0 
-        ? deptEmployees.reduce((acc, e) => acc + Number(e.performance_score || 0), 0) / deptEmployees.length 
-        : 0;
-      return {
-        name: dept,
-        performance: Math.round(avg),
-      };
-    });
+    const performanceByDept = hasServerStats
+      ? departmentStats.map((d) => ({
+          name: d.department || 'Unknown',
+          performance: Math.round(Number(d.avgPerformance || 0) * 10) / 10,
+        }))
+      : Object.keys(deptCounts).map((dept) => {
+          const deptEmployees = employees.filter((e) => (e.department || 'Unknown') === dept);
+          const avg = deptEmployees.length > 0
+            ? deptEmployees.reduce((acc, e) => acc + Number(e.performance_score || 0), 0) / deptEmployees.length
+            : 0;
+          return {
+            name: dept,
+            performance: Math.round(avg * 10) / 10,
+          };
+        });
 
     // Task completion rate
     const taskCompletionRate = tasks.length > 0
@@ -253,23 +273,32 @@ const AnalyticsDashboard = () => {
 
     // Generate recent activity from employees and tasks
     const recentActivity = [
-      ...employees.slice(0, 3).map(emp => ({
-        type: 'hire',
-        icon: UserPlus,
-        title: `${emp.first_name} ${emp.last_name} joined`,
-        description: emp.department,
-        time: new Date(emp.join_date).toLocaleDateString(),
-        color: '#10b981'
-      })),
-      ...tasks.filter(t => t.status === 'done').slice(0, 2).map(task => ({
-        type: 'task',
-        icon: CheckCircle2,
-        title: task.title,
-        description: 'Task completed',
-        time: 'Recently',
-        color: '#4f46e5'
-      }))
-    ].slice(0, 5);
+      ...[...employees]
+        .sort((a, b) => new Date(b.join_date).getTime() - new Date(a.join_date).getTime())
+        .slice(0, 3)
+        .map(emp => ({
+          type: 'hire',
+          icon: UserPlus,
+          title: `${emp.name || 'New Employee'} joined`,
+          description: emp.department || 'General',
+          rawDate: new Date(emp.join_date),
+          time: new Date(emp.join_date).toLocaleDateString(),
+          color: '#10b981'
+        })),
+      ...[...tasks]
+        .filter(t => t.status?.toLowerCase() === 'done')
+        .sort((a, b) => new Date(b.updated_at || b.created_at || new Date()).getTime() - new Date(a.updated_at || a.created_at || new Date()).getTime())
+        .slice(0, 2)
+        .map(task => ({
+          type: 'task',
+          icon: CheckCircle2,
+          title: task.title,
+          description: 'Task completed',
+          rawDate: new Date(task.updated_at || task.created_at || new Date()),
+          time: new Date(task.updated_at || task.created_at || new Date()).toLocaleDateString(),
+          color: '#4f46e5'
+        }))
+    ].sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime()).slice(0, 5);
 
     return {
       totalEmployees,
@@ -286,7 +315,7 @@ const AnalyticsDashboard = () => {
       recentHires: recentHires.length,
       recentActivity,
     };
-  }, [employees, tasks]);
+  }, [employees, tasks, departmentStats]);
 
   // Time-based greeting
   const getGreeting = () => {
@@ -526,7 +555,7 @@ const AnalyticsDashboard = () => {
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: "#6b7280", fontSize: 12 }}
-                  domain={[0, 100]}
+                  domain={[0, 5]}
                 />
                 <Tooltip
                   cursor={{ fill: "rgba(0,0,0,0.04)" }}
@@ -535,7 +564,7 @@ const AnalyticsDashboard = () => {
                     border: "none",
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
                   }}
-                  formatter={(value) => [`${value}%`, 'Performance']}
+                  formatter={(value) => [`${value} / 5`, 'Rating']}
                 />
                 <Bar dataKey="performance" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
               </BarChart>
@@ -557,7 +586,7 @@ const AnalyticsDashboard = () => {
               </p>
               <div className="analytics-insight-footer">
                 <Award size={14} />
-                {[...stats.performanceByDept].sort((a, b) => b.performance - a.performance)[0]?.performance || 0}% avg score
+                {[...stats.performanceByDept].sort((a, b) => b.performance - a.performance)[0]?.performance || 0} / 5 avg score
               </div>
             </div>
             <div className="analytics-insight-item purple">
@@ -626,3 +655,4 @@ const AnalyticsDashboard = () => {
 };
 
 export default AnalyticsDashboard;
+ashboard;
