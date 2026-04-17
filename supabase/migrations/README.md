@@ -22,3 +22,7 @@ remote migration history first.
 Current live RPC source of truth:
 
 - `20260409193000_fix_admin_create_employee_jsonb_return.sql`
+
+## Employee Private Details (B7 Fix Changelog)
+
+Note for future contributors: The `performance_score` column was dropped from `public.employees` and moved exclusively to `public.employee_private_details` in migration `20260408010000_secure_employee_private_data_and_avatars.sql`. The frontend queries use flattened joins to access this score. Do not reintroduce this column on `public.employees` or assume it exists there.
