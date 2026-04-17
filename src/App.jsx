@@ -206,65 +206,75 @@ function App() {
             <Route
               path="/calendar"
               element={
-                <Suspense
-                  fallback={
-                    <CalendarSkeleton />
-                  }
-                >
-                  <CalendarView />
-                </Suspense>
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <Suspense
+                    fallback={
+                      <CalendarSkeleton />
+                    }
+                  >
+                    <CalendarView />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path="/tasks"
               element={
-                <Suspense
-                  fallback={
-                    <TasksSkeleton />
-                  }
-                >
-                  <TasksView />
-                </Suspense>
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <Suspense
+                    fallback={
+                      <TasksSkeleton />
+                    }
+                  >
+                    <TasksView />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path="/support"
               element={
-                <Suspense
-                  fallback={
-                    <GenericViewSkeleton title="Support" />
-                  }
-                >
-                  <SupportView />
-                </Suspense>
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <Suspense
+                    fallback={
+                      <GenericViewSkeleton title="Support" />
+                    }
+                  >
+                    <SupportView />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path="/leave"
               element={
-                <Suspense
-                  fallback={
-                    <LeaveManagementSkeleton />
-                  }
-                >
-                  <LeaveManagement />
-                </Suspense>
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <Suspense
+                    fallback={
+                      <LeaveManagementSkeleton />
+                    }
+                  >
+                    <LeaveManagement />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path="/timetracking"
               element={
-                <Suspense
-                  fallback={
-                    <GenericViewSkeleton title="Time Tracking" />
-                  }
-                >
-                  <TimeTracking />
-                </Suspense>
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <Suspense
+                    fallback={
+                      <GenericViewSkeleton title="Time Tracking" />
+                    }
+                  >
+                    <TimeTracking />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
@@ -286,13 +296,15 @@ function App() {
             <Route
               path="/chat"
               element={
-                <Suspense
-                  fallback={
-                    <GenericViewSkeleton title="Chat" />
-                  }
-                >
-                  <TeamChat />
-                </Suspense>
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <Suspense
+                    fallback={
+                      <GenericViewSkeleton title="Chat" />
+                    }
+                  >
+                    <TeamChat />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
@@ -314,13 +326,22 @@ function App() {
             <Route
               path="/settings"
               element={
-                <Suspense fallback={<GenericViewSkeleton title="Settings" />}>
-                  <SettingsView />
-                </Suspense>
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <Suspense fallback={<GenericViewSkeleton title="Settings" />}>
+                    <SettingsView />
+                  </Suspense>
+                </ProtectedRoute>
               }
             />
 
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
 
             <Route
               path="*"
