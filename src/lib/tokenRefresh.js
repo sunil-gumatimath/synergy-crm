@@ -34,7 +34,7 @@ export const withTokenRefresh = async (apiCall, maxRetries = 1) => {
                     console.error('Failed to refresh session:', refreshError);
                     // Sign out the user if refresh fails
                     await supabase.auth.signOut();
-                    throw new Error('Session expired. Please log in again.');
+                    throw new Error('Session expired. Please log in again.', { cause: error });
                 }
 
 
