@@ -64,14 +64,17 @@ const PerformanceReviews = () => {
         return true;
     });
 
-    const renderRating = (rating) => (
-        <div className="perf-rating-stars">
-            {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} size={16} className={s <= rating ? "filled" : ""} fill={s <= rating ? "#f59e0b" : "none"} />
-            ))}
-            <span>{rating}/5</span>
-        </div>
-    );
+    const renderRating = (score) => {
+        const stars = Math.max(0, Math.min(5, (Number(score) || 0) / 20));
+        return (
+            <div className="perf-rating-stars">
+                {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={16} className={s <= stars ? "filled" : ""} fill={s <= stars ? "#f59e0b" : "none"} />
+                ))}
+                <span>{Number(score).toFixed(0)}/100</span>
+            </div>
+        );
+    };
 
     const renderStatus = (status) => {
         const cfg = statusConfig[status] || statusConfig.pending;
@@ -87,7 +90,7 @@ const PerformanceReviews = () => {
         { title: "Active", value: reviews.filter(r => r.status === "in_progress").length, icon: Target, color: "primary" },
         { title: "Completed", value: reviews.filter(r => r.status === "completed").length, icon: CheckCircle, color: "success" },
         { title: "Pending", value: reviews.filter(r => r.status === "pending").length, icon: Clock, color: "warning" },
-        { title: "Avg Rating", value: analytics?.averageRating?.toFixed(1) || "N/A", icon: Star, color: "accent" },
+        { title: "Avg Rating", value: analytics?.averageScore || "N/A", icon: Star, color: "accent" },
     ];
 
     return (
@@ -151,7 +154,7 @@ const PerformanceReviews = () => {
                                             <Avatar src={r.employee?.avatar} name={r.employee?.name || 'Unknown'} size="sm" />
                                             <div><span className="perf-review-name">{r.employee?.name}</span><span><Calendar size={14} />{r.period}</span></div>
                                         </div>
-                                        <div className="perf-review-middle">{r.overall_rating ? renderRating(r.overall_rating) : <span className="perf-no-rating">Not rated</span>}</div>
+                                        <div className="perf-review-middle">{r.overall_score != null ? renderRating(r.overall_score) : <span className="perf-no-rating">Not rated</span>}</div>
                                         <div className="perf-review-right">{renderStatus(r.status)}<ChevronRight size={20} /></div>
                                     </div>
                                 ))}
