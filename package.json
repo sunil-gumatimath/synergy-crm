@@ -11,8 +11,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "preinstall": "bunx only-allow bun"
+    "test:coverage": "vitest run --coverage"
   },
   "overrides": {
     "flatted": ">=3.4.0",
