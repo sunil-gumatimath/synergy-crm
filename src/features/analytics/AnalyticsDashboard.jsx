@@ -38,7 +38,6 @@ import {
 } from "../../lib/icons";
 import { employeeService } from "../../services/employeeService";
 import { taskService } from "../../services/taskService";
-import { getAnalyticsDepartmentStats } from "../../services/reportsService";
 import { AnalyticsSkeleton } from "../../components/common/PageSkeletons";
 import "./analytics-styles.css";
 
@@ -122,7 +121,6 @@ const ActivityItem = ({ icon: Icon, title, time, color, description }) => (
 const AnalyticsDashboard = () => {
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [departmentStats, setDepartmentStats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -135,15 +133,13 @@ const AnalyticsDashboard = () => {
     }
 
     try {
-      const [empRes, taskRes, deptStatsRes] = await Promise.all([
+      const [empRes, taskRes] = await Promise.all([
         employeeService.getAll({ pageSize: 10000 }),
-        taskService.getAll({ pageSize: 10000 }),
-        getAnalyticsDepartmentStats()
+        taskService.getAll({ pageSize: 10000 })
       ]);
 
       if (empRes.data) setEmployees(empRes.data);
       if (taskRes.data) setTasks(taskRes.data);
-      setDepartmentStats(deptStatsRes?.success ? deptStatsRes.data : []);
       setLastUpdated(new Date());
     } catch (error) {
       console.error("Error fetching analytics data:", error);
@@ -213,47 +209,25 @@ const AnalyticsDashboard = () => {
       return { month, employees: count };
     }).slice(0, currentMonth + 1);
 
-    // Server-side aggregates from secure RPC (Admin/Manager only).
-    // When the RPC is denied (regular employees), fall back to client-side
-    // aggregation which will naturally yield zeros due to RLS on private data.
-    const hasServerStats = Array.isArray(departmentStats) && departmentStats.length > 0;
+    // Calculate Average Performance
+    const avgPerformance = totalEmployees > 0
+      ? Math.round(employees.reduce((acc, emp) => acc + Number(emp.performance_score || 0), 0) / totalEmployees)
+      : 0;
 
     // Calculate Total Payroll
-    const totalPayroll = hasServerStats
-      ? departmentStats.reduce((acc, d) => acc + Number(d.totalPayroll || 0), 0)
-      : employees.reduce((acc, emp) => acc + Number(emp.salary || 0), 0);
-
-    // Calculate Average Performance (headcount-weighted when server stats available)
-    let avgPerformance = 0;
-    if (hasServerStats) {
-      const weightedSum = departmentStats.reduce(
-        (acc, d) => acc + Number(d.avgPerformance || 0) * Number(d.headcount || 0),
-        0
-      );
-      const totalHeadcount = departmentStats.reduce((acc, d) => acc + Number(d.headcount || 0), 0);
-      avgPerformance = totalHeadcount > 0 ? Math.round((weightedSum / totalHeadcount) * 10) / 10 : 0;
-    } else if (totalEmployees > 0) {
-      avgPerformance = Math.round(
-        employees.reduce((acc, emp) => acc + Number(emp.performance_score || 0), 0) / totalEmployees
-      );
-    }
+    const totalPayroll = employees.reduce((acc, emp) => acc + Number(emp.salary || 0), 0);
 
     // Calculate Performance by Department
-    const performanceByDept = hasServerStats
-      ? departmentStats.map((d) => ({
-          name: d.department || 'Unknown',
-          performance: Math.round(Number(d.avgPerformance || 0) * 10) / 10,
-        }))
-      : Object.keys(deptCounts).map((dept) => {
-          const deptEmployees = employees.filter((e) => (e.department || 'Unknown') === dept);
-          const avg = deptEmployees.length > 0
-            ? deptEmployees.reduce((acc, e) => acc + Number(e.performance_score || 0), 0) / deptEmployees.length
-            : 0;
-          return {
-            name: dept,
-            performance: Math.round(avg * 10) / 10,
-          };
-        });
+    const performanceByDept = Object.keys(deptCounts).map((dept) => {
+      const deptEmployees = employees.filter((e) => (e.department || 'Unknown') === dept);
+      const avg = deptEmployees.length > 0 
+        ? deptEmployees.reduce((acc, e) => acc + Number(e.performance_score || 0), 0) / deptEmployees.length 
+        : 0;
+      return {
+        name: dept,
+        performance: Math.round(avg),
+      };
+    });
 
     // Task completion rate
     const taskCompletionRate = tasks.length > 0
@@ -315,7 +289,7 @@ const AnalyticsDashboard = () => {
       recentHires: recentHires.length,
       recentActivity,
     };
-  }, [employees, tasks, departmentStats]);
+  }, [employees, tasks]);
 
   // Time-based greeting
   const getGreeting = () => {
@@ -371,7 +345,7 @@ const AnalyticsDashboard = () => {
         />
         <StatCard
           title="Avg. Performance"
-          value={`${stats.avgPerformance}%`}
+          value={`${Number(stats.avgPerformance || 0).toFixed(1)} / 5`}
           icon={Award}
           color="#f59e0b"
         />
@@ -555,7 +529,7 @@ const AnalyticsDashboard = () => {
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: "#6b7280", fontSize: 12 }}
-                  domain={[0, 5]}
+                  domain={[0, 100]}
                 />
                 <Tooltip
                   cursor={{ fill: "rgba(0,0,0,0.04)" }}
@@ -564,7 +538,7 @@ const AnalyticsDashboard = () => {
                     border: "none",
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
                   }}
-                  formatter={(value) => [`${value} / 5`, 'Rating']}
+                  formatter={(value) => [`${value}%`, 'Performance']}
                 />
                 <Bar dataKey="performance" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
               </BarChart>
@@ -586,7 +560,7 @@ const AnalyticsDashboard = () => {
               </p>
               <div className="analytics-insight-footer">
                 <Award size={14} />
-                {[...stats.performanceByDept].sort((a, b) => b.performance - a.performance)[0]?.performance || 0} / 5 avg score
+                {[...stats.performanceByDept].sort((a, b) => b.performance - a.performance)[0]?.performance || 0}% avg score
               </div>
             </div>
             <div className="analytics-insight-item purple">
@@ -655,4 +629,3 @@ const AnalyticsDashboard = () => {
 };
 
 export default AnalyticsDashboard;
-ashboard;
