@@ -54,8 +54,10 @@ export default defineConfig({
       },
     },
   },
-  // Pre-bundle heavy dependencies
+  // Pre-bundle heavy dependencies that load on the critical path. recharts is
+  // intentionally excluded because it's only pulled in by the lazy Analytics
+  // route and forcing it here slows dev cold starts.
   optimizeDeps: {
-    include: ["recharts", "@supabase/supabase-js", "react-icons"],
+    include: ["@supabase/supabase-js", "react-icons"],
   },
 });
