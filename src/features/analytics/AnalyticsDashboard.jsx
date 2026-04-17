@@ -191,7 +191,8 @@ const AnalyticsDashboard = () => {
 
     // Department Distribution with extended colors
     const deptCounts = employees.reduce((acc, emp) => {
-      acc[emp.department] = (acc[emp.department] || 0) + 1;
+      const dept = emp.department || 'Unknown';
+      acc[dept] = (acc[dept] || 0) + 1;
       return acc;
     }, {});
 
@@ -224,8 +225,10 @@ const AnalyticsDashboard = () => {
 
     // Calculate Performance by Department
     const performanceByDept = Object.keys(deptCounts).map((dept) => {
-      const deptEmployees = employees.filter((e) => e.department === dept);
-      const avg = deptEmployees.reduce((acc, e) => acc + (e.performance_score || 0), 0) / deptEmployees.length;
+      const deptEmployees = employees.filter((e) => (e.department || 'Unknown') === dept);
+      const avg = deptEmployees.length > 0 
+        ? deptEmployees.reduce((acc, e) => acc + (e.performance_score || 0), 0) / deptEmployees.length 
+        : 0;
       return {
         name: dept,
         performance: Math.round(avg),
