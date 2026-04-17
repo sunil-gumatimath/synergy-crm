@@ -15,8 +15,8 @@ export const performanceService = {
                 .from("performance_reviews")
                 .select(`
                     *,
-                    employee:employees!performance_reviews_employee_id_fkey(id, first_name, last_name, avatar_url, department, job_title),
-                    reviewer:employees!performance_reviews_reviewer_id_fkey(id, first_name, last_name, avatar_url)
+                    employee:employees!performance_reviews_employee_id_fkey(id, name, avatar, department, role),
+                    reviewer:employees!performance_reviews_reviewer_id_fkey(id, name, avatar)
                 `)
                 .order("created_at", { ascending: false });
 
@@ -46,11 +46,11 @@ export const performanceService = {
                 .select(`
                     *,
                     employee:employees!performance_reviews_employee_id_fkey(*),
-                    reviewer:employees!performance_reviews_reviewer_id_fkey(id, first_name, last_name, avatar_url),
+                    reviewer:employees!performance_reviews_reviewer_id_fkey(id, name, avatar),
                     goals:performance_goals(*),
                     feedback:performance_feedback(
                         *,
-                        provider:employees(id, first_name, last_name, avatar_url)
+                        provider:employees(id, name, avatar)
                     )
                 `)
                 .eq("id", reviewId)
@@ -115,41 +115,6 @@ export const performanceService = {
             return { data, error: null };
         } catch (error) {
             console.error("Error updating review:", error);
-            return { data: null, error };
-        }
-    },
-
-    /**
-     * Submit review ratings
-     * @param {string} reviewId - Review ID
-     * @param {Object} ratings - Ratings data
-     * @returns {Promise<{data: Object|null, error: Error|null}>}
-     */
-    async submitRatings(reviewId, ratings) {
-        try {
-            const overallScore = Object.values(ratings.scores || {}).reduce((a, b) => a + b, 0) /
-                Object.values(ratings.scores || {}).length || 0;
-
-            const { data, error } = await supabase
-                .from("performance_reviews")
-                .update({
-                    ratings: ratings.scores,
-                    strengths: ratings.strengths,
-                    improvements: ratings.improvements,
-                    comments: ratings.comments,
-                    overall_score: overallScore.toFixed(2),
-                    status: 'completed',
-                    completed_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                })
-                .eq("id", reviewId)
-                .select()
-                .single();
-
-            if (error) throw error;
-            return { data, error: null };
-        } catch (error) {
-            console.error("Error submitting ratings:", error);
             return { data: null, error };
         }
     },
@@ -257,36 +222,6 @@ export const performanceService = {
     },
 
     /**
-     * Add 360 feedback
-     * @param {Object} feedback - Feedback data
-     * @returns {Promise<{data: Object|null, error: Error|null}>}
-     */
-    async addFeedback(feedback) {
-        try {
-            const { data, error } = await supabase
-                .from("performance_feedback")
-                .insert({
-                    review_id: feedback.reviewId,
-                    provider_id: feedback.providerId,
-                    relationship: feedback.relationship, // 'peer', 'manager', 'direct_report', 'self'
-                    ratings: feedback.ratings,
-                    strengths: feedback.strengths,
-                    improvements: feedback.improvements,
-                    comments: feedback.comments,
-                    anonymous: feedback.anonymous || false,
-                })
-                .select()
-                .single();
-
-            if (error) throw error;
-            return { data, error: null };
-        } catch (error) {
-            console.error("Error adding feedback:", error);
-            return { data: null, error };
-        }
-    },
-
-    /**
      * Get feedback requests for a user
      * @param {string} userId - User ID
      * @returns {Promise<{data: Array, error: Error|null}>}
@@ -300,7 +235,7 @@ export const performanceService = {
                     review:performance_reviews(
                         id,
                         review_period,
-                        employee:employees(id, first_name, last_name, avatar_url)
+                        employee:employees(id, name, avatar)
                     )
                 `)
                 .eq("requested_from", userId)
@@ -408,18 +343,28 @@ export const performanceService = {
     async getPerformanceAnalytics(employeeId) {
         try {
             // Get all completed reviews
-            const { data: reviews } = await supabase
+            let reviewsQuery = supabase
                 .from("performance_reviews")
                 .select("*")
-                .eq("employee_id", employeeId)
                 .eq("status", "completed")
                 .order("created_at", { ascending: true });
+                
+            if (employeeId) {
+                reviewsQuery = reviewsQuery.eq("employee_id", employeeId);
+            }
+            
+            const { data: reviews } = await reviewsQuery;
 
             // Get goal completion stats
-            const { data: goals } = await supabase
+            let goalsQuery = supabase
                 .from("performance_goals")
-                .select("*")
-                .eq("employee_id", employeeId);
+                .select("*");
+                
+            if (employeeId) {
+                goalsQuery = goalsQuery.eq("employee_id", employeeId);
+            }
+            
+            const { data: goals } = await goalsQuery;
 
             const completedGoals = (goals || []).filter(g => g.status === 'completed').length;
             const totalGoals = (goals || []).length;
@@ -467,33 +412,6 @@ export const performanceService = {
     },
 
     /**
-     * Create a review cycle
-     * @param {Object} cycle - Cycle data
-     * @returns {Promise<{data: Object|null, error: Error|null}>}
-     */
-    async createReviewCycle(cycle) {
-        try {
-            const { data, error } = await supabase
-                .from("review_cycles")
-                .insert({
-                    name: cycle.name,
-                    start_date: cycle.startDate,
-                    end_date: cycle.endDate,
-                    type: cycle.type,
-                    status: 'active',
-                })
-                .select()
-                .single();
-
-            if (error) throw error;
-            return { data, error: null };
-        } catch (error) {
-            console.error("Error creating cycle:", error);
-            return { data: null, error };
-        }
-    },
-
-    /**
      * Get team performance summary
      * @param {string} managerId - Manager ID
      * @returns {Promise<{data: Object|null, error: Error|null}>}
@@ -503,7 +421,7 @@ export const performanceService = {
             // Get team members
             const { data: employees } = await supabase
                 .from("employees")
-                .select("id, first_name, last_name, avatar_url, department")
+                .select("id, name, avatar, department")
                 .eq("manager_id", managerId);
 
             const employeeIds = (employees || []).map(e => e.id);
@@ -531,8 +449,8 @@ export const performanceService = {
                 data: {
                     employees: employees || [],
                     avgScore,
-                    highPerformers: (employees || []).filter(e => scoresByEmployee[e.id] >= 4),
-                    needsAttention: (employees || []).filter(e => scoresByEmployee[e.id] < 3),
+                    highPerformers: (employees || []).filter(e => scoresByEmployee[e.id] >= 80),
+                    needsAttention: (employees || []).filter(e => scoresByEmployee[e.id] < 60),
                     pendingReviews: (reviews || []).filter(r => r.status === 'pending').length,
                 },
                 error: null
