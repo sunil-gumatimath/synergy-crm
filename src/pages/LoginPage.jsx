@@ -9,6 +9,7 @@ import {
   ArrowRight,
   X,
   Mail,
+  Check,
 } from "../lib/icons";
 import SynergyLogo from "../components/common/SynergyLogo";
 import { setEncryptedItem, getEncryptedItem, removeEncryptedItem } from "../utils/storageUtils";
