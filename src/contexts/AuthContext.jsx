@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { authService } from "../services/authService";
 import { supabase } from "../lib/supabase";
@@ -6,10 +6,9 @@ import { normalizeRole } from "../utils/roles";
 
 const AuthContext = createContext({});
 
-const EMPLOYEE_SELECT = `
-  *,
-  private_details:employee_private_details(*)
-`;
+// Only fetch basic employee data on boot to ensure the role is loaded.
+// Private details (salary, bank info) are fetched on demand in the Profile/Settings views.
+const EMPLOYEE_SELECT = `*`;
 
 const flattenEmployeeRecord = (record) => {
   if (!record) return record;
@@ -24,6 +23,19 @@ const flattenEmployeeRecord = (record) => {
   };
 };
 
+// Build an optimistic user object synchronously from the auth/JWT payload so
+// the UI can render immediately without waiting on a Supabase REST round-trip.
+const buildOptimisticUser = (authUser) => {
+  if (!authUser) return null;
+  const meta = authUser.user_metadata || {};
+  return {
+    ...authUser,
+    id: authUser.id,
+    name: meta.full_name || meta.name || authUser.email,
+    role: normalizeRole(meta.role || "Employee"),
+  };
+};
+
 /* eslint-disable react-refresh/only-export-components */
 
 // Provider component for authentication context
@@ -31,14 +43,21 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const lastProfileFetchIdRef = useRef(null);
 
   const fetchAndSetUser = React.useCallback(async (authUser) => {
     if (!authUser) return;
+    // Dedupe: skip if we've already fetched this auth user's profile.
+    if (lastProfileFetchIdRef.current === authUser.id) return;
+    lastProfileFetchIdRef.current = authUser.id;
     try {
+      // Use a more robust lookup: primary on user_id (UUID match), 
+      // fallback on case-insensitive email (for users not yet linked by ID).
       const { data: employee, error } = await supabase
         .from('employees')
         .select(EMPLOYEE_SELECT)
-        .eq('email', authUser.email)
+        .or(`user_id.eq.${authUser.id},email.ilike.${authUser.email}`)
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -59,15 +78,22 @@ export const AuthProvider = ({ children }) => {
       });
     } catch (err) {
       console.error("Error in fetchAndSetUser:", err);
-      setUser({
-        ...authUser,
-        role: normalizeRole(authUser?.user_metadata?.role || "Employee"),
-      });
+      setUser((prev) => prev || buildOptimisticUser(authUser));
+    } finally {
+      setProfileLoaded(true);
     }
   }, []);
 
   useEffect(() => {
-    // Check active session on mount
+    // Bootstrap the user synchronously from the session/JWT and release the UI
+    // immediately, then enrich the profile from the employees table in the
+    // background so the app never blocks on a Supabase REST round-trip.
+    const bootstrap = (authUser) => {
+      setUser((prev) => prev || buildOptimisticUser(authUser));
+      setLoading(false);
+      void fetchAndSetUser(authUser);
+    };
+
     const initializeAuth = async () => {
       try {
         const { session: currentSession, error } = await authService.getSession();
@@ -77,17 +103,15 @@ export const AuthProvider = ({ children }) => {
           setSession(null);
           setUser(null);
           setLoading(false);
+          setProfileLoaded(true);
           return;
         }
 
-        // Check if session exists and is valid
         if (currentSession) {
-          // Check if token is expired
-          const expiresAt = currentSession.expires_at * 1000; // Convert to milliseconds
+          const expiresAt = currentSession.expires_at * 1000;
           const now = Date.now();
 
           if (expiresAt < now) {
-
             const { data: { session: newSession }, error: refreshError } =
               await supabase.auth.refreshSession();
 
@@ -96,25 +120,28 @@ export const AuthProvider = ({ children }) => {
               await authService.signOut();
               setSession(null);
               setUser(null);
+              setLoading(false);
+              setProfileLoaded(true);
             } else {
-
               setSession(newSession);
-              await fetchAndSetUser(newSession.user);
+              bootstrap(newSession.user);
             }
           } else {
             setSession(currentSession);
-            await fetchAndSetUser(currentSession.user);
+            bootstrap(currentSession.user);
           }
         } else {
           setSession(null);
           setUser(null);
+          setLoading(false);
+          setProfileLoaded(true);
         }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
+      } catch (err) {
+        console.error('Auth initialization error:', err);
         setSession(null);
         setUser(null);
-      } finally {
         setLoading(false);
+        setProfileLoaded(true);
       }
     };
 
@@ -122,21 +149,31 @@ export const AuthProvider = ({ children }) => {
 
     // Listen for auth changes (including automatic token refresh)
     const { subscription } = authService.onAuthStateChange(
-      async (event, newSession) => {
+      (event, newSession) => {
+        // initializeAuth() already handled the initial session; skip the
+        // duplicate INITIAL_SESSION event that Supabase emits on boot.
+        if (event === 'INITIAL_SESSION') return;
 
         setSession(newSession);
 
-        if (newSession?.user) {
-          await fetchAndSetUser(newSession.user);
-        } else {
+        if (event === 'SIGNED_OUT') {
+          lastProfileFetchIdRef.current = null;
+          setSession(null);
           setUser(null);
+          setProfileLoaded(true);
+          return;
         }
 
-
-
-        // Handle sign out
-        if (event === 'SIGNED_OUT') {
-          setSession(null);
+        if (newSession?.user) {
+          // TOKEN_REFRESHED keeps the same user id - no need to refetch profile.
+          if (event === 'TOKEN_REFRESHED' &&
+              lastProfileFetchIdRef.current === newSession.user.id) {
+            return;
+          }
+          setUser((prev) => prev || buildOptimisticUser(newSession.user));
+          setLoading(false);
+          void fetchAndSetUser(newSession.user);
+        } else {
           setUser(null);
         }
       },
@@ -168,7 +205,10 @@ export const AuthProvider = ({ children }) => {
     } = await authService.signIn(email, password);
     if (!error) {
       setSession(newSession);
-      await fetchAndSetUser(signedInUser);
+      // Allow profile refetch on sign-in even if the same user id was cached.
+      lastProfileFetchIdRef.current = null;
+      setUser((prev) => prev || buildOptimisticUser(signedInUser));
+      void fetchAndSetUser(signedInUser);
     }
     return { user: signedInUser, error };
   };
@@ -176,8 +216,10 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     const { error } = await authService.signOut();
     if (!error) {
+      lastProfileFetchIdRef.current = null;
       setUser(null);
       setSession(null);
+      setProfileLoaded(true);
     }
     return { error };
   };
@@ -186,6 +228,7 @@ export const AuthProvider = ({ children }) => {
     user,
     session,
     loading,
+    profileLoaded,
     signUp,
     signIn,
     signOut,
