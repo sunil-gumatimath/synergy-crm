@@ -461,6 +461,19 @@
     font-size: 0.875rem;
 }
 
+.reports-notice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 0.625rem 0.875rem;
+    margin-bottom: var(--space-md);
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: var(--radius-md);
+    color: #92400e;
+    font-size: 0.8125rem;
+}
+
 /* Print Styles */
 @media print {
 
