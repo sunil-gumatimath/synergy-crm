@@ -367,8 +367,8 @@ export const getEmployeeSummaryReport = async () => {
 
             const d = deptMap.get(dept);
             d.count++;
-            d.totalSalary += emp.salary || 0;
-            d.performanceSum += emp.performance_score || 0;
+            d.totalSalary += Number(emp.salary || 0);
+            d.performanceSum += Number(emp.performance_score || 0);
 
             if (emp.status) {
                 statusCounts[emp.status] = (statusCounts[emp.status] || 0) + 1;
