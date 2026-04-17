@@ -358,9 +358,9 @@ const EmployeeDashboard = () => {
                                 <p>No upcoming events scheduled</p>
                             </div>
                         )}
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     );
 };
