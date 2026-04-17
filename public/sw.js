@@ -1,6 +1,6 @@
 // Synergy PWA Service Worker
 /* global clients */
-const CACHE_NAME = 'synergy-v2';
+const CACHE_NAME = 'synergy-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -36,39 +36,58 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch event - network first, fallback to cache
+// Fetch event - cache-first for hashed build assets, stale-while-revalidate
+// for everything else (navigations, icons, manifest, etc.)
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests
     if (event.request.method !== 'GET') return;
 
-    // Skip API calls and external requests
     const url = new URL(event.request.url);
     if (url.origin !== location.origin) return;
     if (url.pathname.startsWith('/api')) return;
 
-    event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                // Clone and cache successful responses
-                if (response.status === 200) {
-                    const responseClone = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return response;
+    // Hashed, immutable build output: serve from cache and only hit the
+    // network when the file isn't cached yet.
+    if (url.pathname.startsWith('/assets/')) {
+        event.respondWith(
+            caches.match(event.request).then((cached) => {
+                if (cached) return cached;
+                return fetch(event.request).then((response) => {
+                    if (response.status === 200) {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, clone);
+                        });
+                    }
+                    return response;
+                });
             })
-            .catch(() => {
-                // Fallback to cache
-                return caches.match(event.request).then((cached) => {
+        );
+        return;
+    }
+
+    // Stale-while-revalidate: return cached copy immediately (if any) and
+    // refresh the cache in the background. Falls back to cache on failure.
+    event.respondWith(
+        caches.match(event.request).then((cached) => {
+            const networkFetch = fetch(event.request)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, clone);
+                        });
+                    }
+                    return response;
+                })
+                .catch(() => {
                     if (cached) return cached;
-                    // Return offline page for navigation requests
                     if (event.request.mode === 'navigate') {
                         return caches.match('/');
                     }
                     return new Response('Offline', { status: 503 });
                 });
-            })
+            return cached || networkFetch;
+        })
     );
 });
 
