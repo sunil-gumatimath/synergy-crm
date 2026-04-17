@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     FileText, Download, Printer, Calendar, Users, Clock,
     ClipboardList, Umbrella, BarChart3, RefreshCw, TrendingUp,
-    TrendingDown, ChevronDown, Building2
+    TrendingDown, ChevronDown, Building2, AlertCircle
 } from '../../lib/icons';
 import {
     getAttendanceReport, getLeaveReport, getTaskReport,
@@ -10,11 +10,15 @@ import {
     getDepartments, exportToCSV, printReport
 } from '../../services/reportsService.js';
 import { formatDateForInput } from '../../utils/dateUtils';
+import { useAuth } from '../../contexts/AuthContext';
+import { isAdminRole } from '../../utils/roles';
 import { ReportsViewSkeleton } from "../../components/common/PageSkeletons";
 import Toast from "../../components/common/Toast";
 import './ReportsView.css';
 
 const ReportsView = () => {
+    const { user } = useAuth();
+    const isAdmin = isAdminRole(user?.role);
     const [activeReport, setActiveReport] = useState('attendance');
     const [dateRange, setDateRange] = useState(() => {
         const end = new Date();
@@ -274,6 +278,13 @@ const ReportsView = () => {
                     <h3>Error Loading Report</h3>
                     <p>{error}</p>
                     <button onClick={fetchReport}>Try Again</button>
+                </div>
+            )}
+
+            {activeReport === 'employees' && !isAdmin && (
+                <div className="reports-notice">
+                    <AlertCircle size={16} />
+                    <span>Salary and performance figures for other employees are restricted and may appear blank.</span>
                 </div>
             )}
 
