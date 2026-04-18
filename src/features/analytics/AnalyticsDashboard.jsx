@@ -38,6 +38,7 @@ import {
 } from "../../lib/icons";
 import { employeeService } from "../../services/employeeService";
 import { taskService } from "../../services/taskService";
+import { useTheme } from "../../contexts/ThemeContext";
 import { AnalyticsSkeleton } from "../../components/common/PageSkeletons";
 import "./analytics-styles.css";
 
@@ -119,11 +120,28 @@ const ActivityItem = ({ icon: Icon, title, time, color, description }) => (
 );
 
 const AnalyticsDashboard = () => {
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
+
+  // Theme-aware chart styles
+  const chartTooltipStyle = {
+    borderRadius: "8px",
+    border: "none",
+    boxShadow: isDark
+      ? "0 4px 12px rgba(0, 0, 0, 0.4)"
+      : "0 4px 12px rgba(0, 0, 0, 0.15)",
+    padding: "12px",
+    backgroundColor: isDark ? "#1e293b" : "#ffffff",
+    color: isDark ? "#e2e8f0" : "#1e293b",
+  };
+  const chartGridStroke = isDark ? "#1e293b" : "#e5e7eb";
+  const chartTickFill = isDark ? "#94a3b8" : "#6b7280";
+  const chartCursorFill = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
 
   const fetchData = useCallback(async (showRefresh = false) => {
     if (showRefresh) {
@@ -423,17 +441,12 @@ const AnalyticsDashboard = () => {
                     <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridStroke} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: chartTickFill, fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: chartTickFill, fontSize: 12 }} />
                 <Tooltip
-                  contentStyle={{
-                    borderRadius: "8px",
-                    border: "none",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                    padding: "12px",
-                  }}
-                  labelStyle={{ fontWeight: 600 }}
+                  contentStyle={chartTooltipStyle}
+                  labelStyle={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "#1e293b" }}
                 />
                 <Area
                   type="monotone"
@@ -476,17 +489,13 @@ const AnalyticsDashboard = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{
-                    borderRadius: "8px",
-                    border: "none",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                  }}
+                  contentStyle={chartTooltipStyle}
                 />
                 <Legend
                   verticalAlign="bottom"
                   height={36}
                   iconType="circle"
-                  formatter={(value) => <span style={{ color: '#374151', fontSize: '12px' }}>{value}</span>}
+                  formatter={(value) => <span style={{ color: isDark ? '#cbd5e1' : '#374151', fontSize: '12px' }}>{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -514,12 +523,12 @@ const AnalyticsDashboard = () => {
                     <stop offset="100%" stopColor="#059669" stopOpacity={1} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridStroke} />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6b7280", fontSize: 11 }}
+                  tick={{ fill: chartTickFill, fontSize: 11 }}
                   interval={0}
                   angle={-15}
                   textAnchor="end"
@@ -528,17 +537,14 @@ const AnalyticsDashboard = () => {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  tick={{ fill: chartTickFill, fontSize: 12 }}
                   domain={[0, 100]}
                 />
                 <Tooltip
-                  cursor={{ fill: "rgba(0,0,0,0.04)" }}
-                  contentStyle={{
-                    borderRadius: "8px",
-                    border: "none",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                  }}
+                  cursor={{ fill: chartCursorFill }}
+                  contentStyle={chartTooltipStyle}
                   formatter={(value) => [`${value}%`, 'Performance']}
+                  labelStyle={{ color: isDark ? '#e2e8f0' : '#1e293b' }}
                 />
                 <Bar dataKey="performance" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
               </BarChart>
