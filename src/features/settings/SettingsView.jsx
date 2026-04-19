@@ -16,6 +16,7 @@ import { SkeletonSettingsSection, Skeleton } from "../../components/common/Skele
 import { useToast } from "../../contexts/ToastContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
+import { useTheme } from "../../contexts/ThemeContext";
 import { authService } from "../../services/authService";
 import {
   AccountSection,
@@ -44,6 +45,7 @@ const defaultSettings = {
   bio: "",
   avatarUrl: "",
   theme: "system",
+  colorTheme: "default",
   accentColor: "indigo",
   compactMode: false,
   emailNotifications: true,
@@ -70,6 +72,7 @@ const defaultSettings = {
  */
 const SettingsView = () => {
   const { user } = useAuth();
+  const { updateTheme, updateColorTheme, updateAccentColor, updateCompactMode } = useTheme();
   const toast = useToast();
   const [activeSection, setActiveSection] = useState("account");
   const [errors, setErrors] = useState({});
@@ -106,6 +109,7 @@ const SettingsView = () => {
           bio: user.bio || "",
           avatarUrl: user.avatar || "",
           theme: userSettings?.theme || "system",
+          colorTheme: userSettings?.color_theme || "default",
           accentColor: userSettings?.accent_color || "indigo",
           compactMode: userSettings?.compact_mode || false,
           emailNotifications: userSettings?.email_notifications ?? true,
@@ -155,6 +159,15 @@ const SettingsView = () => {
     setSettings((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+
+    // Instantly apply theme-related settings for real-time preview
+    switch (field) {
+      case 'theme': updateTheme(value); break;
+      case 'colorTheme': updateColorTheme(value); break;
+      case 'accentColor': updateAccentColor(value); break;
+      case 'compactMode': updateCompactMode(value); break;
+      default: break;
     }
   };
 
@@ -225,6 +238,7 @@ const SettingsView = () => {
       const settingsPayload = {
         user_id: user.id,
         theme: settings.theme,
+        color_theme: settings.colorTheme,
         accent_color: settings.accentColor,
         compact_mode: settings.compactMode,
         email_notifications: settings.emailNotifications,

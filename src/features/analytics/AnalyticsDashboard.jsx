@@ -238,8 +238,8 @@ const AnalyticsDashboard = () => {
     // Calculate Performance by Department
     const performanceByDept = Object.keys(deptCounts).map((dept) => {
       const deptEmployees = employees.filter((e) => (e.department || 'Unknown') === dept);
-      const avg = deptEmployees.length > 0 
-        ? deptEmployees.reduce((acc, e) => acc + Number(e.performance_score || 0), 0) / deptEmployees.length 
+      const avg = deptEmployees.length > 0
+        ? deptEmployees.reduce((acc, e) => acc + Number(e.performance_score || 0), 0) / deptEmployees.length
         : 0;
       return {
         name: dept,

@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Palette, Sun, Moon, Monitor, Check } from "../../../lib/icons";
+import { themes, themeIds } from "../../../themes/themes";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 // Theme options
 const themeOptions = [
@@ -20,10 +22,57 @@ const accentColors = [
 ];
 
 /**
+ * Mini preview swatch — shows a tiny sidebar + content area mockup
+ * using the theme's colors for the current brightness mode
+ */
+const ThemePreviewSwatch = ({ themeId, mode }) => {
+    const themeConfig = themes[themeId];
+    if (!themeConfig) return null;
+
+    const preview = themeConfig.preview[mode] || themeConfig.preview.light;
+
+    return (
+        <div
+            className="settings-color-theme-swatch"
+            style={{ backgroundColor: preview.body }}
+        >
+            {/* Sidebar stripe */}
+            <div
+                className="settings-color-theme-swatch-sidebar"
+                style={{ backgroundColor: preview.sidebar }}
+            >
+                <div className="settings-color-theme-swatch-dot" style={{ backgroundColor: 'var(--primary, #4f46e5)', opacity: 0.7 }} />
+                <div className="settings-color-theme-swatch-line" style={{ backgroundColor: preview.surface, opacity: 0.5 }} />
+                <div className="settings-color-theme-swatch-line" style={{ backgroundColor: preview.surface, opacity: 0.3 }} />
+            </div>
+            {/* Content area */}
+            <div className="settings-color-theme-swatch-content">
+                <div
+                    className="settings-color-theme-swatch-card"
+                    style={{ backgroundColor: preview.surface }}
+                >
+                    <div className="settings-color-theme-swatch-bar" style={{ backgroundColor: 'var(--primary, #4f46e5)', opacity: 0.8 }} />
+                    <div className="settings-color-theme-swatch-text" style={{ backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }} />
+                    <div className="settings-color-theme-swatch-text short" style={{ backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }} />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+ThemePreviewSwatch.propTypes = {
+    themeId: PropTypes.string.isRequired,
+    mode: PropTypes.oneOf(['light', 'dark']).isRequired,
+};
+
+/**
  * Appearance Section Component
- * Handles theme and display settings
+ * Handles theme, color theme, and display settings
  */
 const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
+    const { effectiveTheme } = useTheme();
+    const currentMode = effectiveTheme === 'dark' ? 'dark' : 'light';
+
     return (
         <div className="settings-panel">
             <div className="settings-panel-header">
@@ -37,9 +86,9 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
             </div>
 
             <div className="settings-panel-content">
-                {/* Theme Selection */}
+                {/* Theme Selection (Light/Dark/System) */}
                 <div className="settings-field">
-                    <label className="settings-field-label">Theme</label>
+                    <label className="settings-field-label">Mode</label>
                     <div className="settings-theme-grid">
                         {themeOptions.map((theme) => {
                             const Icon = theme.icon;
@@ -65,6 +114,38 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
                         })}
                     </div>
                     <span className="settings-field-hint">Switch instantly between a polished light, dark, or system-matched theme.</span>
+                </div>
+
+                {/* Color Theme Selection */}
+                <div className="settings-field">
+                    <label className="settings-field-label">Color Theme</label>
+                    <div className="settings-color-theme-grid">
+                        {themeIds.map((id) => {
+                            const themeConfig = themes[id];
+                            const isActive = settings.colorTheme === id;
+                            return (
+                                <button
+                                    key={id}
+                                    className={`settings-color-theme-card ${isActive ? "active" : ""}`}
+                                    onClick={() => onUpdateSetting("colorTheme", id)}
+                                    disabled={isSaving}
+                                    title={themeConfig.label}
+                                >
+                                    <ThemePreviewSwatch themeId={id} mode={currentMode} />
+                                    <div className="settings-color-theme-info">
+                                        <span className="settings-color-theme-name">{themeConfig.label}</span>
+                                        <span className="settings-color-theme-desc">{themeConfig.description}</span>
+                                    </div>
+                                    {isActive && (
+                                        <div className="settings-color-theme-check">
+                                            <Check size={12} />
+                                        </div>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <span className="settings-field-hint">Choose a color personality for your workspace — works with both light and dark modes.</span>
                 </div>
 
                 {/* Accent Color */}
@@ -111,6 +192,7 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
 AppearanceSection.propTypes = {
     settings: PropTypes.shape({
         theme: PropTypes.string,
+        colorTheme: PropTypes.string,
         accentColor: PropTypes.string,
         compactMode: PropTypes.bool,
     }).isRequired,
