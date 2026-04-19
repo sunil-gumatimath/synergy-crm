@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import { setEncryptedItem, getEncryptedItem } from "../utils/storageUtils";
+import { themes, THEME_VARIABLES } from "../themes/themes";
 
 const ThemeContext = createContext({});
 
@@ -8,10 +9,11 @@ const ThemeContext = createContext({});
 
 /**
  * ThemeProvider - Provides theme management across the application
- * Handles light/dark/system theme modes and accent colors
+ * Handles light/dark/system theme modes, color themes, and accent colors
  */
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState("system");
+    const [colorTheme, setColorTheme] = useState("default");
     const [accentColor, setAccentColor] = useState("indigo");
     const [compactMode, setCompactMode] = useState(false);
     const [effectiveTheme, setEffectiveTheme] = useState("light");
@@ -30,10 +32,12 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         const savedTheme = getEncryptedItem("synergy_theme") || "system";
+        const savedColorTheme = getEncryptedItem("synergy_color_theme") || "default";
         const savedAccent = getEncryptedItem("synergy_accent_color") || "indigo";
         const savedCompact = getEncryptedItem("synergy_compact_mode") === "true";
 
         setTheme(savedTheme);
+        setColorTheme(savedColorTheme);
         setAccentColor(savedAccent);
         setCompactMode(savedCompact);
     }, []);
@@ -77,12 +81,36 @@ export const ThemeProvider = ({ children }) => {
 
         const themeColorMeta = document.querySelector('meta[name="theme-color"]');
         if (themeColorMeta) {
-            themeColorMeta.setAttribute(
-                "content",
-                effectiveTheme === "dark" ? "#020817" : "#f6f8fc"
-            );
+            // Use the color theme's body color for the meta tag
+            const currentColorTheme = themes[colorTheme];
+            const modeVars = currentColorTheme?.[effectiveTheme] || {};
+            const bodyColor = modeVars['--bg-body'] || (effectiveTheme === "dark" ? "#020817" : "#f6f8fc");
+            themeColorMeta.setAttribute("content", bodyColor);
         }
-    }, [effectiveTheme]);
+    }, [effectiveTheme, colorTheme]);
+
+    // Apply color theme CSS variables
+    useEffect(() => {
+        const root = document.documentElement;
+        const mode = effectiveTheme; // "light" or "dark"
+        const themeConfig = themes[colorTheme];
+
+        // First, clear ALL theme-controlled CSS variables so base CSS takes over
+        for (const varName of THEME_VARIABLES) {
+            root.style.removeProperty(varName);
+        }
+
+        // Then apply overrides from the selected color theme
+        if (themeConfig) {
+            const overrides = themeConfig[mode] || {};
+            for (const [key, value] of Object.entries(overrides)) {
+                root.style.setProperty(key, value);
+            }
+        }
+
+        // Set data attribute for any CSS-only overrides
+        root.setAttribute("data-color-theme", colorTheme);
+    }, [colorTheme, effectiveTheme]);
 
     // Apply accent color to CSS variables
     useEffect(() => {
@@ -112,6 +140,14 @@ export const ThemeProvider = ({ children }) => {
         setEncryptedItem("synergy_theme", newTheme);
     }, []);
 
+    // Update color theme
+    const updateColorTheme = useCallback((newColorTheme) => {
+        if (themes[newColorTheme]) {
+            setColorTheme(newColorTheme);
+            setEncryptedItem("synergy_color_theme", newColorTheme);
+        }
+    }, []);
+
     // Update accent color
     const updateAccentColor = useCallback((newColor) => {
         if (accentColors[newColor]) {
@@ -133,6 +169,10 @@ export const ThemeProvider = ({ children }) => {
             setTheme(settings.theme);
             setEncryptedItem("synergy_theme", settings.theme);
         }
+        if (settings.colorTheme && themes[settings.colorTheme]) {
+            setColorTheme(settings.colorTheme);
+            setEncryptedItem("synergy_color_theme", settings.colorTheme);
+        }
         if (settings.accentColor) {
             setAccentColor(settings.accentColor);
             setEncryptedItem("synergy_accent_color", settings.accentColor);
@@ -146,10 +186,12 @@ export const ThemeProvider = ({ children }) => {
     const value = {
         theme,
         effectiveTheme,
+        colorTheme,
         accentColor,
         compactMode,
         accentColors,
         updateTheme,
+        updateColorTheme,
         updateAccentColor,
         updateCompactMode,
         syncFromDatabase,
