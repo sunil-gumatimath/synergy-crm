@@ -15,7 +15,7 @@ COPY package.json bun.lock ./
 # Install dependencies
 RUN bun install --frozen-lockfile
 
-# Copy source code
+# Copy source code (exclude unnecessary files via .dockerignore)
 COPY . .
 
 # Build arguments for environment variables (passed from .env file at build time)
@@ -41,7 +41,7 @@ RUN apk add --no-cache wget && \
     sed -i '/user  nginx;/d' /etc/nginx/nginx.conf
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html

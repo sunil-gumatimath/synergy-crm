@@ -98,3 +98,4 @@ supabase/migrations/20260405000000_harden_admin_auth_user_rpcs.sql
 apply-sql.cjs
 apply-sql-robust.cjs
 verify-supabase.cjs
+.blackboxcli/
