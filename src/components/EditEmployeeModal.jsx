@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import { X, AlertCircle, Edit2, Phone, IndianRupee, Shield, Lock } from "../lib/icons";
 import Avatar from "./common/Avatar";
@@ -53,31 +53,10 @@ const EditEmployeeModal = ({
     };
   }, [employee]);
 
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState(() => initialFormData);
   const [errors, setErrors] = useState({});
 
-  // Reset form when employee changes
-
-  useEffect(() => {
-    if (employee) {
-      setFormData({
-        name: employee.name || "",
-        email: employee.email || "",
-        role: employee.role || "",
-        department: employee.department || "",
-        gender: employee.gender || "other",
-        status: employee.status || "Active",
-        joinDate: employee.join_date || employee.joinDate || "",
-        phone: employee.phone || "",
-        address: employee.address || "",
-        location: employee.location || "",
-        salary: employee.salary || "",
-        manager: employee.manager || "",
-        employment_type: employee.employment_type || "Full-time",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [employee?.id]);
+  // departments, etc. below
 
   const departments = [
     "Engineering",

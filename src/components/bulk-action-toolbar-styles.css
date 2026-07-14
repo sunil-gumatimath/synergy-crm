@@ -8,13 +8,9 @@
   justify-content: space-between;
   gap: var(--space-md);
   padding: var(--space-md) var(--space-lg);
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-hover) 100%
-  );
-  border: 1px solid var(--primary);
-  box-shadow: var(--shadow-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
   animation: slideDown 0.3s ease;
   flex-wrap: wrap;
 }
@@ -40,11 +36,10 @@
 .bulk-action-count {
   font-size: 0.875rem;
   font-weight: 600;
-  color: white;
+  color: var(--primary);
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--primary-light);
   border-radius: var(--radius-full);
-  backdrop-filter: blur(10px);
 }
 
 .bulk-action-clear {
@@ -52,9 +47,9 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
@@ -62,8 +57,9 @@
 }
 
 .bulk-action-clear:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--border);
+  border-color: var(--border-hover);
+  color: var(--text-main);
 }
 
 .bulk-action-buttons {
@@ -78,14 +74,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-muted);
   border-radius: var(--radius-md);
 }
 
 .bulk-action-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.025em;
   padding: 0 0.5rem;
@@ -96,8 +92,8 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
-  background: white;
-  border: 1px solid transparent;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   color: var(--text-primary);
   font-size: 0.8125rem;
   font-weight: 500;

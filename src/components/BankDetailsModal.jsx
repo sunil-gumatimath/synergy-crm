@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { X, Landmark, CreditCard, Hash, MapPin, AlertCircle, Save } from "../lib/icons";
 
@@ -19,15 +19,6 @@ const BankDetailsModal = ({
 
     const [formData, setFormData] = useState(getInitialFormData);
     const [errors, setErrors] = useState({});
-
-    // Reset form data when employee changes (only when modal opens with new employee)
-    useEffect(() => {
-        if (isOpen && employee) {
-            const newData = getInitialFormData();
-            setFormData(newData);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [employee?.id, isOpen]);
 
     const validateForm = () => {
         const newErrors = {};
