@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle } from "../lib/icons";
 import { HiOutlineArrowLeft as ArrowLeft } from "react-icons/hi2";
@@ -20,8 +20,6 @@ const ResetPasswordPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
-    const [passwordStrength, setPasswordStrength] = useState({ level: 0, text: "" });
-
     // Check if we have a valid reset token in URL (hash fragment)
     useEffect(() => {
         // Parse hash fragment for access_token
@@ -41,11 +39,9 @@ const ResetPasswordPage = () => {
         }
     }, [searchParams]);
 
-    // Password strength checker
-    useEffect(() => {
+    const passwordStrength = useMemo(() => {
         if (!password) {
-            setPasswordStrength({ level: 0, text: "" });
-            return;
+            return { level: 0, text: "" };
         }
 
         let strength = 0;
@@ -63,7 +59,7 @@ const ResetPasswordPage = () => {
             { level: 5, text: "Very Strong" }
         ];
 
-        setPasswordStrength(levels[strength - 1] || { level: 0, text: "" });
+        return levels[strength - 1] || { level: 0, text: "" };
     }, [password]);
 
     const handleSubmit = async (e) => {

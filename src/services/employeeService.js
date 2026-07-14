@@ -15,7 +15,10 @@ const EMPLOYEE_SELECT = `
  */
 function sanitizeFilterInput(input) {
   if (!input) return "";
-  return input.replace(/[,.()*:]/g, "");
+  // Strip characters with special meaning in PostgREST filter syntax
+  // that a user could abuse to break out of an .or()/.ilike() term.
+  // Dots are intentionally preserved so emails (user@domain.com) survive.
+  return input.replace(/[,()*:]/g, "");
 }
 
 function flattenEmployeeRecord(record) {

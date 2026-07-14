@@ -21,7 +21,9 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(
+    () => getEncryptedItem("synergy_remembered_email") !== null
+  );
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
@@ -31,19 +33,13 @@ const LoginPage = () => {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetMessage, setResetMessage] = useState({ type: "", text: "" });
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  // Load remembered email on mount
-  useEffect(() => {
+  const [formData, setFormData] = useState(() => {
     const rememberedEmail = getEncryptedItem("synergy_remembered_email");
-    if (rememberedEmail) {
-      setFormData((prev) => ({ ...prev, email: rememberedEmail }));
-      setRememberMe(true);
-    }
-  }, []);
+    return {
+      email: rememberedEmail || "",
+      password: "",
+    };
+  });
 
   // Cooldown countdown
   useEffect(() => {
