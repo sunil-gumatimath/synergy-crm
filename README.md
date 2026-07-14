@@ -93,21 +93,11 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 Depending on your use case, choose one of the following methods to initialize your Supabase PostgreSQL instance:
 
 <details>
-<summary><b>Option A: Quick Setup (Recommended for Local Dev/Demo)</b></summary>
+<summary><b>Option A: Migration-Driven Setup (Recommended)</b></summary>
 <br>
 
-1. Navigate to the SQL Editor in your Supabase Dashboard.
-2. Run the full setup script: `database/synergy_ems_complete.sql`.
-   *(Warning: This is destructive and will drop/recreate core tables while inserting seed data.)*
-3. Run `supabase/migrations/20260218000000_chat_tables.sql` for chat tables.
-4. *(Optional)* Run `database/update_user_roles.sql` if you need to adjust specific test users.
-</details>
+Apply the migrations in order via the Supabase CLI (`supabase db push` / `supabase migration up`) or paste each into the Supabase SQL Editor. This is the authoritative, version-controlled schema — **prefer this over any standalone SQL dump.**
 
-<details>
-<summary><b>Option B: Migration-Driven Setup</b></summary>
-<br>
-
-Run the following migrations in order via the Supabase CLI or SQL Editor:
 1. `supabase/migrations/20260101000000_setup.sql`
 2. `supabase/migrations/20260101000001_fix_rls.sql`
 3. `supabase/migrations/20260218000000_chat_tables.sql`
@@ -118,6 +108,31 @@ Run the following migrations in order via the Supabase CLI or SQL Editor:
 8. `supabase/migrations/20260405000000_harden_admin_auth_user_rpcs.sql`
 9. `supabase/migrations/20260408000000_drop_full_access_policies.sql`
 10. `supabase/migrations/20260408010000_secure_employee_private_data_and_avatars.sql`
+11. `supabase/migrations/20260409000000_fix_employee_private_details_rls.sql`
+12. `supabase/migrations/20260409122931_update_handle_new_user_avatar_initials.sql`
+13. `supabase/migrations/20260409123740_20260409150000_fast_admin_create_employee_rpc.sql`
+14. `supabase/migrations/20260409150000_fast_admin_create_employee_rpc.sql`
+15. `supabase/migrations/20260409190000_fix_admin_create_employee_trigger_conflict.sql`
+16. `supabase/migrations/20260409193000_fix_admin_create_employee_jsonb_return.sql`
+17. `supabase/migrations/20260417120633_optimize_rls_helpers_and_fk_index.sql`
+18. `supabase/migrations/20260417210955_resolve_backend_issues.sql`
+19. `supabase/migrations/20260417212511_extend_performance_schema_and_secure_analytics.sql`
+20. `supabase/migrations/20260420000000_add_color_theme.sql`
+21. `supabase/migrations/20260405000001_harden_admin_update_auth_email.sql`
+22. `supabase/migrations/20260421000000_harden_chat_rls.sql`
+</details>
+
+<details>
+<summary><b>Option B: Supabase CLI (applies all migrations automatically)</b></summary>
+<br>
+
+If you have the Supabase CLI linked to your project, simply run:
+
+```bash
+supabase db push
+```
+
+This applies every file under `supabase/migrations/` in filename order, which is equivalent to Option A.
 </details>
 
 ### 4. Running the Development Server
@@ -171,15 +186,17 @@ Synergy employs strict role-based routing. Data is protected both client-side an
 ```text
 synergy-crm/
 ├── src/
-│   ├── components/      # Reusable UI elements, layout wrappers, and global components
-│   ├── contexts/        # Provider wrappers (Auth, Theme, Notifications)
-│   ├── features/        # Domain-driven architecture (Employees, Tasks, Chat, Leave)
-│   ├── pages/           # Route-level components (Login, Profile, Settings)
-│   ├── services/        # Abstraction layer for Supabase data operations
-│   └── lib/             # Core utilities, Supabase client initialization
-├── database/            # Complete SQL bootstrap and utility scripts
-├── supabase/migrations/ # Sequential Supabase migration scripts
-├── public/              # Static assets, Web App Manifest, Service Workers
+│   ├── components/      # Reusable UI elements, layout wrappers, common components
+│   ├── contexts/        # Provider wrappers (Auth, Theme, Notifications, Toast)
+│   ├── features/        # Domain modules (Employees, Tasks, Chat, Leave, Analytics...)
+│   ├── pages/           # Route-level pages (Login, Profile, EmployeeDetail, Settings)
+│   ├── services/        # Supabase data-access layer (one module per domain)
+│   ├── lib/             # Supabase client, react-query client, helpers
+│   ├── store/           # Zustand UI state (e.g. mobile menu)
+│   ├── utils/           # Pure helpers (roles, dates, storage, avatars)
+│   └── themes/          # Theme/accent definitions
+├── supabase/migrations/ # Sequential, version-controlled schema + RLS migrations
+├── public/              # Static assets, Web App Manifest, Service Worker
 ├── Dockerfile           # Multi-stage build definition
 ├── docker-compose.yml   # Local orchestration
 └── nginx.conf           # Reverse proxy configuration for SPA routing & caching
@@ -198,7 +215,7 @@ synergy-crm/
 
 ## Important Notes
 
-- **Package Manager Restrictions**: Non-Bun installs are blocked by a `preinstall` script (`bunx only-allow bun`). Always use `bun`.
+- **Package Manager**: This repo targets `bun@1.3.9` (declared via `packageManager` in `package.json`). Use `bun` for install and scripts. (Note: there is no `preinstall`/`only-allow` guard — installs are not enforced at the CLI level, so avoid mixing package managers.)
 - **Environment Variables**: If environment variables are missing, the application will fall back to placeholder Supabase values, and authentication/data calls will silently fail.
 - **Microservices/Features**: The Team Chat feature requires specific migration tables (`conversations`, `messages`, `message_reactions`, `user_presence`) to function correctly.
 
