@@ -187,10 +187,11 @@ const CalendarView = () => {
             setIsLoading(false);
         }
     }, [currentMonth, dedupeEvents]);
-
+  /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         fetchEvents();
     }, [fetchEvents]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
     const next = () => {
         if (view === "month") setCurrentMonth(addMonths(currentMonth, 1));

@@ -184,8 +184,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
+  background: var(--bg-muted);
   display: flex;
   align-items: center;
   justify-content: center;

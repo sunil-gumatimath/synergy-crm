@@ -48,12 +48,12 @@ const ReportsView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { fetchReport(); }, [activeReport, dateRange, department]);
 
-    const fetchDepartments = async () => {
+    async function fetchDepartments() {
         const result = await getDepartments();
         if (result.success) setDepartments(result.data);
-    };
+    }
 
-    const fetchReport = async () => {
+    async function fetchReport() {
         setLoading(true);
         setError(null);
         try {
@@ -70,7 +70,7 @@ const ReportsView = () => {
             else setError(result.error);
         } catch (err) { setError(err.message); }
         finally { setLoading(false); }
-    };
+    }
 
     const handleExportCSV = () => {
         if (!reportData?.data) return;

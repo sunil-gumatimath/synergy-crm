@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import { X, Calendar, Clock, FileText, AlertCircle } from "../../lib/icons";
 import { leaveService } from "../../services/leaveService.js";
@@ -21,35 +21,24 @@ const ApplyLeaveModal = ({
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
-    const [calculatedDays, setCalculatedDays] = useState(0);
-    const [availableBalance, setAvailableBalance] = useState(null);
-
-    // Calculate days when dates change
-    useEffect(() => {
+    // Derived: business days for the selected range (or 0.5 for half-day).
+    const calculatedDays = useMemo(() => {
         if (formData.startDate && formData.endDate && !formData.isHalfDay) {
-            const days = leaveService.calculateBusinessDays(formData.startDate, formData.endDate);
-            setCalculatedDays(days);
-        } else if (formData.isHalfDay) {
-            setCalculatedDays(0.5);
-        } else {
-            setCalculatedDays(0);
+            return leaveService.calculateBusinessDays(formData.startDate, formData.endDate);
         }
+        if (formData.isHalfDay) return 0.5;
+        return 0;
     }, [formData.startDate, formData.endDate, formData.isHalfDay]);
 
-    // Update available balance when leave type changes
-    useEffect(() => {
-        if (formData.leaveTypeId) {
-            const balance = balances.find(
-                (b) => b.leave_type_id === parseInt(formData.leaveTypeId)
-            );
-            if (balance) {
-                setAvailableBalance(
-                    balance.total_days - balance.used_days - balance.pending_days
-                );
-            } else {
-                setAvailableBalance(null);
-            }
-        }
+    // Derived: remaining balance for the chosen leave type.
+    const availableBalance = useMemo(() => {
+        if (!formData.leaveTypeId) return null;
+        const balance = balances.find(
+            (b) => b.leave_type_id === parseInt(formData.leaveTypeId)
+        );
+        return balance
+            ? balance.total_days - balance.used_days - balance.pending_days
+            : null;
     }, [formData.leaveTypeId, balances]);
 
     const handleChange = (e) => {

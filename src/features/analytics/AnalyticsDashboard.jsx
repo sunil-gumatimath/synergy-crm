@@ -166,7 +166,7 @@ const AnalyticsDashboard = () => {
       setIsRefreshing(false);
     }
   }, []);
-
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     fetchData();
 
@@ -174,6 +174,7 @@ const AnalyticsDashboard = () => {
     const interval = setInterval(() => fetchData(true), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchData]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleRefresh = () => {
     fetchData(true);

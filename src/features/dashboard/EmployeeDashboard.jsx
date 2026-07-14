@@ -127,7 +127,7 @@ const EmployeeDashboard = () => {
             setIsRefreshing(false);
         }
     }, [user?.employeeId]);
-
+  /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (user) {
             fetchData();
@@ -136,6 +136,7 @@ const EmployeeDashboard = () => {
             return () => clearInterval(interval);
         }
     }, [user, fetchData]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
     const handleRefresh = () => {
         fetchData(true);

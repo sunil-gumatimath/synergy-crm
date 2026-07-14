@@ -55,7 +55,7 @@ const TimeTracking = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [employeeId]);
 
-    const fetchWeeklySummary = async () => {
+    function fetchWeeklySummary() {
         if (!employeeId) return;
 
         // Calculate week start based on offset
@@ -66,13 +66,14 @@ const TimeTracking = () => {
         weekStart.setDate(today.getDate() + mondayOffset + weekOffset * 7);
         const weekStartStr = weekStart.toISOString().split("T")[0];
 
-        const { data } = await timeTrackingService.getWeeklySummary(employeeId, weekStartStr);
-        setWeeklySummary(data);
-    };
-
+        timeTrackingService.getWeeklySummary(employeeId, weekStartStr)
+            .then(({ data }) => setWeeklySummary(data));
+    }
+  /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
     useEffect(() => {
         fetchWeeklySummary();
@@ -80,6 +81,7 @@ const TimeTracking = () => {
     }, [weekOffset, employeeId]);
 
     // Update elapsed time every minute while clocked in
+  /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (todayEntry?.clock_in && !todayEntry?.clock_out) {
             const interval = setInterval(() => {
@@ -95,11 +97,12 @@ const TimeTracking = () => {
             setElapsedTime(0);
         }
     }, [todayEntry]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
-    const showToast = (type, message) => {
+    function showToast(type, message) {
         setToast({ type, message });
         setTimeout(() => setToast(null), 3000);
-    };
+    }
 
     const handleClockIn = async () => {
         setIsClocking(true);

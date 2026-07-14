@@ -13,12 +13,21 @@ const themeOptions = [
 
 // Accent color options
 const accentColors = [
-    { id: "indigo", color: "#4f46e5", label: "Indigo" },
-    { id: "blue", color: "#2563eb", label: "Blue" },
-    { id: "violet", color: "#7c3aed", label: "Violet" },
-    { id: "rose", color: "#e11d48", label: "Rose" },
-    { id: "emerald", color: "#059669", label: "Emerald" },
-    { id: "amber", color: "#d97706", label: "Amber" },
+    { id: "iris", color: "#6366f1", label: "Iris" },
+    { id: "violet", color: "#8b5cf6", label: "Violet" },
+    { id: "teal", color: "#14b8a6", label: "Teal" },
+    { id: "coral", color: "#f43f5e", label: "Coral" },
+    { id: "amber", color: "#f59e0b", label: "Amber" },
+    { id: "graphite", color: "#94a3b8", label: "Graphite" },
+    { id: "emerald", color: "#10b981", label: "Emerald" },
+    { id: "green", color: "#22c55e", label: "Green" },
+    { id: "pink", color: "#ec4899", label: "Pink" },
+    { id: "fuchsia", color: "#d946ef", label: "Fuchsia" },
+    { id: "red", color: "#ef4444", label: "Red" },
+    { id: "orange", color: "#f97316", label: "Orange" },
+    { id: "yellow", color: "#eab308", label: "Yellow" },
+    { id: "copper", color: "#b45309", label: "Copper" },
+    { id: "sky", color: "#0ea5e9", label: "Sky" },
 ];
 
 /**

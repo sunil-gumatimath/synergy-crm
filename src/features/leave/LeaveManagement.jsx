@@ -43,13 +43,7 @@ const LeaveManagement = () => {
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [toast, setToast] = useState(null);
 
-    // Fetch data
-    useEffect(() => {
-        fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user?.employeeId]);
-
-    const fetchData = async () => {
+    async function fetchData() {
         setLoading(true);
         try {
             const [typesRes, holidaysRes] = await Promise.all([
@@ -76,9 +70,9 @@ const LeaveManagement = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }
 
-    const fetchRequests = async () => {
+    async function fetchRequests() {
         try {
             let res;
             if (activeTab === "pending" && isManager) {
@@ -92,7 +86,14 @@ const LeaveManagement = () => {
         } catch (error) {
             console.error("Error fetching requests:", error);
         }
-    };
+    }
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+    useEffect(() => {
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.employeeId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
     useEffect(() => {
         if (!loading) {
@@ -100,11 +101,10 @@ const LeaveManagement = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
-
-    const showToast = (type, message) => {
+    function showToast(type, message) {
         setToast({ type, message });
         setTimeout(() => setToast(null), 3000);
-    };
+    }
 
     const handleApprove = async (requestId) => {
         const { error } = await leaveService.approveRequest(requestId, user?.employeeId);

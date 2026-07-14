@@ -1,28 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { X, Calendar, Clock, MapPin, Type, Repeat } from "../../lib/icons";
 import { format } from "date-fns";
 import "./calendar-styles.css";
 
 const AddEventModal = ({ isOpen, onClose, onSave, initialDate, eventToEdit, isLoading }) => {
-    const [formData, setFormData] = useState({
-        title: "",
-        date: format(new Date(), "yyyy-MM-dd"),
-        time: "09:00",
-        end_time: "10:00",
-        location: "",
-        description: "",
-        type: "meeting",
-        recurrence: "none",
-        is_all_day: false
-    });
-
-    const [errors, setErrors] = useState({});
-
-     
-    useEffect(() => {
+    const [formData, setFormData] = useState(() => {
+        const base = {
+            title: "",
+            date: format(new Date(), "yyyy-MM-dd"),
+            time: "09:00",
+            end_time: "10:00",
+            location: "",
+            description: "",
+            type: "meeting",
+            recurrence: "none",
+            is_all_day: false
+        };
         if (eventToEdit) {
-            setFormData({
+            return {
                 title: eventToEdit.title || "",
                 date: eventToEdit.date ? format(new Date(eventToEdit.date), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
                 time: eventToEdit.time || "09:00",
@@ -32,23 +28,15 @@ const AddEventModal = ({ isOpen, onClose, onSave, initialDate, eventToEdit, isLo
                 type: eventToEdit.type || "meeting",
                 recurrence: eventToEdit.recurrence || "none",
                 is_all_day: eventToEdit.is_all_day || eventToEdit.isAllDay || false
-            });
-        } else if (initialDate) {
-            setFormData(prev => ({
-                ...prev,
-                date: format(initialDate, "yyyy-MM-dd"),
-                title: "",
-                time: "09:00",
-                end_time: "10:00",
-                location: "",
-                description: "",
-                type: "meeting",
-                recurrence: "none",
-                is_all_day: false
-            }));
+            };
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [eventToEdit?.id, initialDate, isOpen]);
+        if (initialDate) {
+            return { ...base, date: format(initialDate, "yyyy-MM-dd") };
+        }
+        return base;
+    });
+
+    const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

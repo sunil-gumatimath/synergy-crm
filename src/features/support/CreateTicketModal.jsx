@@ -1,38 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { X, Save, AlertCircle, Loader2 } from "../../lib/icons";
 
 const CreateTicketModal = ({ isOpen, onClose, onSubmit, isLoading, ticketToEdit = null }) => {
-    const [formData, setFormData] = useState({
-        title: "",
-        category: "IT Support",
-        priority: "medium",
-        description: "",
+    const [formData, setFormData] = useState(() => {
+        if (ticketToEdit) {
+            return {
+                title: ticketToEdit.title || "",
+                category: ticketToEdit.category || "IT Support",
+                priority: ticketToEdit.priority || "medium",
+                description: ticketToEdit.description || "",
+            };
+        }
+        return {
+            title: "",
+            category: "IT Support",
+            priority: "medium",
+            description: "",
+        };
     });
 
     const [errors, setErrors] = useState({});
-
-     
-    useEffect(() => {
-        if (isOpen) {
-            if (ticketToEdit) {
-                setFormData({
-                    title: ticketToEdit.title || "",
-                    category: ticketToEdit.category || "IT Support",
-                    priority: ticketToEdit.priority || "medium",
-                    description: ticketToEdit.description || "",
-                });
-            } else {
-                setFormData({
-                    title: "",
-                    category: "IT Support",
-                    priority: "medium",
-                    description: "",
-                });
-            }
-            setErrors({});
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, ticketToEdit?.id]);
 
     if (!isOpen) return null;
 

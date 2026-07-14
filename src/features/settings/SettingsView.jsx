@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   User,
   Bell,
@@ -72,16 +72,14 @@ const defaultSettings = {
  */
 const SettingsView = () => {
   const { user } = useAuth();
-  const { updateTheme, updateColorTheme, updateAccentColor, updateCompactMode } = useTheme();
+  const { updateTheme, updateColorTheme, updateAccentColor, updateCompactMode, syncFromDatabase } = useTheme();
   const toast = useToast();
   const [activeSection, setActiveSection] = useState("account");
   const [errors, setErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(defaultSettings);
   const [originalSettings, setOriginalSettings] = useState({});
-
   // Load initial data
   useEffect(() => {
     const loadSettings = async () => {
@@ -132,6 +130,15 @@ const SettingsView = () => {
 
         setSettings(loadedSettings);
         setOriginalSettings(loadedSettings);
+
+        if (userSettings) {
+          syncFromDatabase({
+            theme: userSettings.theme,
+            colorTheme: userSettings.color_theme,
+            accentColor: userSettings.accent_color,
+            compactMode: userSettings.compact_mode,
+          });
+        }
       } catch (err) {
         console.error("Failed to load settings:", err);
         toast.error("Failed to load settings.");
@@ -141,18 +148,17 @@ const SettingsView = () => {
     };
 
     loadSettings();
-  }, [user, toast]);
+  }, [user, toast, syncFromDatabase]);
 
-  // Track changes
-  useEffect(() => {
+  // Track changes (derived, not state)
+  const hasChanges = useMemo(() => {
     const passwordFields = ['currentPassword', 'newPassword', 'confirmPassword'];
-    const changed = Object.keys(settings).some(key => {
+    return Object.keys(settings).some(key => {
       if (passwordFields.includes(key)) {
         return settings[key] !== "";
       }
       return settings[key] !== originalSettings[key];
     });
-    setHasChanges(changed);
   }, [settings, originalSettings]);
 
   const updateSetting = (field, value) => {
@@ -259,7 +265,7 @@ const SettingsView = () => {
 
       const { error: settingsError } = await supabase
         .from('user_settings')
-        .upsert(settingsPayload);
+        .upsert(settingsPayload, { onConflict: 'user_id' });
 
       if (settingsError) throw settingsError;
 
