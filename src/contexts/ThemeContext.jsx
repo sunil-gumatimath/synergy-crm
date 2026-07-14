@@ -12,35 +12,35 @@ const ThemeContext = createContext({});
  * Handles light/dark/system theme modes, color themes, and accent colors
  */
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState("system");
-    const [colorTheme, setColorTheme] = useState("default");
-    const [accentColor, setAccentColor] = useState("indigo");
-    const [compactMode, setCompactMode] = useState(false);
+    const [theme, setTheme] = useState(() => getEncryptedItem("synergy_theme") || "system");
+    const [colorTheme, setColorTheme] = useState(() => getEncryptedItem("synergy_color_theme") || "default");
+    const [accentColor, setAccentColor] = useState(() => getEncryptedItem("synergy_accent_color") || "iris");
+    const [compactMode, setCompactMode] = useState(() => getEncryptedItem("synergy_compact_mode") === "true");
     const [effectiveTheme, setEffectiveTheme] = useState("light");
 
     // Accent color definitions
     const accentColors = {
-        indigo: { primary: "#4f46e5", hover: "#4338ca", light: "rgba(79, 70, 229, 0.14)", rgb: "79, 70, 229" },
-        blue: { primary: "#2563eb", hover: "#1d4ed8", light: "rgba(37, 99, 235, 0.14)", rgb: "37, 99, 235" },
-        violet: { primary: "#7c3aed", hover: "#6d28d9", light: "rgba(124, 58, 237, 0.14)", rgb: "124, 58, 237" },
-        rose: { primary: "#e11d48", hover: "#be123c", light: "rgba(225, 29, 72, 0.14)", rgb: "225, 29, 72" },
-        emerald: { primary: "#059669", hover: "#047857", light: "rgba(5, 150, 105, 0.14)", rgb: "5, 150, 105" },
-        amber: { primary: "#d97706", hover: "#b45309", light: "rgba(217, 119, 6, 0.14)", rgb: "217, 119, 6" },
+        violet: { primary: "#8b5cf6", hover: "#7c3aed", light: "rgba(139, 92, 246, 0.14)", rgb: "139, 92, 246" },
+        iris: { primary: "#6366f1", hover: "#4f46e5", light: "rgba(99, 102, 241, 0.14)", rgb: "99, 102, 241" },
+        teal: { primary: "#14b8a6", hover: "#0f7660", light: "rgba(20, 184, 166, 0.14)", rgb: "20, 184, 166" },
+        coral: { primary: "#f43f5e", hover: "#e11d48", light: "rgba(244, 63, 94, 0.14)", rgb: "244, 63, 94" },
+        amber: { primary: "#f59e0b", hover: "#d97706", light: "rgba(245, 158, 11, 0.14)", rgb: "245, 158, 11" },
+        graphite: { primary: "#94a3b8", hover: "#64748b", light: "rgba(148, 163, 184, 0.14)", rgb: "148, 163, 184" },
+        emerald: { primary: "#10b981", hover: "#059669", light: "rgba(16, 185, 129, 0.14)", rgb: "16, 185, 129" },
+        green: { primary: "#22c55e", hover: "#16a34a", light: "rgba(34, 197, 94, 0.14)", rgb: "34, 197, 94" },
+        pink: { primary: "#ec4899", hover: "#db2777", light: "rgba(236, 72, 153, 0.14)", rgb: "236, 72, 153" },
+        fuchsia: { primary: "#d946ef", hover: "#c026d3", light: "rgba(217, 70, 239, 0.14)", rgb: "217, 70, 239" },
+        red: { primary: "#ef4444", hover: "#dc2626", light: "rgba(239, 68, 68, 0.14)", rgb: "239, 68, 68" },
+        orange: { primary: "#f97316", hover: "#ea580c", light: "rgba(249, 115, 22, 0.14)", rgb: "249, 115, 22" },
+        yellow: { primary: "#eab308", hover: "#ca8a04", light: "rgba(234, 179, 8, 0.14)", rgb: "234, 179, 8" },
+        copper: { primary: "#b45309", hover: "#92400e", light: "rgba(180, 83, 9, 0.14)", rgb: "180, 83, 9" },
+        sky: { primary: "#0ea5e9", hover: "#0284c7", light: "rgba(14, 165, 233, 0.14)", rgb: "14, 165, 233" },
     };
-
-    // Load saved preferences on mount
-
-    useEffect(() => {
-        const savedTheme = getEncryptedItem("synergy_theme") || "system";
-        const savedColorTheme = getEncryptedItem("synergy_color_theme") || "default";
-        const savedAccent = getEncryptedItem("synergy_accent_color") || "indigo";
-        const savedCompact = getEncryptedItem("synergy_compact_mode") === "true";
-
-        setTheme(savedTheme);
-        setColorTheme(savedColorTheme);
-        setAccentColor(savedAccent);
-        setCompactMode(savedCompact);
-    }, []);
+    // Resolve an accent id to its definition, falling back to a safe default
+    // so legacy/invalid stored ids (e.g. old "rose"/"indigo" in the DB)
+    // never crash the provider.
+    const DEFAULT_ACCENT = "iris";
+    const resolveAccent = (id) => accentColors[id] || accentColors[DEFAULT_ACCENT];
 
     // Determine effective theme based on system preference
     useEffect(() => {
@@ -56,7 +56,6 @@ export const ThemeProvider = ({ children }) => {
 
         updateEffectiveTheme();
 
-        // Listen for system theme changes
         const handleChange = () => {
             if (theme === "system") {
                 setEffectiveTheme(mediaQuery.matches ? "dark" : "light");
@@ -114,7 +113,7 @@ export const ThemeProvider = ({ children }) => {
 
     // Apply accent color to CSS variables
     useEffect(() => {
-        const colors = accentColors[accentColor] || accentColors.indigo;
+        const colors = resolveAccent(accentColor);
         const root = document.documentElement;
 
         root.style.setProperty("--primary", colors.primary);
@@ -150,10 +149,10 @@ export const ThemeProvider = ({ children }) => {
 
     // Update accent color
     const updateAccentColor = useCallback((newColor) => {
-        if (accentColors[newColor]) {
-            setAccentColor(newColor);
-            setEncryptedItem("synergy_accent_color", newColor);
-        }
+        const resolved = resolveAccent(newColor);
+        const safe = resolved === accentColors[newColor] ? newColor : DEFAULT_ACCENT;
+        setAccentColor(safe);
+        setEncryptedItem("synergy_accent_color", safe);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -173,7 +172,7 @@ export const ThemeProvider = ({ children }) => {
             setColorTheme(settings.colorTheme);
             setEncryptedItem("synergy_color_theme", settings.colorTheme);
         }
-        if (settings.accentColor) {
+        if (settings.accentColor && accentColors[settings.accentColor]) {
             setAccentColor(settings.accentColor);
             setEncryptedItem("synergy_accent_color", settings.accentColor);
         }
