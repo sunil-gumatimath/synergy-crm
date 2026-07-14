@@ -24,32 +24,30 @@
 }
 
 :root {
-  /* Refined light palette: slate surfaces + indigo accent */
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-light: rgba(79, 70, 229, 0.14);
-  --primary-dark: #312e81;
+  /* Refined neutral light — slate surfaces */
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: rgba(99, 102, 241, 0.14);
+  --primary-dark: #4338ca;
 
-  --bg-body: #f6f8fc;
+  --bg-body: #f4f5f7;
   --bg-surface: #ffffff;
-  --bg-sidebar: #f8fafc;
-  /* Variable aliases for components using alternate naming */
+  --bg-sidebar: #eceef2;
   --bg-primary: #ffffff;
-  --bg-secondary: #eef2ff;
-  --bg-main: #edf2f7;
-  --bg-muted: #e7eef8;
-  --border-color: rgba(99, 102, 241, 0.14);
+  --bg-secondary: #f1f3f6;
+  --bg-main: #eef1f5;
+  --bg-muted: #e8ebf0;
+  --border-color: rgba(15, 23, 42, 0.10);
 
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-light: #94a3b8;
-  /* Variable aliases */
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --text-main: #0f1115;
+  --text-muted: #5a6270;
+  --text-light: #8b93a1;
+  --text-primary: #0f1115;
+  --text-secondary: #5a6270;
 
-  --border: rgba(148, 163, 184, 0.2);
+  --border: rgba(15, 23, 42, 0.12);
   --border-light: rgba(255, 255, 255, 0.76);
-  --border-hover: rgba(79, 70, 229, 0.24);
+  --border-hover: rgba(15, 23, 42, 0.22);
 
   --success-bg: #ecfdf3;
   --success-text: #047857;
@@ -60,37 +58,32 @@
   --danger-bg: #fff1f2;
   --danger-text: #be123c;
   --danger-color: #ef4444;
-  --neutral-bg: #eef2f7;
-  --neutral-text: #475569;
+  --neutral-bg: #eef1f5;
+  --neutral-text: #5a6270;
 
-  /* Component aliases (notification panel, etc.) */
-  --bg-tertiary: #e2e8f0;
+  --bg-tertiary: #e1e5eb;
   --error: #ef4444;
   --success: #10b981;
   --info: #3b82f6;
   --warning: #f59e0b;
-  --primary-rgb: 79, 70, 229;
+  --primary-rgb: 99, 102, 241;
 
-  /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
 
-  /* Shadows */
   --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 16px 40px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 24px 56px rgba(15, 23, 42, 0.12);
   --shadow-xl: 0 32px 72px rgba(15, 23, 42, 0.16);
 
-  /* Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
   --radius-full: 9999px;
 
-  /* Typography Scale */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -104,24 +97,24 @@
 /* Refined Dark Mode */
 .dark,
 [data-theme="dark"] {
-  --bg-body: #020817;
-  --bg-surface: #0f172a;
-  --bg-sidebar: #08101e;
-  --bg-primary: #0f172a;
-  --bg-secondary: #0f172a;
-  --bg-main: #06101f;
-  --bg-muted: #111c31;
-  --border-color: rgba(129, 140, 248, 0.16);
+  --bg-body: #0b0c0e;
+  --bg-surface: #141518;
+  --bg-sidebar: #0e0f12;
+  --bg-primary: #141518;
+  --bg-secondary: #1a1c20;
+  --bg-main: #0b0c0e;
+  --bg-muted: #1e2024;
+  --border-color: rgba(255, 255, 255, 0.08);
 
-  --text-main: #e5eefb;
-  --text-muted: #94a3b8;
-  --text-light: #64748b;
-  --text-primary: #e5eefb;
-  --text-secondary: #94a3b8;
+  --text-main: #e7e9ee;
+  --text-muted: #9aa0aa;
+  --text-light: #6b7280;
+  --text-primary: #e7e9ee;
+  --text-secondary: #9aa0aa;
 
-  --border: rgba(148, 163, 184, 0.16);
-  --border-light: rgba(255, 255, 255, 0.05);
-  --border-hover: rgba(129, 140, 248, 0.38);
+  --border: rgba(255, 255, 255, 0.10);
+  --border-light: rgba(255, 255, 255, 0.04);
+  --border-hover: rgba(255, 255, 255, 0.16);
 
   --success-bg: rgba(16, 185, 129, 0.14);
   --success-text: #6ee7b7;
@@ -135,10 +128,10 @@
   --danger-text: #fda4af;
   --danger-color: #fb7185;
 
-  --neutral-bg: #132238;
-  --neutral-text: #d7e3f4;
+  --neutral-bg: #1a1c20;
+  --neutral-text: #c7ccd6;
 
-  --bg-tertiary: #16243c;
+  --bg-tertiary: #24262b;
   --error: #fb7185;
   --success: #34d399;
   --info: #60a5fa;
@@ -148,10 +141,10 @@
   --primary-light: rgba(129, 140, 248, 0.18);
   --primary-dark: #a5b4fc;
 
-  --shadow-sm: 0 12px 30px rgba(2, 6, 23, 0.34);
-  --shadow-md: 0 20px 48px rgba(2, 6, 23, 0.44);
-  --shadow-lg: 0 28px 64px rgba(2, 6, 23, 0.56);
-  --shadow-xl: 0 40px 84px rgba(2, 6, 23, 0.68);
+  --shadow-sm: 0 12px 30px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 20px 48px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 28px 64px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 40px 84px rgba(0, 0, 0, 0.65);
 }
 
 /* Utility Classes */

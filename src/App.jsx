@@ -16,8 +16,6 @@ const SettingsView = React.lazy(() => import("./features/settings/SettingsView")
 import { useAuth } from "./contexts/AuthContext";
 import { useUIStore } from "./store/uiStore";
 import "./components/common/Avatar.css";
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from './lib/queryClient';
 import { isAdminOrManagerRole } from "./utils/roles";
 
 const AnalyticsDashboard = React.lazy(
@@ -137,9 +135,8 @@ function App() {
 
   // Main authenticated app layout
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="app-container">
-        <Sidebar activeTab={activeTab} />
+    <div className="app-container">
+      <Sidebar activeTab={activeTab} />
 
         <main className="main-content">
           <Header />
@@ -354,7 +351,6 @@ function App() {
           </Routes>
         </main>
       </div>
-    </QueryClientProvider>
   );
 }
 
