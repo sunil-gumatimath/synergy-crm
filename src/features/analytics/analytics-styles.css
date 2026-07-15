@@ -557,11 +557,6 @@
   margin-bottom: var(--space-lg);
 }
 
-.skeleton-title-lg {
-  height: 32px;
-  width: 250px;
-}
-
 .skeleton-icon {
   width: 48px;
   height: 48px;

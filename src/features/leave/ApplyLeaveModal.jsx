@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from "react";
 import PropTypes from "prop-types";
+import * as Dialog from "@radix-ui/react-dialog";
 import { X, Calendar, Clock, FileText, AlertCircle } from "../../lib/icons";
 import { leaveService } from "../../services/leaveService.js";
+import "./leave-styles.css";
 
 const ApplyLeaveModal = ({
     isOpen,
@@ -52,7 +54,6 @@ const ApplyLeaveModal = ({
             setErrors((prev) => ({ ...prev, [name]: null }));
         }
     };
-
     const validate = () => {
         const newErrors = {};
 
@@ -120,175 +121,194 @@ const ApplyLeaveModal = ({
     const today = new Date().toISOString().split("T")[0];
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content apply-leave-modal">
-                {/* Header */}
-                <div className="modal-header">
-                    <h2>Apply for Leave</h2>
-                    <button className="modal-close-btn" onClick={onClose}>
-                        <X size={20} />
-                    </button>
-                </div>
-
-                {/* Body */}
-                <form onSubmit={handleSubmit} className="modal-body">
-                    {/* Leave Type */}
-                    <div className="form-group">
-                        <label>
-                            <FileText size={16} />
-                            Leave Type
-                        </label>
-                        <select
-                            name="leaveTypeId"
-                            value={formData.leaveTypeId}
-                            onChange={handleChange}
-                            className={errors.leaveTypeId ? "error" : ""}
-                        >
-                            <option value="">Select leave type</option>
-                            {leaveTypes.map((type) => (
-                                <option key={type.id} value={type.id}>
-                                    {type.name}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.leaveTypeId && (
-                            <span className="error-text">{errors.leaveTypeId}</span>
-                        )}
-                        {availableBalance !== null && (
-                            <span className="balance-info">
-                                Available: <strong>{availableBalance}</strong> days
-                            </span>
-                        )}
+        <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <Dialog.Portal>
+                <Dialog.Overlay className="modal-overlay" />
+                <Dialog.Content className="modal-content apply-leave-modal">
+                    {/* Header */}
+                    <div className="modal-header">
+                        <Dialog.Title asChild>
+                            <h2>Apply for Leave</h2>
+                        </Dialog.Title>
+                        <Dialog.Description className="sr-only">
+                            Fill in the leave request form and submit it for approval.
+                        </Dialog.Description>
+                        <Dialog.Close asChild>
+                            <button className="modal-close-btn" aria-label="Close">
+                                <X size={20} />
+                            </button>
+                        </Dialog.Close>
                     </div>
 
-                    {/* Half Day Toggle */}
-                    <div className="form-group checkbox-group">
-                        <label className="checkbox-label">
-                            <input
-                                type="checkbox"
-                                name="isHalfDay"
-                                checked={formData.isHalfDay}
-                                onChange={handleChange}
-                            />
-                            <span className="checkbox-text">Half Day Leave</span>
-                        </label>
-                        {formData.isHalfDay && (
-                            <div className="half-day-options">
-                                <label className={`half-day-option ${formData.halfDayPeriod === "morning" ? "selected" : ""}`}>
-                                    <input
-                                        type="radio"
-                                        name="halfDayPeriod"
-                                        value="morning"
-                                        checked={formData.halfDayPeriod === "morning"}
-                                        onChange={handleChange}
-                                    />
-                                    Morning
-                                </label>
-                                <label className={`half-day-option ${formData.halfDayPeriod === "afternoon" ? "selected" : ""}`}>
-                                    <input
-                                        type="radio"
-                                        name="halfDayPeriod"
-                                        value="afternoon"
-                                        checked={formData.halfDayPeriod === "afternoon"}
-                                        onChange={handleChange}
-                                    />
-                                    Afternoon
-                                </label>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Date Fields */}
-                    <div className="form-row">
+                    {/* Body */}
+                    <form id="apply-leave-form" onSubmit={handleSubmit} className="modal-body">
+                        {/* Leave Type */}
                         <div className="form-group">
-                            <label>
-                                <Calendar size={16} />
-                                {formData.isHalfDay ? "Date" : "Start Date"}
+                            <label htmlFor="leaveTypeId">
+                                <FileText size={16} />
+                                Leave Type
                             </label>
-                            <input
-                                type="date"
-                                name="startDate"
-                                value={formData.startDate}
+                            <select
+                                id="leaveTypeId"
+                                name="leaveTypeId"
+                                value={formData.leaveTypeId}
                                 onChange={handleChange}
-                                min={today}
-                                className={errors.startDate ? "error" : ""}
-                            />
-                            {errors.startDate && (
-                                <span className="error-text">{errors.startDate}</span>
+                                className={errors.leaveTypeId ? "error" : ""}
+                                aria-invalid={!!errors.leaveTypeId}
+                                aria-describedby={errors.leaveTypeId ? "err-leaveTypeId" : undefined}
+                            >
+                                <option value="">Select leave type</option>
+                                {leaveTypes.map((type) => (
+                                    <option key={type.id} value={type.id}>
+                                        {type.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.leaveTypeId && (
+                                <span id="err-leaveTypeId" className="error-text">{errors.leaveTypeId}</span>
+                            )}
+                            {availableBalance !== null && (
+                                <span className="balance-info">
+                                    Available: <strong>{availableBalance}</strong> days
+                                </span>
                             )}
                         </div>
 
-                        {!formData.isHalfDay && (
+                        {/* Half Day Toggle */}
+                        <div className="form-group checkbox-group">
+                            <label className="checkbox-label">
+                                <input
+                                    type="checkbox"
+                                    name="isHalfDay"
+                                    checked={formData.isHalfDay}
+                                    onChange={handleChange}
+                                />
+                                <span className="checkbox-text">Half Day Leave</span>
+                            </label>
+                            {formData.isHalfDay && (
+                                <div className="half-day-options">
+                                    <label className={`half-day-option ${formData.halfDayPeriod === "morning" ? "selected" : ""}`}>
+                                        <input
+                                            type="radio"
+                                            name="halfDayPeriod"
+                                            value="morning"
+                                            checked={formData.halfDayPeriod === "morning"}
+                                            onChange={handleChange}
+                                        />
+                                        Morning
+                                    </label>
+                                    <label className={`half-day-option ${formData.halfDayPeriod === "afternoon" ? "selected" : ""}`}>
+                                        <input
+                                            type="radio"
+                                            name="halfDayPeriod"
+                                            value="afternoon"
+                                            checked={formData.halfDayPeriod === "afternoon"}
+                                            onChange={handleChange}
+                                        />
+                                        Afternoon
+                                    </label>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Date Fields */}
+                        <div className="form-row">
                             <div className="form-group">
-                                <label>
+                                <label htmlFor="startDate">
                                     <Calendar size={16} />
-                                    End Date
+                                    {formData.isHalfDay ? "Date" : "Start Date"}
                                 </label>
                                 <input
+                                    id="startDate"
                                     type="date"
-                                    name="endDate"
-                                    value={formData.endDate}
+                                    name="startDate"
+                                    value={formData.startDate}
                                     onChange={handleChange}
-                                    min={formData.startDate || today}
-                                    className={errors.endDate ? "error" : ""}
+                                    min={today}
+                                    className={errors.startDate ? "error" : ""}
+                                    aria-invalid={!!errors.startDate}
+                                    aria-describedby={errors.startDate ? "err-startDate" : undefined}
                                 />
-                                {errors.endDate && (
-                                    <span className="error-text">{errors.endDate}</span>
+                                {errors.startDate && (
+                                    <span id="err-startDate" className="error-text">{errors.startDate}</span>
                                 )}
                             </div>
+
+                            {!formData.isHalfDay && (
+                                <div className="form-group">
+                                    <label htmlFor="endDate">
+                                        <Calendar size={16} />
+                                        End Date
+                                    </label>
+                                    <input
+                                        id="endDate"
+                                        type="date"
+                                        name="endDate"
+                                        value={formData.endDate}
+                                        onChange={handleChange}
+                                        min={formData.startDate || today}
+                                        className={errors.endDate ? "error" : ""}
+                                        aria-invalid={!!errors.endDate}
+                                        aria-describedby={errors.endDate ? "err-endDate" : undefined}
+                                    />
+                                    {errors.endDate && (
+                                        <span id="err-endDate" className="error-text">{errors.endDate}</span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        {/* Days Summary */}
+                        {calculatedDays > 0 && (
+                            <div className="days-summary">
+                                <Clock size={16} />
+                                <span>
+                                    Total: <strong>{calculatedDays}</strong> day{calculatedDays !== 1 ? "s" : ""}
+                                </span>
+                            </div>
                         )}
-                    </div>
 
-                    {/* Days Summary */}
-                    {calculatedDays > 0 && (
-                        <div className="days-summary">
-                            <Clock size={16} />
-                            <span>
-                                Total: <strong>{calculatedDays}</strong> day{calculatedDays !== 1 ? "s" : ""}
-                            </span>
+                        {/* Reason */}
+                        <div className="form-group">
+                            <label htmlFor="reason">
+                                <FileText size={16} />
+                                Reason (Optional)
+                            </label>
+                            <textarea
+                                id="reason"
+                                name="reason"
+                                value={formData.reason}
+                                onChange={handleChange}
+                                placeholder="Provide a reason for your leave request..."
+                                rows={3}
+                            />
                         </div>
-                    )}
 
-                    {/* Reason */}
-                    <div className="form-group">
-                        <label>
-                            <FileText size={16} />
-                            Reason (Optional)
-                        </label>
-                        <textarea
-                            name="reason"
-                            value={formData.reason}
-                            onChange={handleChange}
-                            placeholder="Provide a reason for your leave request..."
-                            rows={3}
-                        />
+                        {/* Submit Error */}
+                        {errors.submit && (
+                            <div className="submit-error">
+                                <AlertCircle size={16} />
+                                {errors.submit}
+                            </div>
+                        )}
+                    </form>
+
+                    {/* Footer */}
+                    <div className="modal-footer">
+                        <button type="button" className="btn-secondary" onClick={onClose}>
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            form="apply-leave-form"
+                            className="btn-primary"
+                            disabled={loading}
+                        >
+                            {loading ? "Submitting..." : "Submit Request"}
+                        </button>
                     </div>
-
-                    {/* Submit Error */}
-                    {errors.submit && (
-                        <div className="submit-error">
-                            <AlertCircle size={16} />
-                            {errors.submit}
-                        </div>
-                    )}
-                </form>
-
-                {/* Footer */}
-                <div className="modal-footer">
-                    <button type="button" className="btn-secondary" onClick={onClose}>
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="btn-primary"
-                        onClick={handleSubmit}
-                        disabled={loading}
-                    >
-                        {loading ? "Submitting..." : "Submit Request"}
-                    </button>
-                </div>
-            </div>
-        </div>
+                </Dialog.Content>
+            </Dialog.Portal>
+        </Dialog.Root>
     );
 };
 

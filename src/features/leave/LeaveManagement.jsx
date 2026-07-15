@@ -370,7 +370,7 @@ const LeaveManagement = () => {
                                         <td>
                                             <span
                                                 className="leave-type-badge"
-                                                style={{ backgroundColor: request.leave_type?.color + "20", color: request.leave_type?.color }}
+                                                style={{ backgroundColor: (request.leave_type?.color || "#6b7280") + "20", color: request.leave_type?.color || "#6b7280" }}
                                             >
                                                 {request.leave_type?.name}
                                             </span>

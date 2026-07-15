@@ -125,7 +125,7 @@
 }
 
 .view-switcher-btn.active {
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
 }
 
@@ -138,7 +138,7 @@
     gap: 0.375rem;
     min-height: 32px;
     padding: 0.375rem 1rem;
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
     border: none;
     font-size: 0.875rem;
@@ -148,7 +148,7 @@
 }
 
 .calendar-header-actions .btn-primary:hover {
-    background: #4338ca;
+    background: var(--primary-hover);
 }
 
 /* Calendar Layout */
@@ -194,13 +194,13 @@
 
 /* Weekend headers - red */
 .calendar-weekday:first-child {
-    color: #ef4444;
+    color: var(--danger-text);
 }
 
 .calendar-weekday:nth-child(5),
 .calendar-weekday:nth-child(6),
 .calendar-weekday:nth-child(7) {
-    color: #ef4444;
+    color: var(--danger-text);
 }
 
 /* Calendar Days Grid */
@@ -257,7 +257,7 @@
 
 /* Selected */
 .calendar-day.selected {
-    box-shadow: inset 0 0 0 2px #4f46e5;
+    box-shadow: inset 0 0 0 2px var(--primary);
 }
 
 /* Day Header */
@@ -281,13 +281,13 @@
 
 /* Weekend day numbers - red text */
 .calendar-day:nth-child(7n+1) .calendar-day-number {
-    color: #ef4444;
+    color: var(--danger-text);
 }
 
 .calendar-day:nth-child(7n+5) .calendar-day-number,
 .calendar-day:nth-child(7n+6) .calendar-day-number,
 .calendar-day:nth-child(7n) .calendar-day-number {
-    color: #ef4444;
+    color: var(--danger-text);
 }
 
 /* Override for today */
@@ -376,7 +376,7 @@
 }
 
 .calendar-more-events:hover {
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 /* Add button on day hover */
@@ -403,7 +403,7 @@
 }
 
 .calendar-day-add-button:hover {
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
 }
 
@@ -435,7 +435,7 @@
 }
 
 .calendar-week-day.selected {
-    box-shadow: inset 0 0 0 2px #4f46e5;
+    box-shadow: inset 0 0 0 2px var(--primary);
 }
 
 .calendar-week-header {
@@ -509,8 +509,8 @@
 }
 
 .add-event-week-btn:hover {
-    border-color: #4f46e5;
-    color: #4f46e5;
+    border-color: var(--primary);
+    color: var(--primary);
     background: rgba(79, 70, 229, 0.04);
 }
 
@@ -720,7 +720,7 @@
 }
 
 .calendar-event-action-btn.edit:hover {
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
 }
 
@@ -730,7 +730,7 @@
 }
 
 .calendar-event-action-btn.delete:hover {
-    background: #ef4444;
+    background: var(--danger-color);
     color: white;
 }
 
@@ -751,7 +751,7 @@
     align-items: center;
     gap: 0.375rem;
     padding: 0.5rem 1rem;
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
     border: none;
     font-size: 0.8125rem;
@@ -761,7 +761,7 @@
 }
 
 .calendar-empty-state button:hover {
-    background: #4338ca;
+    background: var(--primary-hover);
 }
 
 /* Outline Button (Day View) */
@@ -771,8 +771,8 @@
     gap: 0.375rem;
     padding: 0.375rem 0.875rem;
     background: transparent;
-    color: #4f46e5;
-    border: 1px solid #4f46e5;
+    color: var(--primary);
+    border: 1px solid var(--primary);
     font-size: 0.8125rem;
     font-weight: 500;
     cursor: pointer;
@@ -780,7 +780,7 @@
 }
 
 .btn-outline:hover {
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
 }
 
@@ -851,7 +851,7 @@
 }
 
 .event-modal-title svg {
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 .event-modal-title h2 {
@@ -911,7 +911,7 @@
 }
 
 .event-form-field label .required {
-    color: #ef4444;
+    color: var(--danger-text);
 }
 
 .event-form-field input,
@@ -942,12 +942,12 @@
 .event-form-field select:focus,
 .event-form-field textarea:focus {
     outline: none;
-    border-color: #4f46e5;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .event-form-field input.error {
-    border-color: #ef4444;
+    border-color: var(--danger-color);
 }
 
 .event-form-field textarea {
@@ -956,7 +956,7 @@
 }
 
 .field-error {
-    color: #ef4444;
+    color: var(--danger-text);
     font-size: 0.75rem;
 }
 
@@ -1004,12 +1004,12 @@
 }
 
 .event-form-checkbox label:hover .custom-checkbox {
-    border-color: #4f46e5;
+    border-color: var(--primary);
 }
 
 .event-form-checkbox input[type="checkbox"]:checked+.custom-checkbox {
-    background: #4f46e5;
-    border-color: #4f46e5;
+    background: var(--primary);
+    border-color: var(--primary);
 }
 
 .event-form-checkbox input[type="checkbox"]:checked+.custom-checkbox::after {
@@ -1056,7 +1056,7 @@
 
 .btn-save {
     padding: 0.5rem 1.25rem;
-    background: #4f46e5;
+    background: var(--primary);
     border: none;
     border-radius: 6px;
     font-size: 0.875rem;
@@ -1067,7 +1067,7 @@
 }
 
 .btn-save:hover {
-    background: #4338ca;
+    background: var(--primary-hover);
 }
 
 .btn-save:disabled {
@@ -1109,247 +1109,6 @@
     }
 }
 
-.modal-container,
-.event-modal {
-    background: var(--bg-primary);
-    width: 100%;
-    max-width: 480px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
-    animation: slideIn 0.2s ease;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border-light);
-    background: var(--bg-primary);
-}
-
-.modal-header-content {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-}
-
-.modal-header-icon {
-    color: #4f46e5;
-}
-
-.modal-header h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.modal-close-btn {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    border-radius: 3px;
-    color: #94a3b8;
-    cursor: pointer;
-    transition: all 0.15s;
-}
-
-.modal-close-btn:hover {
-    background: #f1f5f9;
-    color: #1e293b;
-}
-
-.modal-form {
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-}
-
-.form-group label {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #64748b;
-}
-
-.form-group label svg {
-    color: #94a3b8;
-    width: 14px;
-    height: 14px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    padding: 0.625rem 0.875rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    font-size: 0.875rem;
-    color: #1e293b;
-    transition: all 0.15s;
-    width: 100%;
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: #94a3b8;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #4f46e5;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
-}
-
-.form-group input.error,
-.form-group select.error,
-.form-group textarea.error {
-    border-color: #ef4444;
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 72px;
-}
-
-.error-message {
-    color: #ef4444;
-    font-size: 0.6875rem;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.875rem;
-}
-
-/* Checkbox */
-.checkbox-group {
-    padding: 0.5rem 0;
-}
-
-.checkbox-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #1e293b;
-    user-select: none;
-}
-
-.checkbox-label input[type="checkbox"] {
-    /* Completely hide native checkbox */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-    width: 0;
-    height: 0;
-    margin: 0;
-    padding: 0;
-}
-
-.checkbox-custom {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    background: white;
-    border: 2px solid #cbd5e1;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s ease;
-}
-
-.checkbox-label:hover .checkbox-custom {
-    border-color: #4f46e5;
-}
-
-.checkbox-label input[type="checkbox"]:checked+.checkbox-custom {
-    background: #4f46e5;
-    border-color: #4f46e5;
-}
-
-.checkbox-label input[type="checkbox"]:checked+.checkbox-custom::after {
-    content: '';
-    display: block;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    margin-top: -2px;
-}
-
-.checkbox-label input[type="checkbox"]:focus+.checkbox-custom {
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.625rem;
-    padding: 0.875rem 1.25rem;
-    border-top: 1px solid var(--border-light);
-    background: #f8fafc;
-}
-
-.modal-actions .btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-}
-
-.modal-actions .btn-secondary {
-    background: white;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-}
-
-.modal-actions .btn-secondary:hover {
-    background: #f8fafc;
-    color: #1e293b;
-}
-
-.modal-actions .btn-primary {
-    background: #4f46e5;
-    border: none;
-    color: white;
-}
-
-.modal-actions .btn-primary:hover {
-    background: #4338ca;
-}
-
-.modal-actions .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -1433,7 +1192,7 @@
 }
 
 .dark .calendar-day-add-button:hover {
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
 }
 
@@ -1470,8 +1229,8 @@
 }
 
 .dark .add-event-week-btn:hover {
-    border-color: #4f46e5;
-    color: #4f46e5;
+    border-color: var(--primary);
+    color: var(--primary);
     background: rgba(79, 70, 229, 0.1);
 }
 
@@ -1503,7 +1262,7 @@
 }
 
 .dark .calendar-event-action-btn.edit:hover {
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
 }
 
@@ -1513,7 +1272,7 @@
 }
 
 .dark .calendar-event-action-btn.delete:hover {
-    background: #ef4444;
+    background: var(--danger-color);
     color: white;
 }
 
@@ -1592,7 +1351,7 @@
 .dark .event-form-field input:focus,
 .dark .event-form-field select:focus,
 .dark .event-form-field textarea:focus {
-    border-color: #4f46e5;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
@@ -1603,84 +1362,6 @@
 .dark .event-form-checkbox .custom-checkbox {
     background: var(--bg-body);
     border-color: var(--border-hover);
-}
-
-/* Calendar Modal (alternate) Dark */
-.dark .modal-container,
-.dark .event-modal {
-    background: var(--bg-surface);
-}
-
-.dark .modal-header {
-    background: var(--bg-secondary);
-    border-color: var(--border);
-}
-
-.dark .modal-header h2 {
-    color: var(--text-main);
-}
-
-.dark .modal-close-btn {
-    color: var(--text-muted);
-}
-
-.dark .modal-close-btn:hover {
-    background: var(--border-hover);
-    color: var(--text-main);
-}
-
-.dark .form-group label {
-    color: var(--text-muted);
-}
-
-.dark .form-group label svg {
-    color: var(--text-light);
-}
-
-.dark .form-group input,
-.dark .form-group select,
-.dark .form-group textarea {
-    background: var(--bg-body);
-    border-color: var(--border);
-    color: var(--text-main);
-}
-
-.dark .form-group input::placeholder,
-.dark .form-group textarea::placeholder {
-    color: var(--text-light);
-}
-
-.dark .form-group input:focus,
-.dark .form-group select:focus,
-.dark .form-group textarea:focus {
-    background: var(--bg-secondary);
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-}
-
-.dark .checkbox-label {
-    color: var(--text-main);
-}
-
-.dark .checkbox-custom {
-    background: var(--bg-body);
-    border-color: var(--border-hover);
-}
-
-.dark .modal-actions {
-    background: var(--bg-secondary);
-    border-color: var(--border);
-}
-
-.dark .modal-actions .btn-secondary {
-    background: var(--bg-surface);
-    border-color: var(--border);
-    color: var(--text-muted);
-}
-
-.dark .modal-actions .btn-secondary:hover {
-    background: var(--bg-body);
-    color: var(--text-main);
 }
 
 /* Nav Buttons Dark */

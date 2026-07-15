@@ -623,7 +623,7 @@ const CalendarView = () => {
 
     return (
         <div>
-                <div className="card" style={{ marginBottom: '10px' }}>{renderHeader()}</div>
+                <div className="card mb-4">{renderHeader()}</div>
                 <div className="calendar-layout gap-6">
                     <div className="card">
                         <div className="calendar-grid-wrapper">

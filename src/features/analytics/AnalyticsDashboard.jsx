@@ -152,7 +152,7 @@ const AnalyticsDashboard = () => {
 
     try {
       const [empRes, taskRes] = await Promise.all([
-        employeeService.getAll({ pageSize: 10000 }),
+        employeeService.getAll({ pageSize: 10000, select: 'id,name,email,department,role,status,join_date,avatar' }),
         taskService.getAll({ pageSize: 10000 })
       ]);
 
@@ -385,7 +385,7 @@ const AnalyticsDashboard = () => {
       {/* Quick Stats Row */}
       <div className="analytics-quick-stats">
         <div className="analytics-quick-stat-item">
-          <div className="analytics-quick-stat-icon" style={{ backgroundColor: '#dbeafe', color: '#3b82f6' }}>
+          <div className="analytics-quick-stat-icon" style={{ backgroundColor: 'color-mix(in srgb, var(--info) 15%, transparent)', color: 'var(--info)' }}>
             <UserPlus size={18} />
           </div>
           <div>
@@ -394,7 +394,7 @@ const AnalyticsDashboard = () => {
           </div>
         </div>
         <div className="analytics-quick-stat-item">
-          <div className="analytics-quick-stat-icon" style={{ backgroundColor: '#dcfce7', color: '#22c55e' }}>
+          <div className="analytics-quick-stat-icon" style={{ backgroundColor: 'color-mix(in srgb, var(--success-color) 15%, transparent)', color: 'var(--success-color)' }}>
             <CheckCircle2 size={18} />
           </div>
           <div>
@@ -403,7 +403,7 @@ const AnalyticsDashboard = () => {
           </div>
         </div>
         <div className="analytics-quick-stat-item">
-          <div className="analytics-quick-stat-icon" style={{ backgroundColor: '#fef3c7', color: '#f59e0b' }}>
+          <div className="analytics-quick-stat-icon" style={{ backgroundColor: 'color-mix(in srgb, var(--warning-color) 15%, transparent)', color: 'var(--warning-color)' }}>
             <Target size={18} />
           </div>
           <div>
@@ -412,7 +412,7 @@ const AnalyticsDashboard = () => {
           </div>
         </div>
         <div className="analytics-quick-stat-item">
-          <div className="analytics-quick-stat-icon" style={{ backgroundColor: '#fce7f3', color: '#ec4899' }}>
+          <div className="analytics-quick-stat-icon" style={{ backgroundColor: 'color-mix(in srgb, var(--primary) 15%, transparent)', color: 'var(--primary)' }}>
             <Briefcase size={18} />
           </div>
           <div>

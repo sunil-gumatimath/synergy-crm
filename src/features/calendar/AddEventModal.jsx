@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import * as Dialog from "@radix-ui/react-dialog";
 import { X, Calendar, Clock, MapPin, Type, Repeat } from "../../lib/icons";
 import { format } from "date-fns";
 import "./calendar-styles.css";
@@ -60,7 +61,6 @@ const AddEventModal = ({ isOpen, onClose, onSave, initialDate, eventToEdit, isLo
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate()) return;
@@ -98,179 +98,199 @@ const AddEventModal = ({ isOpen, onClose, onSave, initialDate, eventToEdit, isLo
     ];
 
     return (
-        <div className="event-modal-overlay" onClick={onClose}>
-            <div className="event-modal-container" onClick={(e) => e.stopPropagation()}>
-                {/* Header */}
-                <div className="event-modal-header">
-                    <div className="event-modal-title">
-                        <Calendar size={20} />
-                        <h2>{eventToEdit ? "Edit Event" : "Add New Event"}</h2>
-                    </div>
-                    <button type="button" className="event-modal-close" onClick={onClose}>
-                        <X size={18} />
-                    </button>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="event-modal-body">
-                    {/* Title */}
-                    <div className="event-form-field">
-                        <label>
-                            <Type size={14} />
-                            <span>Event Title <span className="required">*</span></span>
-                        </label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            placeholder="Enter event title"
-                            className={errors.title ? "error" : ""}
-                        />
-                        {errors.title && <span className="field-error">{errors.title}</span>}
+        <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <Dialog.Portal>
+                <Dialog.Overlay className="event-modal-overlay" />
+                <Dialog.Content className="event-modal-container">
+                    {/* Header */}
+                    <div className="event-modal-header">
+                        <div className="event-modal-title">
+                            <Calendar size={20} />
+                            <Dialog.Title asChild>
+                                <h2>{eventToEdit ? "Edit Event" : "Add New Event"}</h2>
+                            </Dialog.Title>
+                        </div>
+                        <Dialog.Description className="sr-only">
+                            Fill in the event details and save the event.
+                        </Dialog.Description>
+                        <Dialog.Close asChild>
+                            <button type="button" className="event-modal-close" aria-label="Close">
+                                <X size={18} />
+                            </button>
+                        </Dialog.Close>
                     </div>
 
-                    {/* Date & Type Row */}
-                    <div className="event-form-row">
+                    {/* Form */}
+                    <form id="event-form" onSubmit={handleSubmit} className="event-modal-body">
+                        {/* Title */}
                         <div className="event-form-field">
-                            <label>
-                                <Calendar size={14} />
-                                <span>Date <span className="required">*</span></span>
+                            <label htmlFor="title">
+                                <Type size={14} />
+                                <span>Event Title <span className="required">*</span></span>
                             </label>
                             <input
-                                type="date"
-                                name="date"
-                                value={formData.date}
+                                id="title"
+                                type="text"
+                                name="title"
+                                value={formData.title}
                                 onChange={handleChange}
-                                className={errors.date ? "error" : ""}
+                                placeholder="Enter event title"
+                                className={errors.title ? "error" : ""}
+                                aria-invalid={!!errors.title}
+                                aria-describedby={errors.title ? "err-title" : undefined}
                             />
-                            {errors.date && <span className="field-error">{errors.date}</span>}
+                            {errors.title && <span id="err-title" className="field-error">{errors.title}</span>}
                         </div>
 
+                        {/* Date & Type Row */}
+                        <div className="event-form-row">
+                            <div className="event-form-field">
+                                <label htmlFor="date">
+                                    <Calendar size={14} />
+                                    <span>Date <span className="required">*</span></span>
+                                </label>
+                                <input
+                                    id="date"
+                                    type="date"
+                                    name="date"
+                                    value={formData.date}
+                                    onChange={handleChange}
+                                    className={errors.date ? "error" : ""}
+                                    aria-invalid={!!errors.date}
+                                    aria-describedby={errors.date ? "err-date" : undefined}
+                                />
+                                {errors.date && <span id="err-date" className="field-error">{errors.date}</span>}
+                            </div>
+
+                            <div className="event-form-field">
+                                <label htmlFor="type">Event Type</label>
+                                <select
+                                    id="type"
+                                    name="type"
+                                    value={formData.type}
+                                    onChange={handleChange}
+                                >
+                                    {eventTypes.map(type => (
+                                        <option key={type.value} value={type.value}>
+                                            {type.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* All Day Toggle */}
+                        <div className="event-form-checkbox">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="is_all_day"
+                                    checked={formData.is_all_day}
+                                    onChange={handleChange}
+                                />
+                                <span className="custom-checkbox"></span>
+                                <span>All Day Event</span>
+                            </label>
+                        </div>
+                        {/* Time Row - only show if not all day */}
+                        {!formData.is_all_day && (
+                            <div className="event-form-row">
+                                <div className="event-form-field">
+                                    <label htmlFor="time">
+                                        <Clock size={14} />
+                                        <span>Start Time</span>
+                                    </label>
+                                    <input
+                                        id="time"
+                                        type="time"
+                                        name="time"
+                                        value={formData.time}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                <div className="event-form-field">
+                                    <label htmlFor="end_time">
+                                        <Clock size={14} />
+                                        <span>End Time</span>
+                                    </label>
+                                    <input
+                                        id="end_time"
+                                        type="time"
+                                        name="end_time"
+                                        value={formData.end_time}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Location */}
                         <div className="event-form-field">
-                            <label>Event Type</label>
+                            <label htmlFor="location">
+                                <MapPin size={14} />
+                                <span>Location</span>
+                            </label>
+                            <input
+                                id="location"
+                                type="text"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                placeholder="Enter location (optional)"
+                            />
+                        </div>
+
+                        {/* Recurrence */}
+                        <div className="event-form-field">
+                            <label htmlFor="recurrence">
+                                <Repeat size={14} />
+                                <span>Repeat</span>
+                            </label>
                             <select
-                                name="type"
-                                value={formData.type}
+                                id="recurrence"
+                                name="recurrence"
+                                value={formData.recurrence}
                                 onChange={handleChange}
                             >
-                                {eventTypes.map(type => (
-                                    <option key={type.value} value={type.value}>
-                                        {type.label}
+                                {recurrenceOptions.map(opt => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
                                     </option>
                                 ))}
                             </select>
                         </div>
-                    </div>
 
-                    {/* All Day Toggle */}
-                    <div className="event-form-checkbox">
-                        <label>
-                            <input
-                                type="checkbox"
-                                name="is_all_day"
-                                checked={formData.is_all_day}
+                        {/* Description */}
+                        <div className="event-form-field">
+                            <label htmlFor="description">Description</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={formData.description}
                                 onChange={handleChange}
+                                placeholder="Add event description (optional)"
+                                rows={3}
                             />
-                            <span className="custom-checkbox"></span>
-                            <span>All Day Event</span>
-                        </label>
-                    </div>
-
-                    {/* Time Row - only show if not all day */}
-                    {!formData.is_all_day && (
-                        <div className="event-form-row">
-                            <div className="event-form-field">
-                                <label>
-                                    <Clock size={14} />
-                                    <span>Start Time</span>
-                                </label>
-                                <input
-                                    type="time"
-                                    name="time"
-                                    value={formData.time}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="event-form-field">
-                                <label>
-                                    <Clock size={14} />
-                                    <span>End Time</span>
-                                </label>
-                                <input
-                                    type="time"
-                                    name="end_time"
-                                    value={formData.end_time}
-                                    onChange={handleChange}
-                                />
-                            </div>
                         </div>
-                    )}
-
-                    {/* Location */}
-                    <div className="event-form-field">
-                        <label>
-                            <MapPin size={14} />
-                            <span>Location</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="location"
-                            value={formData.location}
-                            onChange={handleChange}
-                            placeholder="Enter location (optional)"
-                        />
-                    </div>
-
-                    {/* Recurrence */}
-                    <div className="event-form-field">
-                        <label>
-                            <Repeat size={14} />
-                            <span>Repeat</span>
-                        </label>
-                        <select
-                            name="recurrence"
-                            value={formData.recurrence}
-                            onChange={handleChange}
+                    </form>
+                    {/* Footer */}
+                    <div className="event-modal-footer">
+                        <button type="button" className="btn-cancel" onClick={onClose}>
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            form="event-form"
+                            className="btn-save"
+                            disabled={isLoading}
                         >
-                            {recurrenceOptions.map(opt => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </select>
+                            {isLoading ? "Saving..." : eventToEdit ? "Update Event" : "Create Event"}
+                        </button>
                     </div>
-
-                    {/* Description */}
-                    <div className="event-form-field">
-                        <label>Description</label>
-                        <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            placeholder="Add event description (optional)"
-                            rows={3}
-                        />
-                    </div>
-                </form>
-
-                {/* Footer */}
-                <div className="event-modal-footer">
-                    <button type="button" className="btn-cancel" onClick={onClose}>
-                        Cancel
-                    </button>
-                    <button
-                        type="button"
-                        className="btn-save"
-                        onClick={handleSubmit}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Saving..." : eventToEdit ? "Update Event" : "Create Event"}
-                    </button>
-                </div>
-            </div>
-        </div>
+                </Dialog.Content>
+            </Dialog.Portal>
+        </Dialog.Root>
     );
 };
 
