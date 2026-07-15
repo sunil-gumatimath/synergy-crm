@@ -22,9 +22,10 @@ const PreferencesSection = ({ settings, isSaving, onUpdateSetting }) => {
             <div className="settings-panel-content">
                 <div className="settings-form-row">
                     <div className="settings-field">
-                        <label className="settings-field-label">Language</label>
+                        <label className="settings-field-label" htmlFor="pref-language">Language</label>
                         <select
                             value={settings.language}
+                            id="pref-language"
                             onChange={(e) => onUpdateSetting("language", e.target.value)}
                             className="settings-field-select"
                             disabled={isSaving}
@@ -38,11 +39,12 @@ const PreferencesSection = ({ settings, isSaving, onUpdateSetting }) => {
                     </div>
 
                     <div className="settings-field">
-                        <label className="settings-field-label">Timezone</label>
+                        <label className="settings-field-label" htmlFor="pref-timezone">Timezone</label>
                         <div className="settings-field-with-icon">
                             <Clock size={18} className="settings-field-icon" />
                             <select
                                 value={settings.timezone}
+                            id="pref-timezone"
                                 onChange={(e) => onUpdateSetting("timezone", e.target.value)}
                                 className="settings-field-select with-icon"
                                 disabled={isSaving}
@@ -61,11 +63,12 @@ const PreferencesSection = ({ settings, isSaving, onUpdateSetting }) => {
 
                 <div className="settings-form-row">
                     <div className="settings-field">
-                        <label className="settings-field-label">Date Format</label>
+                        <label className="settings-field-label" htmlFor="pref-dateFormat">Date Format</label>
                         <div className="settings-field-with-icon">
                             <Calendar size={18} className="settings-field-icon" />
                             <select
                                 value={settings.dateFormat}
+                            id="pref-dateFormat"
                                 onChange={(e) => onUpdateSetting("dateFormat", e.target.value)}
                                 className="settings-field-select with-icon"
                                 disabled={isSaving}
@@ -79,9 +82,10 @@ const PreferencesSection = ({ settings, isSaving, onUpdateSetting }) => {
                     </div>
 
                     <div className="settings-field">
-                        <label className="settings-field-label">Time Format</label>
+                        <label className="settings-field-label" htmlFor="pref-timeFormat">Time Format</label>
                         <select
                             value={settings.timeFormat}
+                            id="pref-timeFormat"
                             onChange={(e) => onUpdateSetting("timeFormat", e.target.value)}
                             className="settings-field-select"
                             disabled={isSaving}
@@ -93,9 +97,10 @@ const PreferencesSection = ({ settings, isSaving, onUpdateSetting }) => {
                 </div>
 
                 <div className="settings-field">
-                    <label className="settings-field-label">Start of Week</label>
+                    <label className="settings-field-label" htmlFor="pref-startOfWeek">Start of Week</label>
                     <select
                         value={settings.startOfWeek}
+                            id="pref-startOfWeek"
                         onChange={(e) => onUpdateSetting("startOfWeek", e.target.value)}
                         className="settings-field-select"
                         style={{ maxWidth: "300px" }}

@@ -573,7 +573,7 @@
 }
 
 /* Modal */
-.modal-overlay {
+.task-modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
@@ -594,7 +594,7 @@
     }
 }
 
-.modal-content {
+.task-modal-content {
     background: var(--bg-surface);
     width: 100%;
     max-width: 500px;
@@ -615,7 +615,7 @@
     }
 }
 
-.modal-header {
+.task-modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -623,13 +623,13 @@
     border-bottom: 1px solid var(--border);
 }
 
-.modal-header h2 {
+.task-modal-header h2 {
     font-size: 1.125rem;
     font-weight: 600;
     margin: 0;
 }
 
-.modal-close {
+.task-modal-close {
     padding: 4px;
     background: none;
     border: none;
@@ -637,7 +637,7 @@
     cursor: pointer;
 }
 
-.modal-content form {
+.task-modal-content form {
     padding: var(--space-lg);
 }
 
@@ -678,7 +678,7 @@
     gap: var(--space-md);
 }
 
-.modal-actions {
+.task-modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: var(--space-sm);

@@ -97,14 +97,15 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
             <div className="settings-panel-content">
                 {/* Theme Selection (Light/Dark/System) */}
                 <div className="settings-field">
-                    <label className="settings-field-label">Mode</label>
-                    <div className="settings-theme-grid">
+                    <label className="settings-field-label" id="appearance-mode-label">Mode</label>
+                    <div className="settings-theme-grid" role="group" aria-labelledby="appearance-mode-label">
                         {themeOptions.map((theme) => {
                             const Icon = theme.icon;
                             return (
                                 <button
                                     key={theme.id}
                                     className={`settings-theme-option ${settings.theme === theme.id ? "active" : ""}`}
+                                    aria-pressed={settings.theme === theme.id}
                                     onClick={() => onUpdateSetting("theme", theme.id)}
                                     disabled={isSaving}
                                 >
@@ -127,8 +128,8 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
 
                 {/* Color Theme Selection */}
                 <div className="settings-field">
-                    <label className="settings-field-label">Color Theme</label>
-                    <div className="settings-color-theme-grid">
+                    <label className="settings-field-label" id="appearance-color-label">Color Theme</label>
+                    <div className="settings-color-theme-grid" role="group" aria-labelledby="appearance-color-label">
                         {themeIds.map((id) => {
                             const themeConfig = themes[id];
                             const isActive = settings.colorTheme === id;
@@ -136,6 +137,7 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
                                 <button
                                     key={id}
                                     className={`settings-color-theme-card ${isActive ? "active" : ""}`}
+                                    aria-pressed={isActive}
                                     onClick={() => onUpdateSetting("colorTheme", id)}
                                     disabled={isSaving}
                                     title={themeConfig.label}
@@ -159,12 +161,13 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
 
                 {/* Accent Color */}
                 <div className="settings-field">
-                    <label className="settings-field-label">Accent Color</label>
-                    <div className="settings-color-grid">
+                    <label className="settings-field-label" id="appearance-accent-label">Accent Color</label>
+                    <div className="settings-color-grid" role="group" aria-labelledby="appearance-accent-label">
                         {accentColors.map((color) => (
                             <button
                                 key={color.id}
                                 className={`settings-color-option ${settings.accentColor === color.id ? "active" : ""}`}
+                                    aria-pressed={settings.accentColor === color.id}
                                 style={{ "--color": color.color }}
                                 onClick={() => onUpdateSetting("accentColor", color.id)}
                                 disabled={isSaving}
@@ -187,6 +190,7 @@ const AppearanceSection = ({ settings, isSaving, onUpdateSetting }) => {
                         <input
                             type="checkbox"
                             checked={settings.compactMode}
+                            aria-label="Compact Mode"
                             onChange={(e) => onUpdateSetting("compactMode", e.target.checked)}
                             disabled={isSaving}
                         />

@@ -433,11 +433,11 @@ const TaskModal = ({ task, employees, onClose, onSubmit }) => {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className="task-modal-overlay" onClick={onClose}>
+            <div className="task-modal-content" onClick={e => e.stopPropagation()}>
+                <div className="task-modal-header">
                     <h2>{task ? 'Edit Task' : 'Create New Task'}</h2>
-                    <button className="modal-close" onClick={onClose}><X size={20} /></button>
+                    <button className="task-modal-close" onClick={onClose}><X size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -491,7 +491,7 @@ const TaskModal = ({ task, employees, onClose, onSubmit }) => {
                             />
                         </div>
                     </div>
-                    <div className="modal-actions">
+                    <div className="task-modal-actions">
                         <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
                         <button type="submit" className="btn-primary" disabled={submitting}>
                             {submitting ? 'Saving...' : (task ? 'Update Task' : 'Create Task')}

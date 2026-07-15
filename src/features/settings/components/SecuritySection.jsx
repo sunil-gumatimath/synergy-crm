@@ -107,11 +107,12 @@ const SecuritySection = ({ settings, errors, isSaving, onUpdateSetting }) => {
                         <h3>Change Password</h3>
                     </div>
                     <div className="settings-field">
-                        <label className="settings-field-label">New Password</label>
+                        <label className="settings-field-label" htmlFor="security-newPassword">New Password</label>
                         <div className="settings-field-password">
                             <input
                                 type={showNewPassword ? "text" : "password"}
                                 value={settings.newPassword}
+                            id="security-newPassword"
                                 onChange={(e) => onUpdateSetting("newPassword", e.target.value)}
                                 className={`settings-field-input ${errors.newPassword ? "error" : ""}`}
                                 placeholder="Enter new password"
@@ -128,11 +129,12 @@ const SecuritySection = ({ settings, errors, isSaving, onUpdateSetting }) => {
                         )}
                     </div>
                     <div className="settings-field">
-                        <label className="settings-field-label">Confirm New Password</label>
+                        <label className="settings-field-label" htmlFor="security-confirmPassword">Confirm New Password</label>
                         <div className="settings-field-password">
                             <input
                                 type={showConfirmPassword ? "text" : "password"}
                                 value={settings.confirmPassword}
+                            id="security-confirmPassword"
                                 onChange={(e) => onUpdateSetting("confirmPassword", e.target.value)}
                                 className={`settings-field-input ${errors.confirmPassword ? "error" : ""}`}
                                 placeholder="Confirm new password"

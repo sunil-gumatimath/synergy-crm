@@ -107,37 +107,37 @@ const ReportsView = () => {
         const s = reportData.summary;
         const cards = {
             attendance: [
-                { icon: Users, bg: '#eef2ff', color: '#4f46e5', value: s.totalEmployees, label: 'Employees' },
-                { icon: Calendar, bg: '#ecfdf5', color: '#10b981', value: s.totalEntries, label: 'Entries' },
-                { icon: Clock, bg: '#fef3c7', color: '#f59e0b', value: `${s.avgHoursPerDay}h`, label: 'Avg Hours' }
+                { icon: Users, color: '#4f46e5', value: s.totalEmployees, label: 'Employees' },
+                { icon: Calendar, color: '#10b981', value: s.totalEntries, label: 'Entries' },
+                { icon: Clock, color: '#f59e0b', value: `${s.avgHoursPerDay}h`, label: 'Avg Hours' }
             ],
             leave: [
-                { icon: FileText, bg: '#eef2ff', color: '#4f46e5', value: s.totalRequests, label: 'Requests' },
-                { icon: TrendingUp, bg: '#ecfdf5', color: '#10b981', value: s.approved, label: 'Approved' },
-                { icon: Clock, bg: '#fef3c7', color: '#f59e0b', value: s.pending, label: 'Pending' },
-                { icon: TrendingDown, bg: '#fef2f2', color: '#ef4444', value: s.rejected, label: 'Rejected' }
+                { icon: FileText, color: '#4f46e5', value: s.totalRequests, label: 'Requests' },
+                { icon: TrendingUp, color: '#10b981', value: s.approved, label: 'Approved' },
+                { icon: Clock, color: '#f59e0b', value: s.pending, label: 'Pending' },
+                { icon: TrendingDown, color: '#ef4444', value: s.rejected, label: 'Rejected' }
             ],
             tasks: [
-                { icon: ClipboardList, bg: '#eef2ff', color: '#4f46e5', value: s.totalTasks, label: 'Total' },
-                { icon: TrendingUp, bg: '#ecfdf5', color: '#10b981', value: s.completedTasks, label: 'Done' },
-                { icon: BarChart3, bg: '#fef3c7', color: '#f59e0b', value: `${s.completionRate}%`, label: 'Rate' }
+                { icon: ClipboardList, color: '#4f46e5', value: s.totalTasks, label: 'Total' },
+                { icon: TrendingUp, color: '#10b981', value: s.completedTasks, label: 'Done' },
+                { icon: BarChart3, color: '#f59e0b', value: `${s.completionRate}%`, label: 'Rate' }
             ],
             timetracking: [
-                { icon: Clock, bg: '#eef2ff', color: '#4f46e5', value: `${s.totalHours}h`, label: 'Hours' },
-                { icon: Users, bg: '#ecfdf5', color: '#10b981', value: s.uniqueEmployees, label: 'Employees' },
-                { icon: BarChart3, bg: '#fef3c7', color: '#f59e0b', value: `${s.avgHoursPerDay}h`, label: 'Avg/Day' }
+                { icon: Clock, color: '#4f46e5', value: `${s.totalHours}h`, label: 'Hours' },
+                { icon: Users, color: '#10b981', value: s.uniqueEmployees, label: 'Employees' },
+                { icon: BarChart3, color: '#f59e0b', value: `${s.avgHoursPerDay}h`, label: 'Avg/Day' }
             ],
             employees: [
-                { icon: Users, bg: '#eef2ff', color: '#4f46e5', value: s.totalEmployees, label: 'Total' },
-                { icon: TrendingUp, bg: '#ecfdf5', color: '#10b981', value: s.active, label: 'Active' },
-                { icon: Building2, bg: '#f3e8ff', color: '#8b5cf6', value: s.departments, label: 'Depts' }
+                { icon: Users, color: '#4f46e5', value: s.totalEmployees, label: 'Total' },
+                { icon: TrendingUp, color: '#10b981', value: s.active, label: 'Active' },
+                { icon: Building2, color: '#8b5cf6', value: s.departments, label: 'Depts' }
             ]
         };
         return (
             <div className="reports-summary-grid">
                 {(cards[activeReport] || []).map((c, i) => (
                     <div key={i} className="reports-summary-card">
-                        <div className="summary-icon" style={{ background: c.bg }}><c.icon size={20} color={c.color} /></div>
+                        <div className="summary-icon" style={{ background: `color-mix(in srgb, ${c.color} 15%, transparent)` }}><c.icon size={20} color={c.color} /></div>
                         <div className="summary-content">
                             <span className="summary-value">{c.value}</span>
                             <span className="summary-label">{c.label}</span>

@@ -69,6 +69,7 @@ const AccountSection = ({
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploading}
                             title="Upload photo"
+                            aria-label="Upload profile photo"
                         >
                             {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
                         </button>
@@ -83,10 +84,11 @@ const AccountSection = ({
                 {/* Form Fields */}
                 <div className="settings-form-row">
                     <div className="settings-field">
-                        <label className="settings-field-label">First Name</label>
+                        <label className="settings-field-label" htmlFor="account-firstName">First Name</label>
                         <input
                             type="text"
                             value={settings.firstName}
+                            id="account-firstName"
                             onChange={(e) => onUpdateSetting("firstName", e.target.value)}
                             className={`settings-field-input ${errors.firstName ? "error" : ""}`}
                             placeholder="Enter first name"
@@ -100,10 +102,11 @@ const AccountSection = ({
                     </div>
 
                     <div className="settings-field">
-                        <label className="settings-field-label">Last Name</label>
+                        <label className="settings-field-label" htmlFor="account-lastName">Last Name</label>
                         <input
                             type="text"
                             value={settings.lastName}
+                            id="account-lastName"
                             onChange={(e) => onUpdateSetting("lastName", e.target.value)}
                             className="settings-field-input"
                             placeholder="Enter last name"
@@ -113,12 +116,13 @@ const AccountSection = ({
                 </div>
 
                 <div className="settings-field">
-                    <label className="settings-field-label">Email Address</label>
+                    <label className="settings-field-label" htmlFor="account-email">Email Address</label>
                     <div className="settings-field-with-icon">
                         <Mail size={18} className="settings-field-icon" />
                         <input
                             type="email"
                             value={settings.email}
+                            id="account-email"
                             className="settings-field-input with-icon"
                             disabled
                         />
@@ -127,12 +131,13 @@ const AccountSection = ({
                 </div>
 
                 <div className="settings-field">
-                    <label className="settings-field-label">Phone Number</label>
+                    <label className="settings-field-label" htmlFor="account-phone">Phone Number</label>
                     <div className="settings-field-with-icon">
                         <Smartphone size={18} className="settings-field-icon" />
                         <input
                             type="tel"
                             value={settings.phone}
+                            id="account-phone"
                             onChange={(e) => onUpdateSetting("phone", e.target.value)}
                             className="settings-field-input with-icon"
                             placeholder="+91 12345 67890"
@@ -142,9 +147,10 @@ const AccountSection = ({
                 </div>
 
                 <div className="settings-field">
-                    <label className="settings-field-label">Bio</label>
+                    <label className="settings-field-label" htmlFor="account-bio">Bio</label>
                     <textarea
                         value={settings.bio}
+                            id="account-bio"
                         onChange={(e) => onUpdateSetting("bio", e.target.value)}
                         className="settings-field-textarea"
                         placeholder="Tell us a little about yourself..."
