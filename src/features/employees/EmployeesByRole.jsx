@@ -8,7 +8,7 @@ const ROLE_CONFIG = {
         icon: Shield,
         gradient: "role-gradient-admin",
         badge: "role-badge-admin",
-        accent: "#6366f1",
+        accent: "var(--primary)",
         lightBg: "rgba(99, 102, 241, 0.08)",
         description: "Full system access & control",
     },
@@ -16,7 +16,7 @@ const ROLE_CONFIG = {
         icon: UserCheck,
         gradient: "role-gradient-manager",
         badge: "role-badge-manager",
-        accent: "#0ea5e9",
+        accent: "var(--info)",
         lightBg: "rgba(14, 165, 233, 0.08)",
         description: "Team oversight & management",
     },
@@ -24,7 +24,7 @@ const ROLE_CONFIG = {
         icon: Users,
         gradient: "role-gradient-employee",
         badge: "role-badge-employee",
-        accent: "#10b981",
+        accent: "var(--success-color)",
         lightBg: "rgba(16, 185, 129, 0.08)",
         description: "Standard team member",
     },
@@ -32,9 +32,9 @@ const ROLE_CONFIG = {
 
 const StatusDot = ({ status }) => {
     const colorMap = {
-        Active: "#10b981",
-        Inactive: "#6b7280",
-        "On Leave": "#f59e0b",
+        Active: "var(--success-color)",
+        Offline: "#6b7280",
+        "On Leave": "var(--warning-color)",
     };
     return (
         <span
@@ -152,7 +152,7 @@ const RoleSection = ({ role, employees, isExpanded, onToggle }) => {
                                                     ? "status-active"
                                                     : emp.status === "On Leave"
                                                         ? "status-leave"
-                                                        : "status-inactive"
+                                                        : "status-offline"
                                                     }`}
                                             >
                                                 {emp.status || "Unknown"}
@@ -271,7 +271,7 @@ const EmployeesByRole = () => {
             {/* Summary Cards */}
             <div className="ebr-summary">
                 <div className="ebr-summary-card">
-                    <div className="ebr-summary-icon" style={{ background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>
+                    <div className="ebr-summary-icon" style={{ background: "rgba(99,102,241,0.1)", color: "var(--primary)" }}>
                         <Users size={18} />
                     </div>
                     <div>
@@ -280,7 +280,7 @@ const EmployeesByRole = () => {
                     </div>
                 </div>
                 <div className="ebr-summary-card">
-                    <div className="ebr-summary-icon" style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
+                    <div className="ebr-summary-icon" style={{ background: "rgba(16,185,129,0.1)", color: "var(--success-color)" }}>
                         <Activity size={18} />
                     </div>
                     <div>
@@ -289,7 +289,7 @@ const EmployeesByRole = () => {
                     </div>
                 </div>
                 <div className="ebr-summary-card">
-                    <div className="ebr-summary-icon" style={{ background: "rgba(14,165,233,0.1)", color: "#0ea5e9" }}>
+                    <div className="ebr-summary-icon" style={{ background: "rgba(14,165,233,0.1)", color: "var(--info)" }}>
                         <Shield size={18} />
                     </div>
                     <div>

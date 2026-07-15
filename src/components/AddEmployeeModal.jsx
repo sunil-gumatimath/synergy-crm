@@ -216,7 +216,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSubmit, isLoading = false }) => {
               {/* Password — full-width row */}
               <div className="form-group" style={{ gridColumn: "1 / -1" }}>
                 <label htmlFor="password" className="form-label" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Shield size={13} style={{ color: "#6366f1" }} />
+                  <Shield size={13} style={{ color: "var(--primary)" }} />
                   Initial Password <span className="text-red-500">*</span>
                 </label>
                 <div style={{ position: "relative", display: "flex", gap: 6 }}>
@@ -288,7 +288,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSubmit, isLoading = false }) => {
               {/* Role */}
               <div className="form-group">
                 <label htmlFor="role" className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <Shield size={13} style={{ color: "#6366f1" }} />
+                  <Shield size={13} style={{ color: "var(--primary)" }} />
                   Role <span className="text-red-500">*</span>
                 </label>
                 <select

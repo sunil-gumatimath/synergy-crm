@@ -71,7 +71,7 @@ const EditEmployeeModal = ({
     "Operations",
   ];
 
-  const statuses = ["Active", "On Leave", "Inactive"];
+  const statuses = ["Active", "On Leave", "Offline"];
   const genders = [
     { value: "male", label: "Male" },
     { value: "female", label: "Female" },

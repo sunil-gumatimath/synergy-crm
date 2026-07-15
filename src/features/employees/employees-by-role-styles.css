@@ -29,7 +29,7 @@
   width: 2.75rem;
   height: 2.75rem;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -194,15 +194,15 @@
 
 .role-gradient-admin .role-icon-wrapper {
   background: rgba(99, 102, 241, 0.15);
-  color: #6366f1;
+  color: var(--primary);
 }
 .role-gradient-manager .role-icon-wrapper {
   background: rgba(14, 165, 233, 0.15);
-  color: #0ea5e9;
+  color: var(--info);
 }
 .role-gradient-employee .role-icon-wrapper {
   background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .role-header-info {
@@ -255,7 +255,7 @@
 }
 
 .role-stat-value.active {
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .role-stat-label {
@@ -284,19 +284,19 @@
 
 .role-badge-admin {
   background: rgba(99, 102, 241, 0.15);
-  color: #6366f1;
+  color: var(--primary);
   border: 1px solid rgba(99, 102, 241, 0.25);
 }
 
 .role-badge-manager {
   background: rgba(14, 165, 233, 0.15);
-  color: #0ea5e9;
+  color: var(--info);
   border: 1px solid rgba(14, 165, 233, 0.25);
 }
 
 .role-badge-employee {
   background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  color: var(--success-color);
   border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
@@ -414,15 +414,16 @@
 }
 
 .status-active {
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .status-leave {
-  color: #f59e0b;
+  color: var(--warning-color);
 }
 
-.status-inactive {
+.emp-status-text.status-offline {
   color: var(--text-muted);
+  background: transparent;
 }
 
 /* ---- Loading ---- */
@@ -456,7 +457,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  color: #dc2626;
+  color: var(--danger-color);
   font-size: 0.875rem;
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { X, Upload, AlertCircle, FileText } from "../lib/icons";
 import documentService from "../services/documentService";
+import * as Dialog from "@radix-ui/react-dialog";
 
 const DOCUMENT_TYPES = [
   { value: "resume", label: "Resume / CV" },
@@ -105,7 +106,6 @@ const DocumentUploadModal = ({
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload progress (you can implement real progress tracking)
     const progressInterval = setInterval(() => {
       setUploadProgress((prev) => {
         if (prev >= 90) {
@@ -159,163 +159,175 @@ const DocumentUploadModal = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">Upload Document</h2>
-          <button
-            className="modal-close-btn"
-            onClick={handleClose}
-            disabled={isUploading}
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body">
-            {errors.submit && (
-              <div className="error-banner">
-                <AlertCircle size={20} />
-                <span>{errors.submit}</span>
-              </div>
-            )}
-
-            {/* File Drop Zone */}
-            <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                selectedFile
-                  ? "border-primary-color bg-primary-color/5"
-                  : "border-border-color hover:border-primary-color"
-              } ${errors.file ? "border-danger-color" : ""}`}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                onChange={handleFileSelect}
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="modal-overlay" />
+        <Dialog.Content className="modal-content">
+          <div className="modal-header">
+            <Dialog.Title asChild>
+              <h2 className="modal-title">Upload Document</h2>
+            </Dialog.Title>
+            <Dialog.Description className="sr-only">
+              Upload a document for this employee.
+            </Dialog.Description>
+            <Dialog.Close asChild>
+              <button
+                className="modal-close-btn"
+                aria-label="Close"
                 disabled={isUploading}
-              />
+              >
+                <X size={24} />
+              </button>
+            </Dialog.Close>
+          </div>
 
-              {selectedFile ? (
-                <div>
-                  <FileText
-                    size={48}
-                    className="mx-auto mb-3 text-primary-color"
-                  />
-                  <p className="text-main font-medium">{selectedFile.name}</p>
-                  <p className="text-sm text-muted mt-1">
-                    {documentService.formatFileSize(selectedFile.size)}
-                  </p>
-                  <p className="text-xs text-muted mt-2">
-                    Click to change file
-                  </p>
+          <form onSubmit={handleSubmit}>
+            <div className="modal-body">
+              {errors.submit && (
+                <div className="error-banner">
+                  <AlertCircle size={20} />
+                  <span>{errors.submit}</span>
                 </div>
-              ) : (
-                <div>
-                  <Upload size={48} className="mx-auto mb-3 text-muted" />
-                  <p className="text-main font-medium">
-                    Drop file here or click to browse
-                  </p>
-                  <p className="text-sm text-muted mt-2">
-                    Supported formats: PDF, DOCX, DOC, JPG, PNG
-                  </p>
-                  <p className="text-xs text-muted mt-1">
-                    Maximum file size: 10MB
-                  </p>
+              )}
+
+              <div
+                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                  selectedFile
+                    ? "border-primary-color bg-primary-color/5"
+                    : "border-border-color hover:border-primary-color"
+                } ${errors.file ? "border-danger-color" : ""}`}
+                role="button"
+                tabIndex={0}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="sr-only"
+                  onChange={handleFileSelect}
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  disabled={isUploading}
+                />
+
+                {selectedFile ? (
+                  <div>
+                    <FileText
+                      size={48}
+                      className="mx-auto mb-3 text-primary-color"
+                    />
+                    <p className="text-main font-medium">{selectedFile.name}</p>
+                    <p className="text-sm text-muted mt-1">
+                      {documentService.formatFileSize(selectedFile.size)}
+                    </p>
+                    <p className="text-xs text-muted mt-2">
+                      Click to change file
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <Upload size={48} className="mx-auto mb-3 text-muted" />
+                    <p className="text-main font-medium">
+                      Drop file here or click to browse
+                    </p>
+                    <p className="text-sm text-muted mt-2">
+                      Supported formats: PDF, DOCX, DOC, JPG, PNG
+                    </p>
+                    <p className="text-xs text-muted mt-1">
+                      Maximum file size: 10MB
+                    </p>
+                  </div>
+                )}
+              </div>
+              {errors.file && (
+                <span className="error-message mt-2 block">{errors.file}</span>
+              )}
+
+              <div className="form-group mt-4">
+                <label htmlFor="document-type" className="form-label">
+                  Document Type
+                </label>
+                <select
+                  id="document-type"
+                  className="form-input"
+                  value={formData.type}
+                  onChange={(e) => handleChange("type", e.target.value)}
+                  disabled={isUploading}
+                >
+                  {DOCUMENT_TYPES.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="document-notes" className="form-label">
+                  Notes (Optional)
+                </label>
+                <textarea
+                  id="document-notes"
+                  className="form-input"
+                  value={formData.notes}
+                  onChange={(e) => handleChange("notes", e.target.value)}
+                  placeholder="Add any additional notes about this document..."
+                  rows={3}
+                  maxLength={500}
+                  disabled={isUploading}
+                />
+                <span className="text-xs text-muted mt-1">
+                  {formData.notes.length}/500 characters
+                </span>
+              </div>
+
+              {isUploading && (
+                <div className="mt-4">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-main">Uploading...</span>
+                    <span className="text-muted">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-tertiary rounded-full h-2">
+                    <div
+                      className="bg-primary-color h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
                 </div>
               )}
             </div>
-            {errors.file && (
-              <span className="error-message mt-2 block">{errors.file}</span>
-            )}
 
-            {/* Document Type */}
-            <div className="form-group mt-4">
-              <label htmlFor="document-type" className="form-label">
-                Document Type
-              </label>
-              <select
-                id="document-type"
-                className="form-input"
-                value={formData.type}
-                onChange={(e) => handleChange("type", e.target.value)}
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={handleClose}
                 disabled={isUploading}
               >
-                {DOCUMENT_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={!selectedFile || isUploading}
+              >
+                {isUploading
+                  ? `Uploading... ${uploadProgress}%`
+                  : "Upload Document"}
+              </button>
             </div>
-
-            {/* Notes */}
-            <div className="form-group">
-              <label htmlFor="document-notes" className="form-label">
-                Notes (Optional)
-              </label>
-              <textarea
-                id="document-notes"
-                className="form-input"
-                value={formData.notes}
-                onChange={(e) => handleChange("notes", e.target.value)}
-                placeholder="Add any additional notes about this document..."
-                rows={3}
-                maxLength={500}
-                disabled={isUploading}
-              />
-              <span className="text-xs text-muted mt-1">
-                {formData.notes.length}/500 characters
-              </span>
-            </div>
-
-            {/* Upload Progress */}
-            {isUploading && (
-              <div className="mt-4">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-main">Uploading...</span>
-                  <span className="text-muted">{uploadProgress}%</span>
-                </div>
-                <div className="w-full bg-tertiary rounded-full h-2">
-                  <div
-                    className="bg-primary-color h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={handleClose}
-              disabled={isUploading}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={!selectedFile || isUploading}
-            >
-              {isUploading
-                ? `Uploading... ${uploadProgress}%`
-                : "Upload Document"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </form>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };
 

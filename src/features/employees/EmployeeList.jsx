@@ -7,7 +7,7 @@ import React, {
   Suspense,
   lazy,
 } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { UserPlus, Users, RefreshCw, Download, Search, X, LayoutGrid, List } from "../../lib/icons";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import "./employees-styles.css";
@@ -16,7 +16,7 @@ import { supabase } from "../../lib/supabase";
 import Toast from "../../components/common/Toast";
 import EmployeeCard from "../../components/EmployeeCard";
 import Pagination from "../../components/common/Pagination";
-import { SkeletonEmployeeCard, SkeletonFilterBar, Skeleton } from "../../components/common/Skeleton";
+import { Skeleton } from "../../components/common/Skeleton";
 import FilterPanel from "../../components/FilterPanel";
 import SortControls from "../../components/SortControls";
 import BulkActionToolbar from "../../components/BulkActionToolbar";
@@ -96,7 +96,7 @@ const EmployeeList = () => {
       if (result.error) throw result.error;
       return { data: result.data || [], count: result.count ?? 0 };
     },
-    keepPreviousData: true, // keep stale data visible while loading next page
+    placeholderData: keepPreviousData, // keep stale data visible while loading next page
   });
 
   const employees = queryResult.data;
@@ -110,7 +110,7 @@ const EmployeeList = () => {
   const { data: allEmployees = [] } = useQuery({
     queryKey: ["employees-options"],
     queryFn: async () => {
-      const { data } = await employeeService.getAll({ page: 1, pageSize: 1000 });
+      const { data } = await employeeService.getAll({ page: 1, pageSize: 1000, select: 'id,name,department,role,status' });
       return data || [];
     },
     staleTime: 60_000, // revalidate every minute

@@ -404,9 +404,6 @@
     align-items: stretch;
   }
 
-  .employees-search {
-    min-width: 100%;
-  }
 
   .employees-controls {
     grid-template-columns: 1fr;
