@@ -12,7 +12,8 @@ import {
   Check,
 } from "../lib/icons";
 import SynergyLogo from "../components/common/SynergyLogo";
-import { setEncryptedItem, getEncryptedItem, removeEncryptedItem } from "../utils/storageUtils";
+import { setLocalItem, getLocalItem, removeLocalItem } from "../utils/storageUtils";
+import * as Dialog from "@radix-ui/react-dialog";
 import "./login-styles.css";
 
 const LoginPage = () => {
@@ -22,7 +23,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(
-    () => getEncryptedItem("synergy_remembered_email") !== null
+    () => getLocalItem("synergy_remembered_email") !== null
   );
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
@@ -34,7 +35,7 @@ const LoginPage = () => {
   const [resetMessage, setResetMessage] = useState({ type: "", text: "" });
 
   const [formData, setFormData] = useState(() => {
-    const rememberedEmail = getEncryptedItem("synergy_remembered_email");
+    const rememberedEmail = getLocalItem("synergy_remembered_email");
     return {
       email: rememberedEmail || "",
       password: "",
@@ -59,7 +60,7 @@ const LoginPage = () => {
   const handleRememberMeChange = (e) => {
     setRememberMe(e.target.checked);
     if (!e.target.checked) {
-      removeEncryptedItem("synergy_remembered_email");
+      removeLocalItem("synergy_remembered_email");
     }
   };
 
@@ -98,9 +99,9 @@ const LoginPage = () => {
     try {
       // Handle Remember Me
       if (rememberMe) {
-        setEncryptedItem("synergy_remembered_email", formData.email);
+        setLocalItem("synergy_remembered_email", formData.email);
       } else {
-        removeEncryptedItem("synergy_remembered_email");
+        removeLocalItem("synergy_remembered_email");
       }
 
       const { error: signInError, user: signedInUser } = await signIn(
@@ -184,25 +185,31 @@ const LoginPage = () => {
       </div>
 
       {/* Forgot Password Modal */}
-      {showForgotPassword && (
-        <div className="forgot-password-modal-overlay" onClick={() => setShowForgotPassword(false)}>
-          <div className="forgot-password-modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="modal-close-btn"
-              onClick={() => setShowForgotPassword(false)}
-              aria-label="Close"
-            >
-              <X size={20} />
-            </button>
+      <Dialog.Root open={showForgotPassword} onOpenChange={(open) => !open && setShowForgotPassword(false)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="forgot-password-modal-overlay" />
+          <Dialog.Content className="forgot-password-modal">
+            <Dialog.Close asChild>
+              <button
+                className="modal-close-btn"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+            </Dialog.Close>
 
             <div className="modal-icon">
               <Mail size={32} />
             </div>
 
-            <h3 className="modal-title">Reset Password</h3>
-            <p className="modal-subtitle">
-              Enter your email address and we'll send you a link to reset your password.
-            </p>
+            <Dialog.Title asChild>
+              <h3 className="modal-title">Reset Password</h3>
+            </Dialog.Title>
+            <Dialog.Description asChild>
+              <p className="modal-subtitle">
+                Enter your email address and we'll send you a link to reset your password.
+              </p>
+            </Dialog.Description>
 
             {resetMessage.text && (
               <div className={`reset-message ${resetMessage.type}`}>
@@ -249,17 +256,17 @@ const LoginPage = () => {
               </button>
             </form>
 
-            <button
-              type="button"
-              className="back-to-login-btn"
-              onClick={() => setShowForgotPassword(false)}
-            >
-              Back to Sign In
-            </button>
-          </div>
-        </div>
-      )}
-
+            <Dialog.Close asChild>
+              <button
+                type="button"
+                className="back-to-login-btn"
+              >
+                Back to Sign In
+              </button>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
       {/* Main Content */}
       <div className="login-container">
         {/* Logo and Title */}
@@ -280,7 +287,7 @@ const LoginPage = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="error-alert">
+              <div className="error-alert" role="alert">
                 <AlertCircle size={18} className="error-icon" />
                 <p>{error}</p>
               </div>
@@ -326,7 +333,7 @@ const LoginPage = () => {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="password-toggle"
-                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>

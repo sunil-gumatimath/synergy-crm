@@ -19,8 +19,7 @@
   button,
   .btn,
   .icon-btn,
-  a.nav-item,
-  .tab-btn {
+  a.nav-item {
     min-height: 44px;
     min-width: 44px;
   }
@@ -78,22 +77,15 @@
     padding-top: 0.75rem;
   }
 
-  .user-name {
-    font-size: 0.875rem;
-  }
-
-  .user-email {
-    font-size: 0.75rem;
-  }
 }
 
 /* ========== SIDEBAR MOBILE ========== */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
-    left: -100%;
-    width: 280px;
-    z-index: 1000;
+    left: -17rem;
+    width: 17rem;
+    z-index: 50;
     transition: left 0.3s ease;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
   }
@@ -106,12 +98,12 @@
     display: none !important;
   }
 
-  .mobile-menu-button {
+  .mobile-menu-btn-header {
     display: flex !important;
     position: fixed;
     top: 1rem;
     left: 1rem;
-    z-index: 999;
+    z-index: 60;
     width: 44px;
     height: 44px;
     border-radius: var(--radius-md);
@@ -127,7 +119,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 45;
   }
 
   .main-content {
@@ -140,20 +132,15 @@
 }
 
 @media (min-width: 769px) {
-  .mobile-menu-button {
+  .mobile-menu-btn-header {
     display: none !important;
   }
 }
 
 /* ========== HEADER MOBILE ========== */
 @media (max-width: 640px) {
-  .header {
-    padding: 0.75rem 1rem;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
   .header-search-container {
+    display: block;
     width: 100%;
     order: 3;
   }
@@ -166,9 +153,6 @@
     gap: 0.5rem;
   }
 
-  .header-user-info {
-    display: none;
-  }
 }
 
 /* ========== EMPLOYEES MOBILE ========== */
@@ -857,7 +841,7 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
 
-    .mobile-menu-button {
+    .mobile-menu-btn-header {
       top: calc(1rem + env(safe-area-inset-top));
       left: calc(1rem + env(safe-area-inset-left));
     }
@@ -908,7 +892,7 @@
 /* ========== PRINT STYLES ========== */
 @media print {
 
-  .mobile-menu-button,
+  .mobile-menu-btn-header,
   .sidebar-collapse-toggle,
   .sidebar,
   .header-actions,

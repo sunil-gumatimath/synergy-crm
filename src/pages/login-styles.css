@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  background: var(--bg-body);
   position: relative;
   overflow: hidden;
   font-family: "Inter", sans-serif;
@@ -71,21 +71,21 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--border);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
 }
 
 .logo-icon {
-  color: white;
+  color: var(--text-main);
   filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
 }
 
 .app-title {
   font-size: 3rem;
   font-weight: 800;
-  color: white;
+  color: var(--text-main);
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.03em;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -94,8 +94,8 @@
 /* Card */
 .login-card {
   position: relative;
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   box-shadow: 0 22px 40px -16px rgba(0, 0, 0, 0.45);
   overflow: hidden;
 }
@@ -112,12 +112,12 @@
 .form-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-main);
   margin: 0 0 0.5rem 0;
 }
 
 .form-subtitle {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted);
   font-size: 0.9375rem;
 }
 
@@ -135,25 +135,25 @@
 .form-input {
   width: 100%;
   padding: 1rem 1rem 1rem 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-main);
   font-size: 1rem;
   outline: none;
   transition: all 0.2s;
 }
 
 .form-input:focus {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .form-input:not(:placeholder-shown)+.floating-label,
 .form-input:focus+.floating-label {
   transform: translateY(-1.6rem) scale(0.85);
-  color: #a78bfa;
-  background: #1e1b4b;
+  color: var(--primary);
+  background: var(--bg-surface);
   /* Match closest bg color or transparent if possible */
   padding: 0 0.25rem;
 }
@@ -163,7 +163,7 @@
   position: absolute;
   left: 1rem;
   top: 1rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   font-size: 1rem;
   pointer-events: none;
   transition: all 0.2s;
@@ -186,7 +186,7 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0;
   display: flex;
@@ -211,17 +211,17 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
 }
 
 .checkbox-input {
   width: 16px;
   height: 16px;
-  accent-color: #8b5cf6;
+  accent-color: var(--primary);
 }
 
 .forgot-password-link {
-  color: #a78bfa;
+  color: var(--primary);
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -235,7 +235,7 @@
 .submit-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   border: none;
   color: white;
   font-size: 1rem;
@@ -251,7 +251,7 @@
 
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 10px 20px -5px rgba(var(--primary-rgb), 0.4);
 }
 
 .submit-btn:active:not(:disabled) {
@@ -288,7 +288,7 @@
 /* Footer */
 .auth-footer {
   text-align: center;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-light);
   font-size: 0.875rem;
   margin-top: 2rem;
 }
@@ -302,7 +302,7 @@
 .loading-dots span {
   width: 6px;
   height: 6px;
-  background: white;
+  background: var(--text-main);
   animation: bounce 1.4s infinite ease-in-out both;
 }
 
@@ -339,11 +339,15 @@
 }
 
 .forgot-password-modal {
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   max-width: 400px;
-  background: #1e1b4b;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: 101;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -353,9 +357,9 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted);
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -374,25 +378,25 @@
 .modal-icon {
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.2));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  color: #a78bfa;
+  color: var(--primary);
 }
 
 .modal-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-main);
   text-align: center;
   margin: 0 0 0.5rem 0;
 }
 
 .modal-subtitle {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted);
   text-align: center;
   font-size: 0.9375rem;
   margin-bottom: 1.5rem;
@@ -422,9 +426,9 @@
 }
 
 .reset-message.success {
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  color: #86efac;
+  background: var(--success-bg);
+  border: 1px solid var(--success-color);
+  color: var(--success-text);
 }
 
 .back-to-login-btn {
@@ -432,9 +436,9 @@
   margin-top: 1rem;
   padding: 0.75rem;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   font-size: 0.9375rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -451,7 +455,7 @@
   background: none;
   border: none;
   padding: 0;
-  color: #a78bfa;
+  color: var(--primary);
   font-size: 0.875rem;
   cursor: pointer;
   transition: color 0.2s;
@@ -478,7 +482,7 @@
 
   .forgot-password-modal {
     width: calc(100% - 2rem);
-    margin: 1rem;
+    margin: 0;
     padding: 1.5rem;
   }
 }

@@ -4,31 +4,6 @@
 
 /* No custom padding needed - uses main-content */
 
-/* Header - matches other page headers */
-.timetracking-header {
-    margin-bottom: 24px;
-}
-
-.timetracking-header h1 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 4px 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-main);
-}
-
-.timetracking-header h1 svg {
-    color: var(--primary);
-}
-
-.timetracking-header p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-}
-
 /* No Employee Message */
 .timetracking-no-employee {
     display: flex;

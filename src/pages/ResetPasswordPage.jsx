@@ -147,7 +147,7 @@ const ResetPasswordPage = () => {
 
                 <form onSubmit={handleSubmit} className="reset-password-form">
                     {error && (
-                        <div className="error-message">
+                        <div className="error-message" role="alert">
                             <AlertCircle size={18} />
                             {error}
                         </div>
@@ -159,6 +159,7 @@ const ResetPasswordPage = () => {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 id="password"
+                                autoComplete="new-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter your new password"
@@ -198,6 +199,7 @@ const ResetPasswordPage = () => {
                             <input
                                 type={showConfirmPassword ? "text" : "password"}
                                 id="confirmPassword"
+                                autoComplete="new-password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="Confirm your new password"

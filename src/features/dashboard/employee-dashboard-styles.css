@@ -37,7 +37,7 @@
 
 /* Welcome Section */
 .emp-dash-welcome {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-body) 100%);
     border-radius: var(--radius-lg);
     padding: var(--space-xl);
     border: 1px solid var(--border-light);
@@ -475,7 +475,7 @@
 .emp-dash-event-date {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-muted) 100%);
     border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
@@ -531,7 +531,7 @@
     justify-content: center;
     text-align: center;
     padding: var(--space-2xl);
-    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-body) 100%);
     border: 2px dashed var(--border-light);
     border-radius: var(--radius-lg);
     gap: var(--space-sm);
@@ -551,13 +551,13 @@
 }
 
 .emp-dash-empty-icon.success {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-    color: #059669;
+    background: linear-gradient(135deg, var(--success-bg) 0%, var(--bg-muted) 100%);
+    color: var(--success-text);
 }
 
 .emp-dash-empty-icon.info {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    color: #2563eb;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-muted) 100%);
+    color: var(--info);
 }
 
 .emp-dash-empty-state h3 {
@@ -576,7 +576,7 @@
 
 /* Skeleton Styles */
 .skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-secondary) 50%, var(--bg-muted) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     border-radius: var(--radius-sm);
@@ -598,11 +598,6 @@
 
 .skeleton-welcome {
     padding: var(--space-xl);
-}
-
-.skeleton-title-lg {
-    height: 32px;
-    width: 280px;
 }
 
 .skeleton-text-sm {

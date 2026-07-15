@@ -3,10 +3,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Primary brand colors */
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
+  /* Primary brand colors - aligned to the runtime accent (iris) so
+     bg-primary/text-primary/border-primary resolve to the user accent */
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
   --color-primary-light: #eef2ff;
+  --color-primary-dark: #4338ca;
 
   /* Background colors */
   --color-main: #f3f4f6;
@@ -73,6 +75,7 @@
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
+  --space-2xl: 3rem;
 
   --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 16px 40px rgba(15, 23, 42, 0.08);
@@ -1022,7 +1025,7 @@ button {
 }
 
 @media (max-width: 1024px) {
-  .mobile-menu-button {
+  .mobile-menu-btn-header {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1154,6 +1157,16 @@ button {
   background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
   box-shadow: 0 18px 34px rgba(var(--primary-rgb), 0.28);
   transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-body);
 }
 
 .btn-ghost {

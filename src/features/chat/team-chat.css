@@ -222,7 +222,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--space-2xl);
+    padding: var(--space-xl);
     text-align: center;
     color: var(--text-muted);
 }
@@ -617,7 +617,7 @@
     justify-content: center;
     height: 100%;
     text-align: center;
-    padding: var(--space-2xl);
+    padding: var(--space-xl);
 }
 
 .chat-empty-icon {
