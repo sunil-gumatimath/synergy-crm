@@ -31,7 +31,7 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
 
   return (
     <div className={`toast-container ${isExiting ? "toast-exit" : ""}`}>
-      <div className={`toast toast--${type}`}>
+      <div className={`toast toast--${type}`} role={type === "error" || type === "warning" ? "alert" : "status"}>
         <div className="toast__icon">{icons[type]}</div>
         <p className="toast__message">{message}</p>
         <button

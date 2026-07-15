@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import "./Avatar.css";
 import PropTypes from 'prop-types';
 import { getInitials, getAvatarStyle } from '../../utils/avatarUtils.js';
 import { avatarService } from '../../services/avatarService.js';

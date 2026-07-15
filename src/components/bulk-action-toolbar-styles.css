@@ -128,18 +128,18 @@
 }
 
 .bulk-action-btn.status-offline {
-  color: var(--danger);
-  border-color: var(--danger);
+  color: var(--danger-color);
+  border-color: var(--danger-color);
 }
 
 .bulk-action-btn.status-offline:hover {
-  background: var(--danger);
+  background: var(--danger-color);
   color: white;
 }
 
 /* Danger button */
 .bulk-action-btn.danger {
-  background: var(--danger);
+  background: var(--danger-color);
   color: white;
   font-weight: 600;
 }

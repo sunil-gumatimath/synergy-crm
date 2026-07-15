@@ -18,13 +18,13 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
     if (allowedRoles && allowedRoles.length > 0 && !isAllowedRole(user.role, allowedRoles)) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-[var(--bg-body)]">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h1>
-                    <p className="text-gray-600">You do not have permission to view this page.</p>
+                    <p className="text-[var(--text-muted)]">You do not have permission to view this page.</p>
                     <button
                         onClick={() => window.history.back()}
-                        className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+                        className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover"
                     >
                         Go Back
                     </button>

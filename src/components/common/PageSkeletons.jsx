@@ -7,8 +7,8 @@ export const SkeletonStats = () => (
         {[1, 2, 3, 4].map((i) => (
             <div key={i} className="card p-4">
                 <div className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                    <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+                    <div className="h-4 bg-[var(--bg-muted)] rounded w-1/2 mb-2"></div>
+                    <div className="h-8 bg-[var(--bg-muted)] rounded w-1/4"></div>
                 </div>
             </div>
         ))}
@@ -18,7 +18,7 @@ export const SkeletonStats = () => (
 // Employee Dashboard Skeleton
 export const DashboardSkeleton = () => (
     <div className="emp-dash-container p-6">
-        <div className="emp-dash-welcome mb-8 p-8 rounded-2xl bg-gray-50 border border-gray-100">
+        <div className="emp-dash-welcome mb-8 p-8 rounded-2xl bg-[var(--bg-body)] border border-[var(--border)]">
             <Skeleton width="300px" height="36px" />
             <Skeleton width="450px" height="20px" className="mt-4" />
             <Skeleton width="200px" height="16px" className="mt-2" />
@@ -63,7 +63,7 @@ export const EmployeeListSkeleton = () => (
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="card p-4 rounded-xl border border-gray-100">
+                <div key={i} className="card p-4 rounded-xl border border-[var(--border)]">
                     <div className="flex items-center gap-4 mb-4">
                         <Skeleton width="56px" height="56px" borderRadius="12px" />
                         <div>
@@ -90,14 +90,14 @@ export const EmployeeDetailSkeleton = () => (
             <nav className="emp-detail__breadcrumb px-6 py-4">
                 <div className="flex items-center gap-2">
                     <Skeleton width="80px" height="14px" />
-                    <ChevronRight size={14} className="text-gray-300" />
+                    <ChevronRight size={14} className="text-[var(--text-light)]" />
                     <Skeleton width="120px" height="14px" />
                 </div>
             </nav>
 
             {/* Hero Card Skeleton */}
-            <div className="emp-detail__hero mx-6 mb-8 rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm">
-                <div className="h-32 bg-gray-50" />
+            <div className="emp-detail__hero mx-6 mb-8 rounded-2xl overflow-hidden bg-[var(--bg-surface)] border border-[var(--border)] shadow-sm">
+                <div className="h-32 bg-[var(--bg-body)]" />
                 <div className="px-8 pb-8 -mt-12 flex flex-col md:flex-row items-end md:items-center gap-6">
                     <Skeleton width="140px" height="140px" borderRadius="24px" className="border-4 border-white shadow-md" />
                     <div className="flex-1">
@@ -121,7 +121,7 @@ export const EmployeeDetailSkeleton = () => (
             {/* Main Grid Skeleton */}
             <div className="emp-detail__grid px-6 grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <aside className="lg:col-span-1 space-y-6">
-                    <div className="card p-6 bg-white rounded-2xl border border-gray-100">
+                    <div className="card p-6 bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]">
                         <Skeleton width="120px" height="24px" className="mb-6" />
                         <div className="space-y-6">
                             {[1, 2, 3].map(i => (
@@ -139,14 +139,14 @@ export const EmployeeDetailSkeleton = () => (
                 <main className="lg:col-span-3 space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="card p-4 bg-white rounded-xl border border-gray-100">
+                            <div key={i} className="card p-4 bg-[var(--bg-surface)] rounded-xl border border-[var(--border)]">
                                 <Skeleton width="32px" height="32px" borderRadius="8px" className="mb-3" />
                                 <Skeleton width="60px" height="12px" className="mb-2" />
                                 <Skeleton width="80px" height="20px" />
                             </div>
                         ))}
                     </div>
-                    <div className="card p-8 bg-white rounded-2xl border border-gray-100">
+                    <div className="card p-8 bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                             {[1, 2, 3, 4, 5, 6].map(i => (
                                 <div key={i} className="flex gap-4">
@@ -377,7 +377,7 @@ export const CalendarSkeleton = () => (
 export const GenericViewSkeleton = ({ title = "Loading Page" }) => (
     <div className="generic-view p-8">
         <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+            <h1 className="text-2xl font-bold text-[var(--text-main)] dark:text-gray-100">{title}</h1>
             <Skeleton width="400px" height="20px" className="mt-2" />
         </div>
         <div className="space-y-6">

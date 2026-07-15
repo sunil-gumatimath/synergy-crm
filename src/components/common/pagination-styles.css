@@ -125,12 +125,9 @@
     box-shadow: 0 0 0 3px var(--primary-light);
 }
 
-/* Dark mode enhancements */
-@media (prefers-color-scheme: dark) {
-    .pagination-btn.active {
+.dark .pagination-btn.active {
         box-shadow: 0 2px 12px rgba(99, 102, 241, 0.35);
     }
-}
 
 /* Responsive */
 @media (max-width: 640px) {
