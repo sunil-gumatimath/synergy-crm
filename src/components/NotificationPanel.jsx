@@ -87,7 +87,11 @@ const NotificationPanel = () => {
             await markAsRead(notification.id);
         }
         if (notification.link) {
-            navigate(notification.link);
+            const link = notification.link;
+            const isInternal = link.startsWith("/") && !link.startsWith("//") && !link.includes(":");
+            if (isInternal) {
+                navigate(link);
+            }
             closePanel();
         }
     };
@@ -104,6 +108,8 @@ const NotificationPanel = () => {
                 className="notification-bell-btn"
                 onClick={togglePanel}
                 aria-label="Toggle notifications"
+                aria-expanded={isOpen}
+                aria-controls="notification-panel"
             >
                 <Bell size={20} />
                 {unreadCount > 0 && (
@@ -115,7 +121,7 @@ const NotificationPanel = () => {
 
             {/* Panel */}
             {isOpen && (
-                <div className="notification-panel">
+                <div id="notification-panel" className="notification-panel">
                     {/* Header */}
                     <div className="notification-header">
                         <div className="notification-header-title">
@@ -163,9 +169,16 @@ const NotificationPanel = () => {
                                 {notifications.map((notification) => (
                                     <div
                                         key={notification.id}
-                                        className={`notification-item ${notification.read ? "read" : "unread"
-                                            }`}
+                                        className={`notification-item ${notification.read ? "read" : "unread"}`}
+                                    role="button"
+                                    tabIndex={0}
                                         onClick={() => handleNotificationClick(notification)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" || e.key === " ") {
+                                                e.preventDefault();
+                                                handleNotificationClick(notification);
+                                            }
+                                        }}
                                     >
                                         <div className="notification-icon-wrapper">
                                             {getIcon(notification.type)}

@@ -2,14 +2,15 @@ import React, { useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import { X, AlertCircle } from "../lib/icons";
 import noteService from "../services/noteService";
+import * as Dialog from "@radix-ui/react-dialog";
 
 const CATEGORIES = [
-  { value: "general", label: "General", icon: "📝" },
-  { value: "performance", label: "Performance", icon: "📊" },
-  { value: "meeting", label: "Meeting", icon: "💼" },
-  { value: "praise", label: "Praise", icon: "⭐" },
+  { value: "general", label: "General", icon: "\ud83d\udcdd" },
+  { value: "performance", label: "Performance", icon: "\ud83d\udcca" },
+  { value: "meeting", label: "Meeting", icon: "\ud83d\udcbc" },
+  { value: "praise", label: "Praise", icon: "\u2b50" },
   { value: "disciplinary", label: "Disciplinary", icon: "⚠️" },
-  { value: "other", label: "Other", icon: "📄" },
+  { value: "other", label: "Other", icon: "\ud83d\udcc4" },
 ];
 
 const EditNoteModal = ({ isOpen, note, onClose, onNoteUpdated }) => {
@@ -81,139 +82,142 @@ const EditNoteModal = ({ isOpen, note, onClose, onNoteUpdated }) => {
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: null }));
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">Edit Note</h2>
-          <button className="modal-close-btn" onClick={handleClose}>
-            <X size={24} />
-          </button>
-        </div>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="modal-overlay" />
+        <Dialog.Content className="modal-content">
+          <div className="modal-header">
+            <Dialog.Title asChild>
+              <h2 className="modal-title">Edit Note</h2>
+            </Dialog.Title>
+            <Dialog.Description className="sr-only">
+              Update an existing note for this employee.
+            </Dialog.Description>
+            <Dialog.Close asChild>
+              <button className="modal-close-btn" aria-label="Close" disabled={isSubmitting}>
+                <X size={24} />
+              </button>
+            </Dialog.Close>
+          </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body">
-            {errors.submit && (
-              <div className="error-banner">
-                <AlertCircle size={20} />
-                <span>{errors.submit}</span>
-              </div>
-            )}
-
-            {/* Title */}
-            <div className="form-group">
-              <label htmlFor="edit-note-title" className="form-label required">
-                Title
-              </label>
-              <input
-                id="edit-note-title"
-                type="text"
-                className={`form-input ${errors.title ? "error" : ""}`}
-                value={formData.title}
-                onChange={(e) => handleChange("title", e.target.value)}
-                placeholder="Enter note title"
-                maxLength={200}
-                disabled={isSubmitting}
-              />
-              {errors.title && (
-                <span className="error-message">{errors.title}</span>
+          <form onSubmit={handleSubmit}>
+            <div className="modal-body">
+              {errors.submit && (
+                <div className="error-banner">
+                  <AlertCircle size={20} />
+                  <span>{errors.submit}</span>
+                </div>
               )}
-              <span className="text-xs text-muted mt-1">
-                {formData.title.length}/200 characters
-              </span>
-            </div>
 
-            {/* Category */}
-            <div className="form-group">
-              <label htmlFor="edit-note-category" className="form-label">
-                Category
-              </label>
-              <select
-                id="edit-note-category"
-                className="form-input"
-                value={formData.category}
-                onChange={(e) => handleChange("category", e.target.value)}
-                disabled={isSubmitting}
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.icon} {cat.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Content */}
-            <div className="form-group">
-              <label
-                htmlFor="edit-note-content"
-                className="form-label required"
-              >
-                Content
-              </label>
-              <textarea
-                id="edit-note-content"
-                className={`form-input ${errors.content ? "error" : ""}`}
-                value={formData.content}
-                onChange={(e) => handleChange("content", e.target.value)}
-                placeholder="Enter note content..."
-                rows={8}
-                maxLength={5000}
-                disabled={isSubmitting}
-              />
-              {errors.content && (
-                <span className="error-message">{errors.content}</span>
-              )}
-              <span className="text-xs text-muted mt-1">
-                {formData.content.length}/5000 characters
-              </span>
-            </div>
-
-            {/* Private Note Checkbox */}
-            <div className="form-group">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <div className="form-group">
+                <label htmlFor="edit-note-title" className="form-label required">
+                  Title
+                </label>
                 <input
-                  type="checkbox"
-                  checked={formData.is_private}
-                  onChange={(e) => handleChange("is_private", e.target.checked)}
+                  id="edit-note-title"
+                  type="text"
+                  className={`form-input ${errors.title ? "error" : ""}`}
+                  value={formData.title}
+                  onChange={(e) => handleChange("title", e.target.value)}
+                  placeholder="Enter note title"
+                  maxLength={200}
                   disabled={isSubmitting}
-                  className="w-4 h-4 rounded border-border-color"
                 />
-                <span className="text-sm text-main">
-                  Mark as private (only visible to managers)
+                {errors.title && (
+                  <span className="error-message">{errors.title}</span>
+                )}
+                <span className="text-xs text-muted mt-1">
+                  {formData.title.length}/200 characters
                 </span>
-              </label>
-            </div>
-          </div>
+              </div>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={handleClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Updating..." : "Update Note"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+              <div className="form-group">
+                <label htmlFor="edit-note-category" className="form-label">
+                  Category
+                </label>
+                <select
+                  id="edit-note-category"
+                  className="form-input"
+                  value={formData.category}
+                  onChange={(e) => handleChange("category", e.target.value)}
+                  disabled={isSubmitting}
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat.value} value={cat.value}>
+                      {cat.icon} {cat.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label
+                  htmlFor="edit-note-content"
+                  className="form-label required"
+                >
+                  Content
+                </label>
+                <textarea
+                  id="edit-note-content"
+                  className={`form-input ${errors.content ? "error" : ""}`}
+                  value={formData.content}
+                  onChange={(e) => handleChange("content", e.target.value)}
+                  placeholder="Enter note content..."
+                  rows={8}
+                  maxLength={5000}
+                  disabled={isSubmitting}
+                />
+                {errors.content && (
+                  <span className="error-message">{errors.content}</span>
+                )}
+                <span className="text-xs text-muted mt-1">
+                  {formData.content.length}/5000 characters
+                </span>
+              </div>
+
+              <div className="form-group">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_private}
+                    onChange={(e) => handleChange("is_private", e.target.checked)}
+                    disabled={isSubmitting}
+                    className="w-4 h-4 rounded border-border-color"
+                  />
+                  <span className="text-sm text-main">
+                    Mark as private (only visible to managers)
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={handleClose}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Updating..." : "Update Note"}
+              </button>
+            </div>
+          </form>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };
 

@@ -174,46 +174,46 @@ const SupportView = () => {
 
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-slate-950/90 shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
+                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-[var(--bg-surface)] shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
                     <div className="flex items-center justify-between gap-4">
                         <div className="rounded-2xl bg-blue-500/10 p-3 text-blue-300">
                             <Clock size={22} />
                         </div>
                         <div className="text-right">
                             <p className="text-3xl font-semibold text-main">{tickets.filter(t => t.status === 'open' || t.status === 'in_progress').length}</p>
-                            <p className="text-sm text-slate-400">Open Tickets</p>
+                            <p className="text-sm text-[var(--text-muted)]">Open Tickets</p>
                         </div>
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-400">Issues currently active or awaiting a support response.</p>
+                    <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Issues currently active or awaiting a support response.</p>
                 </div>
-                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-slate-950/90 shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
+                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-[var(--bg-surface)] shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
                     <div className="flex items-center justify-between gap-4">
                         <div className="rounded-2xl bg-emerald-500/10 p-3 text-emerald-300">
                             <CheckCircle size={22} />
                         </div>
                         <div className="text-right">
                             <p className="text-3xl font-semibold text-main">{tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length}</p>
-                            <p className="text-sm text-slate-400">Resolved</p>
+                            <p className="text-sm text-[var(--text-muted)]">Resolved</p>
                         </div>
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-400">Requests closed successfully in the help desk workflow.</p>
+                    <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Requests closed successfully in the help desk workflow.</p>
                 </div>
-                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-slate-950/90 shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
+                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-[var(--bg-surface)] shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
                     <div className="flex items-center justify-between gap-4">
                         <div className="rounded-2xl bg-purple-500/10 p-3 text-purple-300">
                             <MessageSquare size={22} />
                         </div>
                         <div className="text-right">
                             <p className="text-3xl font-semibold text-main">N/A</p>
-                            <p className="text-sm text-slate-400">Avg. Response Time</p>
+                            <p className="text-sm text-[var(--text-muted)]">Avg. Response Time</p>
                         </div>
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-400">Response time tracking will appear here once available.</p>
+                    <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Response time tracking will appear here once available.</p>
                 </div>
             </div>
 
             {/* Ticket List */}
-            <div className="card flex-1 overflow-hidden flex flex-col rounded-[2rem] border border-white/10 bg-[var(--bg-panel)] shadow-[0_24px_100px_-50px_rgba(15,23,42,0.9)]">
+            <div className="card flex-1 overflow-hidden flex flex-col rounded-[2rem] border border-white/10 bg-[var(--bg-surface)] shadow-[0_24px_100px_-50px_rgba(15,23,42,0.9)]">
                 <div className="p-4 border-b border-white/10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                         <h2 className="font-semibold text-lg">My Tickets</h2>
@@ -261,16 +261,16 @@ const SupportView = () => {
                                         role="button"
                                         tabIndex={0}
                                         onClick={() => openEditModal(ticket)}
-                                        className="group rounded-[2rem] border border-white/10 bg-slate-950/80 p-5 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.85)] transition duration-200 hover:-translate-y-0.5 hover:bg-slate-900/95 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 overflow-hidden"
+                                        className="group rounded-[2rem] border border-white/10 bg-[var(--bg-surface)] p-5 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.85)] transition duration-200 hover:-translate-y-0.5 hover:bg-slate-900/95 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 overflow-hidden"
                                     >
                                         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between min-w-0">
                                             <div className="space-y-3 min-w-0 w-full">
                                                 <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.24em] text-slate-500">
-                                                    <span className="inline-flex min-w-0 break-words items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-slate-300">#{abbreviateTicketId(ticket.id)}</span>
-                                                    <span className="inline-flex min-w-0 break-words items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-slate-300">{formatCategory(ticket.category)}</span>
+                                                    <span className="inline-flex min-w-0 break-words items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[var(--text-light)]">#{abbreviateTicketId(ticket.id)}</span>
+                                                    <span className="inline-flex min-w-0 break-words items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[var(--text-light)]">{formatCategory(ticket.category)}</span>
                                                 </div>
                                                 <h3 className="text-xl font-semibold text-main break-words max-w-full">{ticket.title}</h3>
-                                                <p className="text-sm leading-6 text-slate-400 break-words max-w-full">{ticket.description || "No additional details provided."}</p>
+                                                <p className="text-sm leading-6 text-[var(--text-muted)] break-words max-w-full">{ticket.description || "No additional details provided."}</p>
                                             </div>
                                             <div className="flex flex-col gap-3 sm:items-end min-w-0 w-full sm:w-auto">
                                                 <span className={`inline-flex max-w-full break-words items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase ${getStatusColor(ticket.status)}`}>
@@ -281,12 +281,12 @@ const SupportView = () => {
                                                     {ticket.priority}
                                                 </span>
                                                 <div className="text-right text-xs uppercase tracking-[0.18em] text-slate-500">Updated</div>
-                                                <div className="text-sm font-medium text-slate-300">{formatDate(ticket.updated_at || ticket.created_at)}</div>
+                                                <div className="text-sm font-medium text-[var(--text-light)]">{formatDate(ticket.updated_at || ticket.created_at)}</div>
                                             </div>
                                         </div>
 
-                                        <div className="mt-5 flex items-center justify-between gap-3 text-sm text-slate-400">
-                                            <span className="text-slate-400">Click to open ticket details</span>
+                                        <div className="mt-5 flex items-center justify-between gap-3 text-sm text-[var(--text-muted)]">
+                                            <span className="text-[var(--text-muted)]">Click to open ticket details</span>
                                             <button
                                                 className="text-muted hover:text-red-500 transition-colors p-2"
                                                 onClick={(e) => openDeleteModal(e, ticket)}
@@ -300,12 +300,12 @@ const SupportView = () => {
                             })}
                         </div>
                     ) : (
-                        <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[2rem] border border-dashed border-white/10 bg-slate-950/70 p-10 text-center text-slate-400">
+                        <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[2rem] border border-dashed border-white/10 bg-[var(--bg-surface)] p-10 text-center text-[var(--text-muted)]">
                             <div className="mb-4 rounded-full bg-slate-900 p-4">
-                                <MessageSquare size={28} className="text-slate-400" />
+                                <MessageSquare size={28} className="text-[var(--text-muted)]" />
                             </div>
                             <h3 className="mb-2 text-lg font-semibold text-main">No tickets to display yet</h3>
-                            <p className="max-w-xl text-sm text-slate-400">Use the raise ticket button to submit a new request, and we’ll show it here once it’s created.</p>
+                            <p className="max-w-xl text-sm text-[var(--text-muted)]">Use the raise ticket button to submit a new request, and we’ll show it here once it’s created.</p>
                         </div>
                     )}
                 </div>
