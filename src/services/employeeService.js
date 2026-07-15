@@ -49,16 +49,51 @@ export const employeeService = {
    * @param {number} [options.pageSize=50] - Rows per page
    * @returns {Promise<{data: Array, count: number|null, error: Error|null}>}
    */
-  async getAll({ page = 1, pageSize = 50 } = {}) {
+  async getAll({
+    page = 1,
+    pageSize = 50,
+    search,
+    department,
+    role,
+    status,
+    sortBy,
+    sortOrder,
+    select,
+  } = {}) {
     try {
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
-      const { data, error, count } = await supabase
+      // Use a narrow caller-provided select when given (e.g. for privacy),
+      // otherwise fall back to the default select that embeds private_details.
+      const selectArg = select || EMPLOYEE_SELECT;
+
+      let query = supabase
         .from(TABLE_NAME)
-        .select(EMPLOYEE_SELECT, { count: "exact" })
-        .order("created_at", { ascending: false })
-        .range(from, to);
+        .select(selectArg, { count: "exact" });
+
+      // Text search across name/email (matching the existing search() method).
+      if (search) {
+        const safeQuery = sanitizeFilterInput(search);
+        if (safeQuery) {
+          query = query.or("name.ilike.%" + safeQuery + "%,email.ilike.%" + safeQuery + "%");
+        }
+      }
+
+      // Exact-match filters. Skip falsy values so legacy callers and empty
+      // filter chips don't accidentally constrain the result set.
+      if (department) query = query.eq("department", department);
+      if (role) query = query.eq("role", role);
+      if (status) query = query.eq("status", status);
+
+      // Ordering: caller-provided sort wins; default to created_at desc.
+      if (sortBy) {
+        query = query.order(sortBy, { ascending: sortOrder !== "desc" });
+      } else {
+        query = query.order("created_at", { ascending: false });
+      }
+
+      const { data, error, count } = await query.range(from, to);
 
       if (error) throw error;
       return { data: flattenEmployeeRecords(data), count, error: null };

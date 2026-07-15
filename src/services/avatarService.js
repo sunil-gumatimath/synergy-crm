@@ -118,6 +118,12 @@ export const avatarService = {
             return null;
         }
 
+        // Bound the cache to avoid unbounded memory growth (~200 entries max).
+        if (signedUrlCache.size >= 200) {
+            const oldestKey = signedUrlCache.keys().next().value;
+            if (oldestKey !== undefined) signedUrlCache.delete(oldestKey);
+        }
+
         signedUrlCache.set(normalizedPath, {
             url: data.signedUrl,
             expiresAt: Date.now() + ((SIGNED_URL_TTL_SECONDS - 30) * 1000),

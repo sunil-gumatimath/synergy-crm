@@ -1,13 +1,7 @@
 import { supabase } from '../lib/supabase.js';
 import DOMPurify from 'dompurify';
 
-const EMPLOYEE_SUMMARY_SELECT = `
-  *,
-  private_details:employee_private_details(
-    salary,
-    performance_score
-  )
-`;
+const EMPLOYEE_SUMMARY_SELECT = 'id,name,email,department,role,status,join_date,avatar';
 
 const flattenEmployee = (employee) => {
     const privateDetails = Array.isArray(employee?.private_details)

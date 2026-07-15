@@ -1,21 +1,20 @@
 /**
- * Storage Utilities — thin wrappers around localStorage.
+ * Storage Utilities — honest thin wrappers around plain localStorage.
  *
- * Previously this module used CryptoJS with a hardcoded key shipped in the
- * client bundle, which provided zero security (the key was visible in DevTools).
- * Replaced with plain localStorage since the only stored value is a
- * non-sensitive remembered email address.
+ * NOTE: These functions write PLAINTEXT to localStorage. There is NO
+ * encryption. They were previously named "Encrypted" which was misleading
+ * and dangerous if anyone later stored sensitive data assuming encryption.
  *
- * The API surface (setEncryptedItem / getEncryptedItem / removeEncryptedItem)
- * is preserved so callers don't need changes.
+ * Only non-sensitive values are stored here (a remembered email address and
+ * UI theme preferences). Never store secrets, tokens, or passwords with these.
  */
 
 /**
- * Stores a value in localStorage
+ * Stores a value in localStorage (plaintext, NOT encrypted)
  * @param {string} key - The storage key
  * @param {string} value - The value to store
  */
-export const setEncryptedItem = (key, value) => {
+export const setLocalItem = (key, value) => {
   try {
     localStorage.setItem(key, value);
   } catch (error) {
@@ -24,11 +23,11 @@ export const setEncryptedItem = (key, value) => {
 };
 
 /**
- * Retrieves a value from localStorage
+ * Retrieves a value from localStorage (plaintext, NOT encrypted)
  * @param {string} key - The storage key
  * @returns {string|null} The stored value or null if not found
  */
-export const getEncryptedItem = (key) => {
+export const getLocalItem = (key) => {
   try {
     return localStorage.getItem(key);
   } catch (error) {
@@ -41,6 +40,6 @@ export const getEncryptedItem = (key) => {
  * Removes an item from localStorage
  * @param {string} key - The storage key
  */
-export const removeEncryptedItem = (key) => {
+export const removeLocalItem = (key) => {
   localStorage.removeItem(key);
 };
