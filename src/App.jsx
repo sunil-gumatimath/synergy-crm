@@ -103,10 +103,10 @@ function App() {
   // Show loading spinner while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-body)]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-[var(--text-muted)]">Loading...</p>
         </div>
       </div>
     );
@@ -136,9 +136,15 @@ function App() {
   // Main authenticated app layout
   return (
     <div className="app-container">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:top-2 focus:left-2 focus:rounded-md focus:bg-[var(--bg-surface)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary"
+      >
+        Skip to content
+      </a>
       <Sidebar activeTab={activeTab} />
 
-        <main className="main-content">
+        <main id="main" className="main-content">
           <Header />
 
           <Routes>

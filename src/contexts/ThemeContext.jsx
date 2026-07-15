@@ -1,7 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
-import { setEncryptedItem, getEncryptedItem } from "../utils/storageUtils";
+import { setLocalItem, getLocalItem } from "../utils/storageUtils";
 import { themes, THEME_VARIABLES } from "../themes/themes";
+
+// Convert a #rrggbb hex string into an [r, g, b] tuple.
+const hexToRgb = (hex) => {
+    const int = parseInt(hex.replace("#", ""), 16);
+    return [(int >> 16) & 255, (int >> 8) & 255, int & 255];
+};
 
 const ThemeContext = createContext({});
 
@@ -12,10 +18,10 @@ const ThemeContext = createContext({});
  * Handles light/dark/system theme modes, color themes, and accent colors
  */
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(() => getEncryptedItem("synergy_theme") || "system");
-    const [colorTheme, setColorTheme] = useState(() => getEncryptedItem("synergy_color_theme") || "default");
-    const [accentColor, setAccentColor] = useState(() => getEncryptedItem("synergy_accent_color") || "iris");
-    const [compactMode, setCompactMode] = useState(() => getEncryptedItem("synergy_compact_mode") === "true");
+    const [theme, setTheme] = useState(() => getLocalItem("synergy_theme") || "system");
+    const [colorTheme, setColorTheme] = useState(() => getLocalItem("synergy_color_theme") || "default");
+    const [accentColor, setAccentColor] = useState(() => getLocalItem("synergy_accent_color") || "iris");
+    const [compactMode, setCompactMode] = useState(() => getLocalItem("synergy_compact_mode") === "true");
     const [effectiveTheme, setEffectiveTheme] = useState("light");
 
     // Accent color definitions
@@ -118,10 +124,27 @@ export const ThemeProvider = ({ children }) => {
 
         root.style.setProperty("--primary", colors.primary);
         root.style.setProperty("--primary-hover", colors.hover);
-        root.style.setProperty("--primary-light", colors.light);
-        root.style.setProperty("--primary-rgb", colors.rgb);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accentColor]);
+        // Keep Tailwind color utilities (bg-primary / text-primary / border-primary)
+        // in sync with the user-selectable accent.
+        root.style.setProperty("--color-primary", colors.primary);
+        root.style.setProperty("--color-primary-hover", colors.hover);
+        root.style.setProperty("--color-primary-light", colors.light);
+
+        // --primary-light and --primary-rgb must respect the active theme so the
+        // accent stays visible on both light and dark surfaces. Inline overrides
+        // otherwise defeat the .dark definitions in index.css.
+        if (effectiveTheme === "dark") {
+            const [r, g, b] = hexToRgb(colors.primary);
+            const lr = Math.round(r + (255 - r) * 0.2);
+            const lg = Math.round(g + (255 - g) * 0.2);
+            const lb = Math.round(b + (255 - b) * 0.2);
+            root.style.setProperty("--primary-rgb", lr + ", " + lg + ", " + lb);
+            root.style.setProperty("--primary-light", "rgba(" + lr + ", " + lg + ", " + lb + ", 0.18)");
+        } else {
+            root.style.setProperty("--primary-light", colors.light);
+            root.style.setProperty("--primary-rgb", colors.rgb);
+        }
+    }, [accentColor, effectiveTheme]);
 
     // Apply compact mode
     useEffect(() => {
@@ -136,14 +159,14 @@ export const ThemeProvider = ({ children }) => {
     // Update theme
     const updateTheme = useCallback((newTheme) => {
         setTheme(newTheme);
-        setEncryptedItem("synergy_theme", newTheme);
+        setLocalItem("synergy_theme", newTheme);
     }, []);
 
     // Update color theme
     const updateColorTheme = useCallback((newColorTheme) => {
         if (themes[newColorTheme]) {
             setColorTheme(newColorTheme);
-            setEncryptedItem("synergy_color_theme", newColorTheme);
+            setLocalItem("synergy_color_theme", newColorTheme);
         }
     }, []);
 
@@ -152,33 +175,33 @@ export const ThemeProvider = ({ children }) => {
         const resolved = resolveAccent(newColor);
         const safe = resolved === accentColors[newColor] ? newColor : DEFAULT_ACCENT;
         setAccentColor(safe);
-        setEncryptedItem("synergy_accent_color", safe);
+        setLocalItem("synergy_accent_color", safe);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Update compact mode
     const updateCompactMode = useCallback((enabled) => {
         setCompactMode(enabled);
-        setEncryptedItem("synergy_compact_mode", enabled.toString());
+        setLocalItem("synergy_compact_mode", enabled.toString());
     }, []);
 
     // Sync settings from database (called after user settings are loaded)
     const syncFromDatabase = useCallback((settings) => {
         if (settings.theme) {
             setTheme(settings.theme);
-            setEncryptedItem("synergy_theme", settings.theme);
+            setLocalItem("synergy_theme", settings.theme);
         }
         if (settings.colorTheme && themes[settings.colorTheme]) {
             setColorTheme(settings.colorTheme);
-            setEncryptedItem("synergy_color_theme", settings.colorTheme);
+            setLocalItem("synergy_color_theme", settings.colorTheme);
         }
         if (settings.accentColor && accentColors[settings.accentColor]) {
             setAccentColor(settings.accentColor);
-            setEncryptedItem("synergy_accent_color", settings.accentColor);
+            setLocalItem("synergy_accent_color", settings.accentColor);
         }
         if (settings.compactMode !== undefined) {
             setCompactMode(settings.compactMode);
-            setEncryptedItem("synergy_compact_mode", settings.compactMode.toString());
+            setLocalItem("synergy_compact_mode", settings.compactMode.toString());
         }
     }, []);
 

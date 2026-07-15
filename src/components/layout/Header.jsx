@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   HiOutlineBars3 as Menu,
   HiOutlineMagnifyingGlass as Search,
@@ -13,12 +13,12 @@ import { employeeService } from "../../services/employeeService";
 import { isAdminOrManagerRole } from "../../utils/roles";
 import NotificationPanel from "../NotificationPanel";
 import Avatar from "../common/Avatar";
-import PropTypes from "prop-types";
 import { useUIStore } from "../../store/uiStore";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const Header = () => {
   const toggleMobileMenu = useUIStore((state) => state.toggleMobileMenu);
+  const isMobileMenuOpen = useUIStore((state) => state.isMobileMenuOpen);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -150,24 +150,27 @@ const Header = () => {
           className="mobile-menu-btn-header"
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="app-sidebar"
         >
           <Menu size={24} />
         </button>
 
         <div className="header-title-container">
-          <h2 className="page-title">{getPageTitle()}</h2>
+          <p className="page-title">{getPageTitle()}</p>
           <p className="page-subtitle">Welcome back, {getUserName()}</p>
         </div>
       </div>
 
       {/* Global Search */}
       {canUseEmployeeSearch && (
-        <div className="header-search-container" ref={searchRef}>
+        <div className="header-search-container" ref={searchRef} role="search">
           <div className="header-search-input-wrapper">
             <Search size={18} className="header-search-icon" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none', zIndex: 10 }} />
             <input
               type="text"
               placeholder="Search employees..."
+              aria-label="Search employees"
               className="header-search-input" style={{ paddingLeft: '4rem' }}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -178,6 +181,7 @@ const Header = () => {
             {searchQuery && (
               <button
                 className="header-search-clear"
+                aria-label="Clear search"
                 onClick={() => {
                   setSearchQuery("");
                   setSearchResults([]);
@@ -190,7 +194,7 @@ const Header = () => {
 
           {/* Search Results Dropdown */}
           {showResults && (
-            <div className="header-search-results">
+            <div className="header-search-results" aria-live="polite">
               {isSearching ? (
                 <div className="p-4 text-center text-sm text-muted">Searching...</div>
               ) : searchResults.length > 0 ? (
@@ -249,27 +253,24 @@ const Header = () => {
 
           <DropdownMenu.Portal>
             <DropdownMenu.Content
-              className={`dropdown-content w-[240px] overflow-hidden rounded-md shadow-xl border p-3 space-y-1.5 z-50 animate-in fade-in zoom-in-95 ${effectiveTheme === "dark"
-                ? "bg-[#0f172a] border-[#334155]"
-                : "bg-white border-gray-200"
-                }`}
+              className="dropdown-content w-[240px] overflow-hidden rounded-md shadow-xl border p-3 space-y-1.5 z-50 animate-scale-in bg-[var(--bg-surface)] border-[var(--border)]"
               style={{ borderRadius: '6px', padding: '12px', width: '240px' }}
               sideOffset={8}
               collisionPadding={8}
               align="end"
             >
-              <DropdownMenu.Label className={`px-4 pt-2 pb-1 text-xs font-semibold uppercase tracking-wider ${effectiveTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+              <DropdownMenu.Label className="px-4 pt-2 pb-1 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 My Account
               </DropdownMenu.Label>
 
-              <DropdownMenu.Item className={`dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-sm w-full text-left transition-colors ${effectiveTheme === 'dark' ? 'text-gray-200 hover:bg-[#1e293b] data-[highlighted]:bg-[#1e293b]' : 'text-gray-900 hover:bg-gray-100 data-[highlighted]:bg-gray-100'}`} style={{ borderRadius: '4px', padding: '10px 16px' }} onSelect={() => navigate('/profile')}>
+              <DropdownMenu.Item className="dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-sm w-full text-left transition-colors text-[var(--text-main)] hover:bg-[var(--bg-secondary)] data-[highlighted]:bg-[var(--bg-secondary)]" style={{ borderRadius: '4px', padding: '10px 16px' }} onSelect={() => navigate('/profile')}>
                 Profile Settings
               </DropdownMenu.Item>
 
-              <DropdownMenu.Separator className={`h-[1px] my-1 mx-1 ${effectiveTheme === 'dark' ? 'bg-[#1e293b]' : 'bg-gray-200'}`} />
+              <DropdownMenu.Separator className="h-[1px] my-1 mx-1 bg-[var(--border)]" />
 
               <DropdownMenu.Item
-                className={`dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-sm w-full text-left font-medium transition-colors ${effectiveTheme === 'dark' ? 'text-red-400 hover:bg-red-950/30 data-[highlighted]:bg-red-950/30' : 'text-red-600 hover:bg-red-50 data-[highlighted]:bg-red-50'}`}
+                className="dropdown-item flex items-center gap-2 px-4 py-2.5 outline-none cursor-pointer select-none rounded-sm w-full text-left font-medium transition-colors text-[var(--danger-text)] hover:bg-[var(--danger-bg)] data-[highlighted]:bg-[var(--danger-bg)]"
                 style={{ borderRadius: '4px', padding: '10px 16px' }}
                 onSelect={handleSignOut}
               >
@@ -283,7 +284,6 @@ const Header = () => {
   );
 };
 
-Header.propTypes = {};
 
 export default Header;
 

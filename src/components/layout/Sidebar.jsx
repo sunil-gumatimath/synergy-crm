@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import {
@@ -161,6 +161,17 @@ const Sidebar = ({ activeTab }) => {
 
   const filteredSections = getFilteredSections();
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isMobileMenuOpen, setMobileMenuOpen]);
+
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -206,9 +217,9 @@ const Sidebar = ({ activeTab }) => {
             <Link to="/dashboard">
               <SynergyLogo size={isCollapsed ? 24 : 32} />
               {!isCollapsed && (
-                <h1 className="brand-name">
+                <p className="brand-name">
                   Synergy<span className="brand-dot">.</span>
-                </h1>
+                </p>
               )}
             </Link>
           </div>
@@ -233,6 +244,7 @@ const Sidebar = ({ activeTab }) => {
                       onClick={() => setMobileMenuOpen(false)}
                       className={`nav-item ${activeTab === item.id ? "active" : ""}`}
                       data-tooltip={item.label}
+                      aria-current={activeTab === item.id ? "page" : undefined}
                     >
                       <span className="nav-item-icon">
                         <Icon size={20} strokeWidth={2} />

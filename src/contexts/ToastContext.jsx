@@ -29,8 +29,6 @@ export const ToastProvider = ({ children }) => {
             type,
             message,
             duration: options.duration || 5000,
-            action: options.action || null,
-            actionLabel: options.actionLabel || null,
         };
 
         setToasts((prev) => [...prev, toast]);
@@ -67,19 +65,19 @@ export const ToastProvider = ({ children }) => {
         clearAll,
     };
 
+    const hasAssertiveToast = toasts.some((toast) => toast.type === "error" || toast.type === "warning");
+
     return (
         <ToastContext.Provider value={value}>
             {children}
             {/* Toast Container */}
-            <div className="toast-container">
+            <div className="toast-viewport" role="region" aria-label="Notifications" aria-live={hasAssertiveToast ? "assertive" : "polite"}>
                 {toasts.map((toast) => (
                     <Toast
                         key={toast.id}
                         type={toast.type}
                         message={toast.message}
                         onClose={() => removeToast(toast.id)}
-                        action={toast.action}
-                        actionLabel={toast.actionLabel}
                     />
                 ))}
             </div>
