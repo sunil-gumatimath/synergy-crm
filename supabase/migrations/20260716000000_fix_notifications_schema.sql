@@ -1,0 +1,14 @@
+-- Migration: fix notifications schema column-name mismatch (B3) and preferences user_id (H2)
+--
+-- No DDL changes are required. The live database schema is already correct:
+--   * notifications.is_read  (boolean, default false)  -- exists; client was wrongly using "read"
+--   * notification_preferences.user_id (uuid NOT NULL) -- exists; client omitted it on insert
+--
+-- Fixes are code-side only, in src/services/notificationService.js:
+--   B3: replace column references "read" -> "is_read" in getNotifications, getUnreadCount,
+--       markAsRead, and markAllAsRead.
+--   H2: updatePreferences() now injects user_id: user.id (via supabase.auth.getUser())
+--       into the notification_preferences insert payload.
+--
+-- This file is intentionally a no-op so the migration history records that the
+-- issue was resolved at the application layer.
