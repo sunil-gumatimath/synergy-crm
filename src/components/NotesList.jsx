@@ -155,7 +155,7 @@ const NotesList = ({
                   </div>
 
                   <div className="bg-main/40 rounded-xl p-4 border border-border-light text-muted text-sm leading-relaxed whitespace-pre-wrap">
-                    {note.content}
+                    {note.note}
                   </div>
                 </div>
               </div>
@@ -240,7 +240,7 @@ NotesList.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
-      content: PropTypes.string.isRequired,
+      note: PropTypes.string.isRequired,
       category: PropTypes.string,
       created_by: PropTypes.string.isRequired,
       created_at: PropTypes.string.isRequired,

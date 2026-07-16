@@ -6,6 +6,8 @@ import { normalizeRole } from "../utils/roles";
 
 const AuthContext = createContext({});
 
+export { AuthContext };
+
 // Only fetch basic employee data on boot to ensure the role is loaded.
 // Private details (salary, bank info) are fetched on demand in the Profile/Settings views.
 const EMPLOYEE_SELECT = `*`;

@@ -18,7 +18,7 @@ const EditNoteModal = ({ isOpen, note, onClose, onNoteUpdated }) => {
     if (note) {
       return {
         title: note.title || "",
-        content: note.content || "",
+        content: note.note || "",
         category: note.category || "general",
         is_private: note.is_private || false,
       };
@@ -226,7 +226,7 @@ EditNoteModal.propTypes = {
   note: PropTypes.shape({
     id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
+    note: PropTypes.string.isRequired,
     category: PropTypes.string,
     is_private: PropTypes.bool,
   }),
