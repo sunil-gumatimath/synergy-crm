@@ -26,7 +26,7 @@ export const notificationService = {
             }
 
             if (unreadOnly) {
-                query = query.eq("read", false);
+                query = query.eq("is_read", false);
             }
 
             const { data, error } = await query;
@@ -49,7 +49,7 @@ export const notificationService = {
             let query = supabase
                 .from("notifications")
                 .select("*", { count: "exact", head: true })
-                .eq("read", false);
+                .eq("is_read", false);
 
             // Filter by user_id if provided
             if (userId) {
@@ -75,7 +75,7 @@ export const notificationService = {
         try {
             const { data, error } = await supabase
                 .from("notifications")
-                .update({ read: true })
+                .update({ is_read: true })
                 .eq("id", notificationId)
                 .select()
                 .single();
@@ -96,8 +96,8 @@ export const notificationService = {
         try {
             const { error } = await supabase
                 .from("notifications")
-                .update({ read: true })
-                .eq("read", false);
+                .update({ is_read: true })
+                .eq("is_read", false);
 
             if (error) throw error;
             return { error: null };
@@ -236,9 +236,12 @@ export const notificationService = {
                     .select()
                     .single();
             } else {
+                const {
+                    data: { user },
+                } = await supabase.auth.getUser();
                 result = await supabase
                     .from("notification_preferences")
-                    .insert(preferences)
+                    .insert({ ...preferences, user_id: user.id })
                     .select()
                     .single();
             }

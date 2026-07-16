@@ -35,11 +35,17 @@ export const noteService = {
         data: { user },
       } = await supabase.auth.getUser();
 
+      const { title, content, category, is_private, employee_id } = noteData;
+
       const { data, error } = await supabase
         .from("employee_notes")
         .insert([
           {
-            ...noteData,
+            employee_id,
+            title,
+            note: content,
+            category,
+            is_private,
             created_by: user?.email || "demo@company.com",
           },
         ])
@@ -63,9 +69,13 @@ export const noteService = {
    */
   async update(id, updates) {
     try {
+      const { content, ...rest } = updates;
+      const payload = { ...rest };
+      if (content !== undefined) payload.note = content;
+
       const { data, error } = await supabase
         .from("employee_notes")
-        .update(updates)
+        .update(payload)
         .eq("id", id)
         .select()
         .single();

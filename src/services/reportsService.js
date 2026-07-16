@@ -93,6 +93,9 @@ export const getAttendanceReport = async (startDate, endDate, departmentFilter =
             emp.totalHours += entry.total_hours || 0;
 
             // Consider late if clocked in after 9:30 AM
+            // NOTE: clock_in is a timestamptz; we only need the time-of-day part,
+            // which is preserved when the timestamp is coerced to a string here.
+            // Parsing `2000-01-01T<time>` works correctly for the threshold check.
             if (entry.clock_in) {
                 const clockInTime = new Date(`2000-01-01T${entry.clock_in}`);
                 const lateThreshold = new Date(`2000-01-01T09:30:00`);

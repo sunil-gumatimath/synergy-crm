@@ -9,6 +9,21 @@ export const timeTrackingService = {
     // ========================================
 
     /**
+     * Derive total worked hours for an entry from clock_in/clock_out/break_minutes.
+     * The `time_entries` table has no `total_hours` column, so compute it client-side.
+     * @param {Object} entry - A time entry with clock_in, clock_out, break_minutes
+     * @returns {number} total hours (clock_out - clock_in - break), rounded to 2 decimals
+     */
+    calculateTotalHours(entry) {
+        if (!entry || !entry.clock_in || !entry.clock_out) return 0;
+        const start = new Date(entry.clock_in).getTime();
+        const end = new Date(entry.clock_out).getTime();
+        const breakMs = (Number(entry.break_minutes) || 0) * 60 * 1000;
+        const diffMs = Math.max(0, end - start - breakMs);
+        return Math.round((diffMs / (1000 * 60 * 60)) * 100) / 100;
+    },
+
+    /**
      * Get today's time entry for employee
      */
     async getTodayEntry(employeeId) {
@@ -22,7 +37,9 @@ export const timeTrackingService = {
                 .maybeSingle();
 
             if (error) throw error;
-            return { data, error: null };
+            // Attach computed total_hours (column does not exist in DB)
+            const enriched = data ? { ...data, total_hours: this.calculateTotalHours(data) } : null;
+            return { data: enriched, error: null };
         } catch (error) {
             console.error("Error fetching today's entry:", error);
             return { data: null, error };
@@ -56,7 +73,8 @@ export const timeTrackingService = {
                 .single();
 
             if (error) throw error;
-            return { data, error: null };
+            const enriched = data ? { ...data, total_hours: this.calculateTotalHours(data) } : data;
+            return { data: enriched, error: null };
         } catch (error) {
             console.error("Error clocking in:", error);
             return { data: null, error };
@@ -84,7 +102,8 @@ export const timeTrackingService = {
                 .single();
 
             if (error) throw error;
-            return { data, error: null };
+            const enriched = data ? { ...data, total_hours: this.calculateTotalHours(data) } : data;
+            return { data: enriched, error: null };
         } catch (error) {
             console.error("Error clocking out:", error);
             return { data: null, error };
@@ -225,7 +244,7 @@ export const timeTrackingService = {
                 return {
                     day,
                     date: dateStr,
-                    hours: entry?.total_hours || 0,
+                    hours: entry?.total_hours ?? this.calculateTotalHours(entry),
                     clockIn: entry?.clock_in,
                     clockOut: entry?.clock_out,
                     status: entry?.status,
@@ -274,8 +293,8 @@ export const timeTrackingService = {
 
             if (error) throw error;
 
-            const totalHours = data?.reduce((sum, e) => sum + (e.total_hours || 0), 0) || 0;
-            const workingDays = data?.filter((e) => e.total_hours > 0).length || 0;
+            const totalHours = data?.reduce((sum, e) => sum + (this.calculateTotalHours(e) || 0), 0) || 0;
+            const workingDays = data?.filter((e) => this.calculateTotalHours(e) > 0).length || 0;
             const overtimeHours = Math.max(0, totalHours - workingDays * 8);
 
             return {

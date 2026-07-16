@@ -314,14 +314,14 @@ export const leaveService = {
     /**
      * Add a new holiday
      */
-    async addHoliday({ name, date, isOptional = false, description = null }) {
+    async addHoliday({ name, date, isRecurring = false, description = null }) {
         try {
             const { data, error } = await supabase
                 .from("holidays")
                 .insert({
                     name,
                     date,
-                    is_optional: isOptional,
+                    is_recurring: isRecurring,
                     description,
                 })
                 .select()
