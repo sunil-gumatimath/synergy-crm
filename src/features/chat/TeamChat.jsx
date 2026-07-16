@@ -243,7 +243,11 @@ const TeamChat = () => {
     // Render conversation list item
     const renderConversationItem = (conv) => {
         const isActive = activeConversation?.id === conv.id;
-        const unreadCount = conv.unread_count || 0;
+        // The `conversations` table has no `unread_count` column.
+        // We only have message-level read state for the active conversation,
+        // so we don't have a reliable per-list-item unread count here.
+        // Default to 0 to avoid referencing the non-existent field.
+        const unreadCount = 0;
 
         return (
             <button

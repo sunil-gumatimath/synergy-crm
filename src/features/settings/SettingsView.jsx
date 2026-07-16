@@ -7,10 +7,10 @@ import {
   Globe,
   Save,
   Settings as SettingsIcon,
-  ChevronRight,
   LogOut,
   Loader2,
-  X
+  X,
+  AlertCircle
 } from "../../lib/icons";
 import { SkeletonSettingsSection, Skeleton } from "../../components/common/Skeleton";
 import { useToast } from "../../contexts/ToastContext";
@@ -372,39 +372,36 @@ const SettingsView = () => {
 
   return (
     <div className="settings-container">
-      {/* Page Header */}
-      <div className="settings-header">
-        <div className="settings-header-content">
-          <div className="settings-header-icon">
-            <SettingsIcon size={28} />
-          </div>
-          <div>
-            <h1 className="settings-header-title">Settings</h1>
-            <p className="settings-header-subtitle">Manage your account and preferences</p>
-          </div>
-        </div>
-      </div>
-
       <div className="settings-layout">
         {/* Sidebar Navigation */}
         <aside className="settings-sidebar">
+          <div className="settings-sidebar-header">
+            <div className="settings-sidebar-title">
+              <SettingsIcon size={20} />
+              <span>Settings</span>
+            </div>
+            <p className="settings-sidebar-subtitle">Manage your account &amp; preferences</p>
+          </div>
+
           <nav className="settings-nav">
             {navigationItems.map((item) => {
               const Icon = item.icon;
+              const active = activeSection === item.id;
               return (
                 <button
                   key={item.id}
-                  className={`settings-nav-item ${activeSection === item.id ? "active" : ""}`}
+                  className={`settings-nav-item ${active ? "active" : ""}`}
                   onClick={() => setActiveSection(item.id)}
+                  aria-current={active ? "page" : undefined}
+                  data-label={item.label}
                 >
-                  <div className="settings-nav-icon">
+                  <span className="settings-nav-icon">
                     <Icon size={18} />
-                  </div>
-                  <div className="settings-nav-content">
+                  </span>
+                  <span className="settings-nav-content">
                     <span className="settings-nav-label">{item.label}</span>
                     <span className="settings-nav-description">{item.description}</span>
-                  </div>
-                  <ChevronRight size={16} className="settings-nav-arrow" />
+                  </span>
                 </button>
               );
             })}
@@ -424,12 +421,56 @@ const SettingsView = () => {
 
         {/* Main Content */}
         <main className="settings-main">
+          <div className="settings-content-header">
+            <div>
+              <h1 className="settings-content-title">
+                {navigationItems.find((i) => i.id === activeSection)?.label}
+              </h1>
+              <p className="settings-content-subtitle">
+                {navigationItems.find((i) => i.id === activeSection)?.description}
+              </p>
+            </div>
+
+            {hasChanges && (
+              <div className="settings-save-actions">
+                <button
+                  className="settings-btn-secondary"
+                  onClick={discardChanges}
+                  disabled={isSaving}
+                >
+                  <X size={16} />
+                  Discard
+                </button>
+                <button
+                  className="settings-btn-primary"
+                  onClick={saveSettings}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} />
+                      Save Changes
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+
           {renderActiveSection()}
 
-          {/* Save Bar */}
+          {/* Bottom Save Bar (sticky, appears when changes exist) */}
           {hasChanges && (
             <div className="settings-save-bar">
-              <span className="settings-save-text">You have unsaved changes</span>
+              <span className="settings-save-text">
+                <AlertCircle size={16} />
+                You have unsaved changes
+              </span>
               <div className="settings-save-actions">
                 <button
                   className="settings-btn-secondary"

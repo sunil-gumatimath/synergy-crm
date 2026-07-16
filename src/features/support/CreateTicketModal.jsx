@@ -1,26 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X, Save, AlertCircle, Loader2 } from "../../lib/icons";
+import "./support-styles.css";
+
+const buildInitialForm = (ticketToEdit) => {
+    if (ticketToEdit) {
+        return {
+            title: ticketToEdit.title || "",
+            category: ticketToEdit.category || "IT Support",
+            priority: ticketToEdit.priority || "medium",
+            status: ticketToEdit.status || "open",
+            description: ticketToEdit.description || "",
+        };
+    }
+    return {
+        title: "",
+        category: "IT Support",
+        priority: "medium",
+        status: "open",
+        description: "",
+    };
+};
 
 const CreateTicketModal = ({ isOpen, onClose, onSubmit, isLoading, ticketToEdit = null }) => {
-    const [formData, setFormData] = useState(() => {
-        if (ticketToEdit) {
-            return {
-                title: ticketToEdit.title || "",
-                category: ticketToEdit.category || "IT Support",
-                priority: ticketToEdit.priority || "medium",
-                description: ticketToEdit.description || "",
-            };
-        }
-        return {
-            title: "",
-            category: "IT Support",
-            priority: "medium",
-            description: "",
-        };
-    });
-
+    const [formData, setFormData] = useState(() => buildInitialForm(ticketToEdit));
     const [errors, setErrors] = useState({});
+
+    // Re-sync the form whenever the modal is opened or the target ticket changes,
+    // so editing a second ticket never shows a previous ticket's stale data.
+  /* eslint-disable react-hooks/set-state-in-effect */
+    useEffect(() => {
+        if (isOpen) {
+            setFormData(buildInitialForm(ticketToEdit));
+            setErrors({});
+        }
+    }, [isOpen, ticketToEdit]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
     if (!isOpen) return null;
 
@@ -48,8 +63,7 @@ const CreateTicketModal = ({ isOpen, onClose, onSubmit, isLoading, ticketToEdit 
             onSubmit({
                 ...formData,
                 type: 'ticket',
-                status: ticketToEdit ? ticketToEdit.status : 'todo',
-                due_date: ticketToEdit ? ticketToEdit.due_date : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                status: formData.status,
             });
         }
     };
@@ -93,7 +107,7 @@ const CreateTicketModal = ({ isOpen, onClose, onSubmit, isLoading, ticketToEdit 
                             )}
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             {/* Category */}
                             <div className="form-group">
                                 <label htmlFor="category" className="form-label">
@@ -131,6 +145,27 @@ const CreateTicketModal = ({ isOpen, onClose, onSubmit, isLoading, ticketToEdit 
                                     <option value="high">High</option>
                                 </select>
                             </div>
+
+                            {/* Status (visible when editing an existing ticket) */}
+                            {ticketToEdit && (
+                                <div className="form-group">
+                                    <label htmlFor="status" className="form-label">
+                                        Status
+                                    </label>
+                                    <select
+                                        id="status"
+                                        name="status"
+                                        value={formData.status}
+                                        onChange={handleChange}
+                                        className="form-select"
+                                    >
+                                        <option value="open">Open</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="closed">Closed</option>
+                                    </select>
+                                </div>
+                            )}
                         </div>
                         {/* Description */}
                         <div className="form-group">
@@ -153,9 +188,9 @@ const CreateTicketModal = ({ isOpen, onClose, onSubmit, isLoading, ticketToEdit 
                             )}
                         </div>
 
-                        <div className="bg-[var(--primary-light)] p-3 rounded-xl border border-[var(--border)] flex gap-2 items-start mb-4">
-                            <AlertCircle size={16} className="text-[var(--primary)] mt-0.5 shrink-0" />
-                            <p className="text-xs text-[var(--primary)]">
+                        <div className="support-info-banner">
+                            <AlertCircle size={16} />
+                            <p>
                                 Your ticket will be assigned to the relevant department automatically.
                                 Typical response time is 24 hours.
                             </p>

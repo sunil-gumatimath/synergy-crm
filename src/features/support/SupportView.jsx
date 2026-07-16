@@ -6,6 +6,7 @@ import ConfirmModal from "../../components/ui/ConfirmModal";
 import { SupportViewSkeleton } from "../../components/common/PageSkeletons";
 import Toast from "../../components/common/Toast";
 import { useAuth } from "../../contexts/AuthContext";
+import "./support-styles.css";
 
 const SupportView = () => {
     const { user } = useAuth();
@@ -15,6 +16,7 @@ const SupportView = () => {
     const [toast, setToast] = useState(null);
 
     const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
 
     // Edit/Delete State
     const [editingTicket, setEditingTicket] = useState(null);
@@ -96,14 +98,7 @@ const SupportView = () => {
         setShowDeleteModal(true);
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "resolved": return "text-green-600 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-500/15 dark:border-green-500/30";
-            case "in_progress": return "text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-500/15 dark:border-blue-500/30";
-            case "closed": return "text-gray-600 bg-gray-100 border-gray-300 dark:text-gray-400 dark:bg-gray-500/15 dark:border-gray-500/30";
-            default: return "text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-500/15 dark:border-orange-500/30";
-        }
-    };
+    const getStatusClass = (status) => `status-${status || "open"}`;
 
     const getStatusIcon = (status) => {
         switch (status) {
@@ -122,6 +117,8 @@ const SupportView = () => {
         }
     };
 
+    const getPriorityClass = (priority) => `priority-${priority || "low"}`;
+
     const formatDate = (dateString) => {
         if (!dateString) return "-";
         const date = new Date(dateString);
@@ -134,6 +131,7 @@ const SupportView = () => {
         category ? category.replace(/[_-]/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : "General";
 
     const filteredTickets = tickets.filter((ticket) => {
+        if (statusFilter !== "all" && ticket.status !== statusFilter) return false;
         if (!searchTerm) return true;
         const term = searchTerm.toLowerCase();
         return (
@@ -149,163 +147,169 @@ const SupportView = () => {
     }
 
     return (
-        <div className="h-full flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-main flex items-center gap-2">
-                        <LifeBuoy size={28} className="text-primary" />
-                        Help Desk & Support
+        <div className="support-container">
+            {/* Header */}
+            <div className="support-header">
+                <div className="support-title-section">
+                    <h1>
+                        <LifeBuoy size={26} />
+                        Help Desk &amp; Support
                     </h1>
-                    <p className="text-muted text-sm">Raise tickets and track your requests</p>
+                    <p>Raise tickets and track your requests</p>
                 </div>
-                <div className="flex gap-3">
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                            setEditingTicket(null);
-                            setShowCreateModal(true);
-                        }}
-                    >
-                        <Plus size={18} />
-                        Raise Ticket
-                    </button>
-                </div>
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        setEditingTicket(null);
+                        setShowCreateModal(true);
+                    }}
+                >
+                    <Plus size={18} />
+                    Raise Ticket
+                </button>
             </div>
 
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-[var(--bg-surface)] shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="rounded-2xl bg-blue-500/10 p-3 text-blue-300">
-                            <Clock size={22} />
-                        </div>
-                        <div className="text-right">
-                            <p className="text-3xl font-semibold text-main">{tickets.filter(t => t.status === 'open' || t.status === 'in_progress').length}</p>
-                            <p className="text-sm text-[var(--text-muted)]">Open Tickets</p>
-                        </div>
+            <div className="support-stats">
+                <div className="support-stat-card">
+                    <div className="support-stat-icon open">
+                        <Clock size={22} />
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Issues currently active or awaiting a support response.</p>
+                    <div className="support-stat-info">
+                        <span className="support-stat-value">
+                            {tickets.filter((t) => t.status === "open" || t.status === "in_progress").length}
+                        </span>
+                        <span className="support-stat-label">Open Tickets</span>
+                    </div>
+                    <p className="support-stat-desc">Issues currently active or awaiting a support response.</p>
                 </div>
-                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-[var(--bg-surface)] shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="rounded-2xl bg-emerald-500/10 p-3 text-emerald-300">
-                            <CheckCircle size={22} />
-                        </div>
-                        <div className="text-right">
-                            <p className="text-3xl font-semibold text-main">{tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length}</p>
-                            <p className="text-sm text-[var(--text-muted)]">Resolved</p>
-                        </div>
+                <div className="support-stat-card">
+                    <div className="support-stat-icon resolved">
+                        <CheckCircle size={22} />
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Requests closed successfully in the help desk workflow.</p>
+                    <div className="support-stat-info">
+                        <span className="support-stat-value">
+                            {tickets.filter((t) => t.status === "resolved" || t.status === "closed").length}
+                        </span>
+                        <span className="support-stat-label">Resolved</span>
+                    </div>
+                    <p className="support-stat-desc">Requests closed successfully in the help desk workflow.</p>
                 </div>
-                <div className="card p-5 rounded-[1.75rem] border-white/10 bg-[var(--bg-surface)] shadow-[0_28px_80px_-45px_rgba(15,23,42,0.85)]">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="rounded-2xl bg-purple-500/10 p-3 text-purple-300">
-                            <MessageSquare size={22} />
-                        </div>
-                        <div className="text-right">
-                            <p className="text-3xl font-semibold text-main">N/A</p>
-                            <p className="text-sm text-[var(--text-muted)]">Avg. Response Time</p>
-                        </div>
+                <div className="support-stat-card">
+                    <div className="support-stat-icon response">
+                        <MessageSquare size={22} />
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Response time tracking will appear here once available.</p>
+                    <div className="support-stat-info">
+                        <span className="support-stat-value">N/A</span>
+                        <span className="support-stat-label">Avg. Response</span>
+                    </div>
+                    <p className="support-stat-desc">Response time tracking will appear here once available.</p>
                 </div>
             </div>
 
             {/* Ticket List */}
-            <div className="card flex-1 overflow-hidden flex flex-col rounded-[2rem] border border-white/10 bg-[var(--bg-surface)] shadow-[0_24px_100px_-50px_rgba(15,23,42,0.9)]">
-                <div className="p-4 border-b border-white/10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="support-list-panel">
+                <div className="support-panel-head">
                     <div>
-                        <h2 className="font-semibold text-lg">My Tickets</h2>
-                        <p className="text-sm text-muted mt-1">Search, filter, and manage your support requests at a glance.</p>
+                        <h2>My Tickets</h2>
+                        <p>Search, filter, and manage your support requests at a glance.</p>
                     </div>
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <div className="relative w-full sm:w-72">
+                    <div className="support-toolbar">
+                        <div className="support-search">
+                            <Search size={18} />
                             <input
                                 type="text"
                                 placeholder="Search tickets..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full rounded-full border border-white/10 bg-[var(--bg-body)] px-4 py-2 text-sm text-main outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
+                                aria-label="Search tickets"
                             />
                             {searchTerm && (
                                 <button
+                                    className="support-search-clear"
                                     onClick={() => setSearchTerm("")}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-main transition-colors"
                                     title="Clear search"
                                 >
                                     <X size={16} />
                                 </button>
                             )}
                         </div>
-                        <button className="btn btn-ghost h-10 gap-2 self-start">
+                        <div className="filter-group">
                             <Filter size={16} />
-                            Filter
-                        </button>
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                aria-label="Filter by status"
+                            >
+                                <option value="all">All Statuses</option>
+                                <option value="open">Open</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div className="p-4 space-y-4">
+                <div className="support-ticket-grid">
                     {filteredTickets.length > 0 ? (
-                        <div className="grid gap-4 xl:grid-cols-2">
-                            {filteredTickets.map((ticket) => {
-                                const priorityClasses = ticket.priority === 'high'
-                                    ? 'bg-red-500/10 text-red-300 border-red-500/15'
-                                    : ticket.priority === 'medium'
-                                        ? 'bg-orange-500/10 text-orange-300 border-orange-500/15'
-                                        : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/15';
-
-                                return (
-                                    <div
-                                        key={ticket.id}
-                                        role="button"
-                                        tabIndex={0}
-                                        onClick={() => openEditModal(ticket)}
-                                        className="group rounded-[2rem] border border-white/10 bg-[var(--bg-surface)] p-5 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.85)] transition duration-200 hover:-translate-y-0.5 hover:bg-slate-900/95 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 overflow-hidden"
-                                    >
-                                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between min-w-0">
-                                            <div className="space-y-3 min-w-0 w-full">
-                                                <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.24em] text-slate-500">
-                                                    <span className="inline-flex min-w-0 break-words items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[var(--text-light)]">#{abbreviateTicketId(ticket.id)}</span>
-                                                    <span className="inline-flex min-w-0 break-words items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[var(--text-light)]">{formatCategory(ticket.category)}</span>
-                                                </div>
-                                                <h3 className="text-xl font-semibold text-main break-words max-w-full">{ticket.title}</h3>
-                                                <p className="text-sm leading-6 text-[var(--text-muted)] break-words max-w-full">{ticket.description || "No additional details provided."}</p>
-                                            </div>
-                                            <div className="flex flex-col gap-3 sm:items-end min-w-0 w-full sm:w-auto">
-                                                <span className={`inline-flex max-w-full break-words items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase ${getStatusColor(ticket.status)}`}>
-                                                    {getStatusIcon(ticket.status)}
-                                                    {getStatusLabel(ticket.status)}
-                                                </span>
-                                                <span className={`inline-flex max-w-full break-words items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase ${priorityClasses}`}>
-                                                    {ticket.priority}
-                                                </span>
-                                                <div className="text-right text-xs uppercase tracking-[0.18em] text-slate-500">Updated</div>
-                                                <div className="text-sm font-medium text-[var(--text-light)]">{formatDate(ticket.updated_at || ticket.created_at)}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-5 flex items-center justify-between gap-3 text-sm text-[var(--text-muted)]">
-                                            <span className="text-[var(--text-muted)]">Click to open ticket details</span>
-                                            <button
-                                                className="text-muted hover:text-red-500 transition-colors p-2"
-                                                onClick={(e) => openDeleteModal(e, ticket)}
-                                                title="Delete Ticket"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
+                        filteredTickets.map((ticket) => (
+                            <button
+                                key={ticket.id}
+                                type="button"
+                                className="ticket-card"
+                                onClick={() => openEditModal(ticket)}
+                            >
+                                <div className="ticket-card-top">
+                                    <div className="ticket-meta-tags">
+                                        <span className="ticket-tag">#{abbreviateTicketId(ticket.id)}</span>
+                                        <span className="ticket-tag">{formatCategory(ticket.category)}</span>
                                     </div>
-                                );
-                            })}
-                        </div>
+                                    <span className={`status-badge ${getStatusClass(ticket.status)}`}>
+                                        {getStatusIcon(ticket.status)}
+                                        {getStatusLabel(ticket.status)}
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h3 className="ticket-title">{ticket.title}</h3>
+                                    <p className="ticket-desc">
+                                        {ticket.description || "No additional details provided."}
+                                    </p>
+                                </div>
+
+                                <div className="ticket-card-bottom">
+                                    <span className={`priority-badge ${getPriorityClass(ticket.priority)}`}>
+                                        {ticket.priority}
+                                    </span>
+                                    <div className="ticket-updated">
+                                        <span>Updated</span>
+                                        <span className="ticket-updated-date">
+                                            {formatDate(ticket.updated_at || ticket.created_at)}
+                                        </span>
+                                    </div>
+                                    <span
+                                        className="ticket-delete-btn"
+                                        role="button"
+                                        tabIndex={-1}
+                                        onClick={(e) => openDeleteModal(e, ticket)}
+                                        title="Delete Ticket"
+                                    >
+                                        <Trash2 size={18} />
+                                    </span>
+                                </div>
+                            </button>
+                        ))
                     ) : (
-                        <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[2rem] border border-dashed border-white/10 bg-[var(--bg-surface)] p-10 text-center text-[var(--text-muted)]">
-                            <div className="mb-4 rounded-full bg-slate-900 p-4">
-                                <MessageSquare size={28} className="text-[var(--text-muted)]" />
+                        <div className="support-empty">
+                            <div className="support-empty-icon">
+                                <MessageSquare size={28} />
                             </div>
-                            <h3 className="mb-2 text-lg font-semibold text-main">No tickets to display yet</h3>
-                            <p className="max-w-xl text-sm text-[var(--text-muted)]">Use the raise ticket button to submit a new request, and we’ll show it here once it’s created.</p>
+                            <h3>No tickets to display yet</h3>
+                            <p>
+                                Use the raise ticket button to submit a new request, and we&rsquo;ll show
+                                it here once it&rsquo;s created.
+                            </p>
                         </div>
                     )}
                 </div>
