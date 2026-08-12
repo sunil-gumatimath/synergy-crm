@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar";
 import Stats from "./components/Stats";
-import { DashboardSkeleton, EmployeeListSkeleton, EmployeeDetailSkeleton, LeaveManagementSkeleton, AnalyticsSkeleton, TasksSkeleton, CalendarSkeleton, GenericViewSkeleton } from "./components/common/PageSkeletons";
+import { DashboardSkeleton, EmployeeListSkeleton, EmployeeDetailSkeleton, LeaveManagementSkeleton, AnalyticsSkeleton, TasksSkeleton, CalendarSkeleton, GenericViewSkeleton, OnboardingSkeleton } from "./components/common/PageSkeletons";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Header from "./components/layout/Header";
 import LoadingSpinner from "./components/common/LoadingSpinner";
@@ -27,6 +27,9 @@ const CalendarView = React.lazy(
 
 const TasksView = React.lazy(
   () => import("./features/tasks/TasksView"),
+);
+const OnboardingView = React.lazy(
+  () => import("./features/onboarding/OnboardingView"),
 );
 const SupportView = React.lazy(
   () => import("./features/support/SupportView"),
@@ -89,6 +92,7 @@ function App() {
     if (path.startsWith("/reports")) return "reports";
     if (path.startsWith("/chat")) return "chat";
     if (path.startsWith("/performance")) return "performance";
+    if (path.startsWith("/onboarding")) return "onboarding";
     if (path.startsWith("/settings")) return "settings";
     return "dashboard"; // Default fallback
   };
@@ -246,6 +250,21 @@ function App() {
                     }
                   >
                     <SupportView />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+                  <Suspense
+                    fallback={
+                      <OnboardingSkeleton />
+                    }
+                  >
+                    <OnboardingView />
                   </Suspense>
                 </ProtectedRoute>
               }

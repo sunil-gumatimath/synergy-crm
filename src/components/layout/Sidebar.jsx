@@ -17,6 +17,7 @@ import {
   HiOutlineChatBubbleLeftEllipsis as MessageCircle,
   HiOutlineCheckBadge as Target,
   HiOutlineSun as LeaveIcon,
+  HiOutlineRocketLaunch as RocketLaunch,
 } from "react-icons/hi2";
 
 import { useAuth } from "../../contexts/AuthContext";
@@ -124,6 +125,13 @@ const Sidebar = ({ activeTab }) => {
     {
       label: "Manage",
       items: [
+        {
+          icon: RocketLaunch,
+          label: "Onboarding",
+          id: "onboarding",
+          path: "/onboarding",
+          roles: ["Admin", "Manager"],
+        },
         {
           icon: Target,
           label: "Performance",

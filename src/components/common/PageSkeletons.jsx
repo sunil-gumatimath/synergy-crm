@@ -691,6 +691,61 @@ export const PerformanceReviewsSkeleton = () => (
     </div>
 );
 
+// Onboarding Skeleton - matches header + stats + workflow/tasks layout
+export const OnboardingSkeleton = () => (
+    <div className="onb-container">
+        <div className="onb-header">
+            <div>
+                <Skeleton width="220px" height="32px" />
+                <Skeleton width="300px" height="16px" className="mt-2" />
+            </div>
+            <Skeleton width="150px" height="42px" borderRadius="10px" />
+        </div>
+
+        <div className="onb-stats">
+            {[1, 2, 3, 4].map(i => (
+                <div key={i} className="onb-stat-card">
+                    <Skeleton width="44px" height="44px" borderRadius="12px" />
+                    <div>
+                        <Skeleton width="50px" height="22px" />
+                        <Skeleton width="90px" height="14px" className="mt-1" />
+                    </div>
+                </div>
+            ))}
+        </div>
+
+        <Skeleton width="340px" height="40px" borderRadius="10px" className="mb-5" />
+
+        <div className="onb-layout">
+            <div className="onb-workflows-column">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="onb-workflow-card">
+                        <div className="onb-workflow-card-top">
+                            <Skeleton width="42px" height="42px" borderRadius="11px" />
+                            <div className="onb-workflow-info">
+                                <Skeleton width="160px" height="16px" />
+                                <Skeleton width="120px" height="12px" className="mt-2" />
+                            </div>
+                        </div>
+                        <Skeleton width="100%" height="6px" borderRadius="4px" className="mt-4" />
+                    </div>
+                ))}
+            </div>
+            <div className="onb-tasks-column">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="onb-task-row">
+                        <Skeleton width="20px" height="20px" borderRadius="50%" />
+                        <div className="flex-1">
+                            <Skeleton width="60%" height="16px" />
+                            <Skeleton width="40%" height="12px" className="mt-2" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
 // Reports View Skeleton - matches header + tabs + summary + table
 export const ReportsViewSkeleton = () => (
     <div className="reports-container">
