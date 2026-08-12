@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { Facehash } from 'facehash';
 import "./Avatar.css";
 import PropTypes from 'prop-types';
-import { getInitials, getAvatarStyle } from '../../utils/avatarUtils.js';
+import { getAvatarColors } from '../../utils/avatarUtils.js';
 import { avatarService } from '../../services/avatarService.js';
 
 /**
  * Avatar Component — Displays user avatar
  *
- * Priority: uploaded src → initials fallback
+ * Priority: uploaded src → Facehash fallback
  */
 const Avatar = ({
     src,
@@ -19,8 +20,7 @@ const Avatar = ({
 }) => {
     const [failedSrc, setFailedSrc] = useState(null);
     const [resolvedSrc, setResolvedSrc] = useState(null);
-    const initials = getInitials(name);
-    const style = getAvatarStyle(gender);
+    const colors = getAvatarColors(gender);
 
     const sizeClasses = {
         xs: 'avatar-xs',
@@ -86,15 +86,22 @@ const Avatar = ({
         );
     }
 
-    // Fallback to initials
+    // Fallback: deterministic Facehash avatar from the name
     return (
         <div
             className={`avatar ${sizeClass} ${className}`}
-            style={style}
             onClick={onClick}
             title={name}
+            style={{ padding: 0, overflow: 'hidden' }}
         >
-            {initials}
+            <Facehash
+                name={name || 'user'}
+                size="100%"
+                colors={[colors.bg]}
+                intensity3d="subtle"
+                showInitial={size === 'md' || size === 'lg' || size === 'xl'}
+                className="avatar-facehash"
+            />
         </div>
     );
 };
