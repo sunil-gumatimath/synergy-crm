@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   User,
   Bell,
@@ -72,7 +72,7 @@ const defaultSettings = {
  */
 const SettingsView = () => {
   const { user } = useAuth();
-  const { updateTheme, updateColorTheme, updateAccentColor, updateCompactMode, syncFromDatabase } = useTheme();
+  const { theme, colorTheme, accentColor, compactMode, updateTheme, updateColorTheme, updateAccentColor, updateCompactMode } = useTheme();
   const toast = useToast();
   const [activeSection, setActiveSection] = useState("account");
   const [errors, setErrors] = useState({});
@@ -81,6 +81,9 @@ const SettingsView = () => {
   const [settings, setSettings] = useState(defaultSettings);
   const [originalSettings, setOriginalSettings] = useState({});
   // Load initial data
+  // Capture the live theme preferences once at mount so the settings page
+  // reflects the current theme without re-applying DB defaults on every visit.
+  const themePrefsRef = useRef({ theme, colorTheme, accentColor, compactMode });
   useEffect(() => {
     const loadSettings = async () => {
       if (!user) return;
@@ -106,10 +109,10 @@ const SettingsView = () => {
           phone: user.phone || "",
           bio: user.bio || "",
           avatarUrl: user.avatar || "",
-          theme: userSettings?.theme || "system",
-          colorTheme: userSettings?.color_theme || "default",
-          accentColor: userSettings?.accent_color || "indigo",
-          compactMode: userSettings?.compact_mode || false,
+          theme: themePrefsRef.current.theme,
+          colorTheme: themePrefsRef.current.colorTheme,
+          accentColor: themePrefsRef.current.accentColor,
+          compactMode: themePrefsRef.current.compactMode,
           emailNotifications: userSettings?.email_notifications ?? true,
           pushNotifications: userSettings?.push_notifications ?? false,
           taskReminders: userSettings?.task_reminders ?? true,
@@ -130,15 +133,6 @@ const SettingsView = () => {
 
         setSettings(loadedSettings);
         setOriginalSettings(loadedSettings);
-
-        if (userSettings) {
-          syncFromDatabase({
-            theme: userSettings.theme,
-            colorTheme: userSettings.color_theme,
-            accentColor: userSettings.accent_color,
-            compactMode: userSettings.compact_mode,
-          });
-        }
       } catch (err) {
         console.error("Failed to load settings:", err);
         toast.error("Failed to load settings.");
@@ -148,7 +142,7 @@ const SettingsView = () => {
     };
 
     loadSettings();
-  }, [user, toast, syncFromDatabase]);
+  }, [user, toast]);
 
   // Track changes (derived, not state)
   const hasChanges = useMemo(() => {
