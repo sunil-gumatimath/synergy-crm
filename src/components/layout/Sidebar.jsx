@@ -2,26 +2,27 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import {
-  HiOutlineUsers as Users,
-  HiOutlineSquares2X2 as LayoutDashboard,
-  HiOutlineCalendarDays as Calendar,
-  HiOutlineCog6Tooth as Settings,
-  HiArrowRightOnRectangle as LogOut,
-  HiChevronRight as ChevronRight,
-  HiChevronLeft as ChevronLeft,
-  HiOutlineClipboardDocumentList as ClipboardList,
-  HiOutlineLifebuoy as LifeBuoy,
-  HiOutlineHome as Home,
-  HiOutlineClock as Timer,
-  HiOutlineDocumentText as FileText,
-  HiOutlineChatBubbleLeftEllipsis as MessageCircle,
-  HiOutlineCheckBadge as Target,
-  HiOutlineSun as LeaveIcon,
-  HiOutlineRocketLaunch as RocketLaunch,
-} from "react-icons/hi2";
+  Home01Icon,
+  LayoutDashboard,
+  UserGroupIcon,
+  Task01Icon,
+  Time01Icon,
+  CalendarMinus01Icon,
+  Message01Icon,
+  LifebuoyIcon,
+  Calendar01Icon,
+  Rocket01Icon,
+  Target01Icon,
+  DocumentValidationIcon,
+  Settings01Icon,
+  Logout01Icon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@hugeicons/core-free-icons";
 
 import { useAuth } from "../../contexts/AuthContext";
 import SynergyLogo from "../common/SynergyLogo";
+import HugeIcon from "../common/HugeIcon";
 import { useNotifications } from "../../contexts/NotificationContext";
 import { useUIStore } from "../../store/uiStore";
 
@@ -45,7 +46,7 @@ const Sidebar = ({ activeTab }) => {
       label: "Main",
       items: [
         {
-          icon: Home,
+          icon: Home01Icon,
           label: "Dashboard",
           id: "dashboard",
           path: "/dashboard",
@@ -59,7 +60,7 @@ const Sidebar = ({ activeTab }) => {
           roles: ["Admin", "Manager"],
         },
         {
-          icon: Users,
+          icon: UserGroupIcon,
           label: "Employees",
           id: "employees",
           path: "/employees",
@@ -71,7 +72,7 @@ const Sidebar = ({ activeTab }) => {
       label: "Work",
       items: [
         {
-          icon: ClipboardList,
+          icon: Task01Icon,
           label: "Tasks",
           id: "tasks",
           path: "/tasks",
@@ -79,14 +80,14 @@ const Sidebar = ({ activeTab }) => {
           badge: notifications.tasks,
         },
         {
-          icon: Timer,
+          icon: Time01Icon,
           label: "Time Tracking",
           id: "timetracking",
           path: "/timetracking",
           roles: ["Admin", "Manager", "Employee"],
         },
         {
-          icon: LeaveIcon,
+          icon: CalendarMinus01Icon,
           label: "Leave",
           id: "leave",
           path: "/leave",
@@ -99,14 +100,14 @@ const Sidebar = ({ activeTab }) => {
       label: "Connect",
       items: [
         {
-          icon: MessageCircle,
+          icon: Message01Icon,
           label: "Team Chat",
           id: "chat",
           path: "/chat",
           roles: ["Admin", "Manager", "Employee"],
         },
         {
-          icon: LifeBuoy,
+          icon: LifebuoyIcon,
           label: "Help Desk",
           id: "support",
           path: "/support",
@@ -114,7 +115,7 @@ const Sidebar = ({ activeTab }) => {
           badge: notifications.support,
         },
         {
-          icon: Calendar,
+          icon: Calendar01Icon,
           label: "Calendar",
           id: "calendar",
           path: "/calendar",
@@ -126,28 +127,28 @@ const Sidebar = ({ activeTab }) => {
       label: "Manage",
       items: [
         {
-          icon: RocketLaunch,
+          icon: Rocket01Icon,
           label: "Onboarding",
           id: "onboarding",
           path: "/onboarding",
           roles: ["Admin", "Manager"],
         },
         {
-          icon: Target,
+          icon: Target01Icon,
           label: "Performance",
           id: "performance",
           path: "/performance",
           roles: ["Admin", "Manager", "Employee"],
         },
         {
-          icon: FileText,
+          icon: DocumentValidationIcon,
           label: "Reports",
           id: "reports",
           path: "/reports",
           roles: ["Admin", "Manager"],
         },
         {
-          icon: Settings,
+          icon: Settings01Icon,
           label: "Settings",
           id: "settings",
           path: "/settings",
@@ -209,7 +210,7 @@ const Sidebar = ({ activeTab }) => {
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           <span className="sidebar-collapse-toggle-icon" aria-hidden="true">
-            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            {isCollapsed ? <HugeIcon icon={ChevronRightIcon} size={16} /> : <HugeIcon icon={ChevronLeftIcon} size={16} />}
           </span>
           <span className="sr-only">
             {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -244,7 +245,6 @@ const Sidebar = ({ activeTab }) => {
                   <div className="nav-section-divider" />
                 )}
                 {section.items.map((item) => {
-                  const Icon = item.icon;
                   return (
                     <Link
                       key={item.id}
@@ -255,7 +255,7 @@ const Sidebar = ({ activeTab }) => {
                       aria-current={activeTab === item.id ? "page" : undefined}
                     >
                       <span className="nav-item-icon">
-                        <Icon size={20} strokeWidth={2} />
+                        <HugeIcon icon={item.icon} size={20} strokeWidth={2} />
                       </span>
                       {!isCollapsed && (
                         <>
@@ -264,7 +264,8 @@ const Sidebar = ({ activeTab }) => {
                             <span className="nav-badge">{item.badge > 9 ? '9+' : item.badge}</span>
                           )}
                           {activeTab === item.id && !item.badge && (
-                            <ChevronRight
+                            <HugeIcon
+                              icon={ChevronRightIcon}
                               size={16}
                               className="nav-item-arrow"
                             />
@@ -288,7 +289,7 @@ const Sidebar = ({ activeTab }) => {
               onClick={handleLogout}
               title="Logout"
             >
-              <LogOut size={20} />
+              <HugeIcon icon={Logout01Icon} size={20} />
               {!isCollapsed && <span className="logout-label">Logout</span>}
             </button>
           </div>

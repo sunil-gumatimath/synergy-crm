@@ -503,7 +503,7 @@ Exported: ${new Date().toLocaleString()}
                         <div className="emp-detail__hero-banner" />
                         <div className="emp-detail__hero-content">
                             <div className="emp-detail__avatar-container">
-                                <Skeleton width="140px" height="140px" borderRadius="16px" />
+                                <Skeleton width="140px" height="140px" borderRadius="0" />
                             </div>
                             <div className="emp-detail__info">
                                 <Skeleton width="200px" height="28px" />
